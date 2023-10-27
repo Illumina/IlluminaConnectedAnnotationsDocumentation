@@ -11,7 +11,7 @@ Illumina Annotator currently uses .NET6.0. Please make sure that you have the mo
 ## Getting Illumina Annotator
 
 ### Latest Release
-Contact the team (annotation_support@illumina.com) to obtain the latest release and or Docker image.
+Please visit [Illumina Annotator](https://developer.illumina.com/IlluminaAnnotator). to obtain the latest release.
 
 ```bash
 mkdir -p IlluminaAnnotator/Data

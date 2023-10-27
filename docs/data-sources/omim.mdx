@@ -14,6 +14,10 @@ Amberger JS, Bocchini CA, Scott AF, Hamosh A. OMIM.org: leveraging knowledge acr
 Amberger JS, Bocchini CA, Schiettecatte FJM, Scott AF, Hamosh A. OMIM.org: Online Mendelian Inheritance in Man (OMIM®), an online catalog of human genes and genetic disorders. Nucleic Acids Res. 2015 Jan;43(Database issue):D789-98. PMID: [25428349](https://pubmed.ncbi.nlm.nih.gov/25428349/).
 :::
 
+:::caution Professional data source
+This is a Professional data source and is not available freely. Please contact annotation_support@illumina.com if you would like to obtain it.
+:::
+
 ## Parse OMIM data
 
 Illumina Annotator uses gene symbols as the gene identifiers internally. To generate the OMIM database, we first map the MIM numbers, which are the primary identifiers used by OMIM, to gene symbols supported by Illumina Annotator. Please note that there can be multiple MIM numbers mapped to one gene symbol. Only MIM numbers successfully mapped to an Illumina Annotator gene symbol are further processed. The OMIM API is used to fetch all the information associated with a gene MIM number, except the gene symbols.
