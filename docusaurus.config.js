@@ -17,10 +17,10 @@ function getNextVersionName() {
 }
 
 module.exports = {
-  title: 'IlluminaAnnotator',
+  title: 'IlluminaConnectedAnnotations',
   tagline: 'Clinical-grade variant annotation',
   url: 'https://illumina.github.io',
-  baseUrl: '/IlluminaAnnotatorDocumentation/',
+  baseUrl: '/IlluminaConnectedAnnotationsDocumentation/',
   onBrokenLinks: 'throw',
   favicon: 'img/favicon.ico',
   organizationName: 'illumina',
@@ -72,7 +72,7 @@ module.exports = {
           routeBasePath: '/',
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl:
-            'https://github.com/Illumina/IlluminaAnnotatorDocumentation/edit/master/',
+            'https://github.com/Illumina/IlluminaConnectedAnnotationsDocumentation/edit/master/',
           lastVersion: 'current',
           versions: {
             current: {

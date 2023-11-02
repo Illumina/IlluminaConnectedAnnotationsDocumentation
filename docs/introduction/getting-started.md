@@ -11,40 +11,40 @@ Illumina Connected Annotations currently uses .NET6.0. Please make sure that you
 ## Getting Illumina Connected Annotations
 
 ### Latest Release
-Please visit [Illumina Connected Annotations](https://developer.illumina.com/IlluminaAnnotator). to obtain the latest release.
+Please visit [Illumina Connected Annotations](https://developer.illumina.com/IlluminaConnectedAnnotations). to obtain the latest release.
 
 ```bash
-mkdir -p IlluminaAnnotator/Data
-cd IlluminaAnnotator
-unzip IlluminaAnnotator-3.18.1-net6.0.zip
+mkdir -p IlluminaConnectedAnnotations/Data
+cd IlluminaConnectedAnnotations
+unzip IlluminaConnectedAnnotations-3.18.1-net6.0.zip
 ```
 
 ### Quick Start
-If you want to get started right away, we've created [a script](TestIlluminaAnnotator.sh) that unzips the Illumina Connected Annotations build, downloads the annotation data, and starts annotating a test file:
+If you want to get started right away, we've created [a script](TestIlluminaConnectedAnnotations.sh) that unzips the Illumina Connected Annotations build, downloads the annotation data, and starts annotating a test file:
 
 ```bash
-bash ./TestIlluminaAnnotator.sh IlluminaAnnotatorBuild.zip
+bash ./TestIlluminaConnectedAnnotations.sh IlluminaConnectedAnnotationsBuild.zip
 ```
 We have verified that this script works on Windows (using Git Bash or WSL), Linux, and Mac OS X.
 
 ### Docker
 
-Obtain the docker image in a zip file (e.g. IlluminaAnnotator-v3.21.0-net6.0-docker.tar.gz), and load it as follows
+Obtain the docker image in a zip file (e.g. IlluminaConnectedAnnotations-v3.21.0-net6.0-docker.tar.gz), and load it as follows
 
 ```bash
-docker load < IlluminaAnnotator-v3.21.0-net6.0-docker.tar.gz
+docker load < IlluminaConnectedAnnotations-v3.21.0-net6.0-docker.tar.gz
 ```
 
 For Docker, we have special instructions for running the Downloader:
 
 ```bash
-docker run --rm -it -v local/data/folder:/scratch IlluminaAnnotator:v3.21.0 Downloader --ga GRCh37 -o /scratch
+docker run --rm -it -v local/data/folder:/scratch IlluminaConnectedAnnotations:v3.21.0 Downloader --ga GRCh37 -o /scratch
 ```
 
-Similarly, we have special instructions for running IlluminaAnnotator (Here's [a toy VCF](https://illumina.github.io/IlluminaAnnotatorDocumentation/files/HiSeq.10000.vcf.gz) in case you need it):
+Similarly, we have special instructions for running IlluminaConnectedAnnotations (Here's [a toy VCF](https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/files/HiSeq.10000.vcf.gz) in case you need it):
 
 ```bash
-docker run --rm -it -v local/data/folder:/scratch IlluminaAnnotator:v3.21.0 IlluminaAnnotator -c /scratch/Cache/ \
+docker run --rm -it -v local/data/folder:/scratch IlluminaConnectedAnnotations:v3.21.0 IlluminaConnectedAnnotations -c /scratch/Cache/ \
      -r /scratch/References/Homo_sapiens.GRCh37.Nirvana.dat \
      --sd /scratch/SupplementaryAnnotation/GRCh37 \
      -i /scratch/HiSeq.10000.vcf.gz -o /scratch/HiSeq
@@ -55,7 +55,7 @@ We think Docker is fantastic. However, because our data files are usually access
 :::tip
 For convenience, the user is encouraged to create aliases for the docker commands. For example:
 ```bash
-alias IlluminaAnnotator="docker run --rm -it -v local/data/folder:/scratch IlluminaAnnotator:v3.21.0 IlluminaAnnotator"
+alias IlluminaConnectedAnnotations="docker run --rm -it -v local/data/folder:/scratch IlluminaConnectedAnnotations:v3.21.0 IlluminaConnectedAnnotations"
 ```
 :::
 
@@ -82,10 +82,10 @@ From time to time, you can re-run the Downloader to get the latest annotation fi
 
 ## Download a test VCF file
 
-Here's [a toy VCF file](https://illumina.github.io/IlluminaAnnotatorDocumentation/files/HiSeq.10000.vcf.gz) you can play around with:
+Here's [a toy VCF file](https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/files/HiSeq.10000.vcf.gz) you can play around with:
 
 ```bash
-curl -O https://illumina.github.io/IlluminaAnnotatorDocumentation/files/HiSeq.10000.vcf.gz
+curl -O https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/files/HiSeq.10000.vcf.gz
 ```
 
 ## Running Illumina Connected Annotations
@@ -111,7 +111,7 @@ When running Illumina Connected Annotations, performance metrics are shown as it
 
 ```bash
 ---------------------------------------------------------------------------
-IlluminaAnnotator                                   (c) 2020 Illumina, Inc.
+IlluminaConnectedAnnotations                                   (c) 2020 Illumina, Inc.
 Stromberg, Roy, Platzer, Siddiqui, Ouyang, et al                     3.21.0
 ---------------------------------------------------------------------------
 
@@ -133,14 +133,14 @@ Annotation                                          00:00:00.8       18.5 %
 Time: 00:00:04.4
 ```
 
-The output will be a JSON file called `HiSeq.10000.json.gz`. Here's [the full JSON file](https://illumina.github.io/IlluminaAnnotatorDocumentation/files/HiSeq.10000.json.gz).
+The output will be a JSON file called `HiSeq.10000.json.gz`. Here's [the full JSON file](https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/files/HiSeq.10000.json.gz).
 
 ## The Illumina Connected Annotations command line
 The full command line options can be viewed by using the `-h` option or no options
 ```bash
 dotnet Annotator.dll
 ---------------------------------------------------------------------------
-IlluminaAnnotator                                   (c) 2020 Illumina, Inc.
+IlluminaConnectedAnnotations                                   (c) 2020 Illumina, Inc.
 Stromberg, Roy, Platzer, Siddiqui, Ouyang, et al                     3.21.0
 ---------------------------------------------------------------------------
 
@@ -183,7 +183,7 @@ dotnet Annotator.dll \
      -o HiSeq.10000 \
 	 -s omim,gnomad,ense
  ---------------------------------------------------------------------------
- IlluminaAnnotator                                   (c) 2020 Illumina, Inc.
+ IlluminaConnectedAnnotations                                   (c) 2020 Illumina, Inc.
  Stromberg, Roy, Platzer, Siddiqui, Ouyang, et al                     3.21.0
  ---------------------------------------------------------------------------
 

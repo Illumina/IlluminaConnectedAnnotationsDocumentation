@@ -11,7 +11,7 @@
 
 
 ILLUMINA_ANNOTATOR_BUILD_ZIP=$1
-ILLUMINA_ANNOTATOR_ROOT=~/IlluminaAnnotatorTest
+ILLUMINA_ANNOTATOR_ROOT=~/IlluminaConnectedAnnotationsTest
 ILLUMINA_ANNOTATOR_BUILD_DIR=$ILLUMINA_ANNOTATOR_ROOT/build
 ILLUMINA_ANNOTATOR_BIN=$ILLUMINA_ANNOTATOR_BUILD_DIR/Annotator.dll
 DOWNLOADER_BIN=$ILLUMINA_ANNOTATOR_BUILD_DIR/Downloader.dll
@@ -29,7 +29,7 @@ REF_TEST=$REF_DIR/Homo_sapiens.${GENOME_ASSEMBLY}.Nirvana.dat
 
 ########## Help function #############
 PrintHelp(){
-	echo "USAGE: ./TestIlluminaAnnotator.sh /path/to/build/Annotator.zip"
+	echo "USAGE: ./TestIlluminaConnectedAnnotations.sh /path/to/build/Annotator.zip"
 }
 ############ Checking arguments ########
 if [ "$#" -neq 1 ] ; then
@@ -91,10 +91,10 @@ dotnet $DOWNLOADER_BIN --ga $GENOME_ASSEMBLY --out $DATA_DIR
 echo "run Illumina Connected Annotations on a test VCF file"
 if [ ! -f $VCF_PATH ]
 then
-    curl -O https://illumina.github.io/IlluminaAnnotatorDocumentation/files/HiSeq.10000.vcf.gz
+    curl -O https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/files/HiSeq.10000.vcf.gz
 fi
 
-# analyze it with IlluminaAnnotator
+# analyze it with IlluminaConnectedAnnotations
 dotnet $ILLUMINA_ANNOTATOR_BIN -c $CACHE_DIR --sd $SA_DIR -r $REF_TEST -i $VCF_PATH -o HiSeq.10000
 
 popd
