@@ -50,7 +50,7 @@ docker run --rm -it -v local/data/folder:/scratch IlluminaConnectedAnnotations:v
      -i /scratch/HiSeq.10000.vcf.gz -o /scratch/HiSeq
 ```
 :::caution
-We think Docker is fantastic. However, because our data files are usually accessed through a Docker volume, there is a noticeable performance penalty when running Illumina Connected Annotations in Docker.
+Please note that since our data files are usually accessed through a Docker volume, there is a noticeable performance penalty when running Illumina Connected Annotations in Docker.
 :::
 :::tip
 For convenience, the user is encouraged to create aliases for the docker commands. For example:
