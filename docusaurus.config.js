@@ -24,7 +24,7 @@ module.exports = {
   onBrokenLinks: 'throw',
   favicon: 'img/favicon.ico',
   organizationName: 'illumina',
-  projectName: 'NirvanaDocumentation',
+  projectName: 'IlluminaConnectedAnnotationsDocumentation',
   themeConfig: {
     gtag: {
       trackingID: 'G-5KXNW9LCD7',
