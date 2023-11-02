@@ -12,14 +12,14 @@ export function TeamProfileCardCol(props) { return <TeamProfileCard {...props} c
 
 ![](ICAnnotations.png)
 
-Illumina Annotator provides clinical-grade annotation of genomic variants (SNVs, MNVs, insertions, deletions, indels, STRs, gene fusions, and SVs (including CNVs). It can be run as a stand-alone package, as an AWS Lambda function, or integrated into larger software tools that require variant annotation.
+Illumina Connected Annotations provides clinical-grade annotation of genomic variants (SNVs, MNVs, insertions, deletions, indels, STRs, gene fusions, and SVs (including CNVs). It can be run as a stand-alone package, as an AWS Lambda function, or integrated into larger software tools that require variant annotation.
 
-The input to Illumina Annotator are VCFs and the output is a structured JSON representation of all annotation and sample information (as extracted from the VCF). Illumina Annotator handles multiple alternate alleles and multiple samples with ease.
+The input to Illumina Connected Annotations are VCFs and the output is a structured JSON representation of all annotation and sample information (as extracted from the VCF). Illumina Connected Annotations handles multiple alternate alleles and multiple samples with ease.
 
-The software is being developed under a rigorous SDLC and testing process to ensure accuracy of the results and enable embedding in other software with regulatory needs. Illumina Annotator uses a continuous integration pipeline where millions of variant annotations are monitored against baseline values daily.
+The software is being developed under a rigorous SDLC and testing process to ensure accuracy of the results and enable embedding in other software with regulatory needs. Illumina Connected Annotations uses a continuous integration pipeline where millions of variant annotations are monitored against baseline values daily.
 
 
-## What does Illumina Annotator annotate?
+## What does Illumina Connected Annotations annotate?
 
 We use Sequence Ontology consequences to describe how each variant impacts a given transcript:
 
@@ -28,7 +28,7 @@ We use Sequence Ontology consequences to describe how each variant impacts a giv
 The transcript and gene models are obtained from [RefSeq](https://ftp.ncbi.nlm.nih.gov/genomes/all/annotation_releases/9606/) and [Ensembl](https://ftp.ensembl.org/pub/).
 
 In addition, we also use external data sources to provide additional context for each variant. 
-Illumina Annotator provides annotations from the following sources divided into 2 tiers: Professional and basic. 
+Illumina Connected Annotations provides annotations from the following sources divided into 2 tiers: Professional and basic. 
 The basic tier can be accessed free of charge. The professional tier requires a license. For access, please contact annotation_support@illumina.com. 
 
 | Data Source | Availability |
@@ -55,4 +55,4 @@ The basic tier can be accessed free of charge. The professional tier requires a 
 
 
 ## Download
-Please visit [Illumina Annotator](https://developer.illumina.com/IlluminaAnnotator).
+Please visit [Illumina Connected Annotations](https://developer.illumina.com/IlluminaAnnotator).

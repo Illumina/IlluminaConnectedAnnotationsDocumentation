@@ -17,22 +17,22 @@ while the other caters to gene annotations.
 In both cases, the custom annotation file format is a tab-delimited file that is separated into two parts: the header & the data.
 
 The header is where you can customize how you want the data to appear in the JSON file and provide context about the genome assembly and how
-Illumina Annotator should match the variants.
+Illumina Connected Annotations should match the variants.
 
-At Illumina, there are usually many components downstream of Illumina Annotator that have to parse our annotations. If a customer provides a custom
+At Illumina, there are usually many components downstream of Illumina Connected Annotations that have to parse our annotations. If a customer provides a custom
 annotation, those downstream tools need to understand more about the data such as:
 
 * data type (e.g. number, boolean, or a string)
 * data category (e.g. is this an allele count, allele number, allele frequency, etc.)
 * associated population (i.e. if this is an allele frequency)
 
-For each custom annotation, Illumina Annotator uses this context to create a [JSON schema](https://json-schema.org/) that can be sent to downstream tools. If
+For each custom annotation, Illumina Connected Annotations uses this context to create a [JSON schema](https://json-schema.org/) that can be sent to downstream tools. If
 a tool knows that this is an allele frequency, it can validate user input to ensure that it's in the range of [0, 1].
 
 ## Variant File Format
 
 :::caution File Format
-Illumina Annotator expects plain text (or gzipped text) files. Using tools like Excel can add extra characters that can break parsing. We highly recommend creating and modifying these files with plain text editor like Notepad, Notepad++ or Atom.
+Illumina Connected Annotations expects plain text (or gzipped text) files. Using tools like Excel can add extra characters that can break parsing. We highly recommend creating and modifying these files with plain text editor like Notepad, Notepad++ or Atom.
 :::
 
 ### Basic Allele Frequency Example
@@ -68,16 +68,16 @@ downstream tool that this means a global allele frequency using all sub-populati
 * `type` indicates to downstream tools the data type. Since allele frequencies are numbers, we'll write `number` in this column.
 
 :::caution Reference Base Checking
-Illumina Annotator validates all the reference bases in a custom annotation. If a variant or genomic region is specified that has the wrong reference base, an error will be produced.
+Illumina Connected Annotations validates all the reference bases in a custom annotation. If a variant or genomic region is specified that has the wrong reference base, an error will be produced.
 :::
 
 :::caution Sorting
 The variants within each chromosome must be sorted by genomic position.
 :::
 
-#### Convert to Illumina Annotator Format
+#### Convert to Illumina Connected Annotations Format
 
-First we need to convert the TSV file to Illumina Annotator's native file format and let's put that file in a new directory called CA:
+First we need to convert the TSV file to Illumina Connected Annotations's native file format and let's put that file in a new directory called CA:
 
 ```bash
 $ mkdir CA
@@ -94,7 +94,7 @@ Chromosome 19 completed in 00:00:00.0
 Time: 00:00:00.2
 ```
 
-#### Annotate with Illumina Annotator
+#### Annotate with Illumina Connected Annotations
 
 Let's annotate the following VCF (notice that it's one of the variants that we have in our custom annotation):
 
@@ -106,8 +106,8 @@ Let's annotate the following VCF (notice that it's one of the variants that we h
 
 Here's [the full VCF file](https://illumina.github.io/IlluminaAnnotatorDocumentation/files/TestCA.vcf).
 
-Since Illumina Annotator can handle multiple directories with external annotations, all we need to do is specify our new CA directory in addition to
-the normal Illumina Annotator command-line.
+Since Illumina Connected Annotations can handle multiple directories with external annotations, all we need to do is specify our new CA directory in addition to
+the normal Illumina Connected Annotations command-line.
 
 ```bash {3}
 $ dotnet Annotator.dll -c Data/Cache/GRCh38/Both \
@@ -162,7 +162,7 @@ We would expect the following data to show up in our JSON output file:
 
 Here's [the full JSON file](https://illumina.github.io/IlluminaAnnotatorDocumentation/files/TestCA.json.gz).
 
-Illumina Annotator preserves up to 6 decimal places for allele frequency data.
+Illumina Connected Annotations preserves up to 6 decimal places for allele frequency data.
 
 ### Categories & Descriptions Example
 
@@ -187,17 +187,17 @@ Here's [the full TSV file](https://illumina.github.io/IlluminaAnnotatorDocumenta
 
 :::tip Placeholders
 You can use a period to denote an empty value (much in the same way as periods are used in VCF files to signify missing values). While
-Illumina Annotator also accepts empty columns in the TSV file, we use them in these examples to promote readability.
+Illumina Connected Annotations also accepts empty columns in the TSV file, we use them in these examples to promote readability.
 :::
 
 Let's go over what's new in this example:
-* **Column 6** adds a field called `pathogenicity` which uses the `Prediction` category. When using this category, Illumina Annotator will
+* **Column 6** adds a field called `pathogenicity` which uses the `Prediction` category. When using this category, Illumina Connected Annotations will
 validate to make
 sure that the field contains either the abbreviations (B, LB, VUS, LP, and P) or the long-form equivalents (e.g. benign or pathogenic).
 * **Column 7** adds a field called `notes` and it doesn't have a category or description. We're just going to use it to add some internal
 notes.
 
-#### Annotate with Illumina Annotator
+#### Annotate with Illumina Connected Annotations
 
 Let's use a new VCF file. It includes all the same positions as our custom annotation file, but only the middle variant also matches the
 alternate allele (allele-specific match):
@@ -319,7 +319,7 @@ Let's go over what's new in this example:
 In the previous example we learned about positional matching vs allele-specific matching. For genomic regions, `#matchVariantsBy=allele` and `#matchVariantsBy=position` produce
 the same result.
 
-#### Annotate with Illumina Annotator
+#### Annotate with Illumina Connected Annotations
 
 Let's use the same VCF file as our previous example.
 
@@ -349,7 +349,7 @@ Let's use the same VCF file as our previous example.
 Here's [the full JSON file](https://illumina.github.io/IlluminaAnnotatorDocumentation/files/TestCA3.json.gz).
 
 :::tip Reciprocal & Annotation Overlap
-For all intervals, Illumina Annotator internally calculates two overlaps: a **variant overlap** and an **annotation overlap**. Variant overlap is the percentage of the variant's length that is
+For all intervals, Illumina Connected Annotations internally calculates two overlaps: a **variant overlap** and an **annotation overlap**. Variant overlap is the percentage of the variant's length that is
 overlapped. Annotation overlap is the percentage of the annotation's length that is overlap.
 
 **Reciprocal overlap** is the minimum of those two overlaps. Given that the annotation is 50 Mbp and the deletion is one 1 bp, both overlaps will be pretty close to 0.
@@ -382,7 +382,7 @@ We will also see this annotation for the other variant on chr16:
 
 #### Create the Custom Annotation TSV
 
-Often we use genomic regions to represent other known CNVs and SVs in the genome. In this use case, we usually don't want to match these regions to other small variants. To force Illumina Annotator to match regions only to other SVs, use the `#matchVariantsBy=sv` option in the header. Here is an example:
+Often we use genomic regions to represent other known CNVs and SVs in the genome. In this use case, we usually don't want to match these regions to other small variants. To force Illumina Connected Annotations to match regions only to other SVs, use the `#matchVariantsBy=sv` option in the header. Here is an example:
 
 | Col 1                   | Col 2    | Col 3 | Col 4 | Col 5 |
 |:------------------------|:---------|:------|:------|:------|
@@ -400,7 +400,7 @@ Here's [the full TSV file](https://illumina.github.io/IlluminaAnnotatorDocumenta
 Let's go over what's new in this example:
 * The main difference is the header field `#matchVariantsBy=sv` which indicates that only structural variants that overlap these genomic regions will receive annotations.
 
-#### Annotate with Illumina Annotator
+#### Annotate with Illumina Connected Annotations
 
 Let's use a new VCF file. It contains the first variant from the previous file and a structural variant deletion- both of which overlap the given genomic region.
 
@@ -475,9 +475,9 @@ Here's [the full TSV file](https://illumina.github.io/IlluminaAnnotatorDocumenta
 Let's go over what's new in this example:
 * **Column 4** now has the `REF` field. Exception for the case listed below, this is only used by small variants or translocation breakends.
 * **Column 5** now has the `END` field. This is only used by genomic regions.
-* There are two custom annotations on chr21 and the start and end coordinates look the same, so what's different? Interval #2 has **a symbolic allele in the ALT column**. When this is used in custom annotation, the start position is treated as the padding base (using VCF conventions). When Illumina Annotator matches a variant to interval #2, it will ignore the padding base and consider the start position to be at position 10510819.
+* There are two custom annotations on chr21 and the start and end coordinates look the same, so what's different? Interval #2 has **a symbolic allele in the ALT column**. When this is used in custom annotation, the start position is treated as the padding base (using VCF conventions). When Illumina Connected Annotations matches a variant to interval #2, it will ignore the padding base and consider the start position to be at position 10510819.
 
-#### Annotate with Illumina Annotator
+#### Annotate with Illumina Connected Annotations
 
 Let's use a new VCF file to study how matching works for intervals #1 and #2:
 
@@ -573,16 +573,16 @@ Let's go over what's in this example:
 * **Column 2** has the `geneId` field. This can be either an **Entrez Gene ID** or an **Ensembl ID**.
 
 :::caution Gene Symbols
-Gene symbols are always in flux and are being updated on a daily basis at the NCBI and at HGNC. Due to this, Illumina Annotator uses the `geneId` to match genes rather than the gene symbol. However, to
+Gene symbols are always in flux and are being updated on a daily basis at the NCBI and at HGNC. Due to this, Illumina Connected Annotations uses the `geneId` to match genes rather than the gene symbol. However, to
 make the custom annotation files easier to read, we've included the `geneSymbol` column as well.
 :::
 
 :::caution Unknown Gene IDs
-When Illumina Annotator parses the gene custom annotation file, it will note any gene IDs that are currently not recognized in Illumina Annotator. In such a case, Illumina Annotator will display an error showing all the
+When Illumina Connected Annotations parses the gene custom annotation file, it will note any gene IDs that are currently not recognized in Illumina Connected Annotations. In such a case, Illumina Connected Annotations will display an error showing all the
 unrecognized gene IDs.
 :::
 
-#### Annotate with Illumina Annotator
+#### Annotate with Illumina Connected Annotations
 
 Let's use a VCF file that contain variants in TP53 and KRAS:
 
@@ -658,7 +658,7 @@ The following genome assemblies can be specified:
 
 ### Matching Criteria
 
-The matching criteria instructs how Illumina Annotator should match a VCF variant to the custom annotation.
+The matching criteria instructs how Illumina Connected Annotations should match a VCF variant to the custom annotation.
 
 The following matching criteria can be specified:
 * `allele` - use this when you only want allele-specific matches. This is commonly the case when using allele frequency data sources like `gnomAD`
@@ -668,10 +668,10 @@ copy number intervals along the genome.
 
 ### Categories
 
-Categories are not used by Illumina Annotator, but are often used by downstream tools. Categories provide hints for how those tools should filter or display
+Categories are not used by Illumina Connected Annotations, but are often used by downstream tools. Categories provide hints for how those tools should filter or display
 the annotation data.
 
-When a category is specified, Illumina Annotator will provide additional validation for those fields. The following table describes each category:
+When a category is specified, Illumina Connected Annotations will provide additional validation for those fields. The following table describes each category:
 
 | Category        | Description                                                             | Validation |
 |:----------------|:------------------------------------------------------------------------|:-----------|
@@ -746,7 +746,7 @@ For boolean variables, only keys with a `true` value will be output to the JSON 
 
 ## Using SAUtils
 
-Illumina Annotator includes a tool called `SAUtils` that converts various data sources into Illumina Annotator's native binary format. The sub-commands `customvar` and `customgene` are used to specify a variant file or a gene file respectively.
+Illumina Connected Annotations includes a tool called `SAUtils` that converts various data sources into Illumina Connected Annotations's native binary format. The sub-commands `customvar` and `customgene` are used to specify a variant file or a gene file respectively.
 
 ### Convert Variant File
 
@@ -771,6 +771,6 @@ dotnet bin/Release/netcoreapp2.1/SAUtils.dll customgene \
      -o SupplementaryAnnotation
 ```
 
-* the `-c` argument specifies the Illumina Annotator cache path
+* the `-c` argument specifies the Illumina Connected Annotations cache path
 * the `-i` argument specifies the input TSV path
 * the `-o` argument specifies the output directory

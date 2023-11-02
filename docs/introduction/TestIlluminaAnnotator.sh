@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # The first argument is the path to the release zip file.
-# adjust these paths to reflect where you have downloaded the Illumina Annotator data files
+# adjust these paths to reflect where you have downloaded the Illumina Connected Annotations data files
 # In this example, we assume that the Cache, References, and SupplementaryDatabase
 # folders have been downloaded into the ILLUMINA_ANNOTATOR_ROOT folder.
 
-# In addition to downloading the Illumina Annotator data files, make sure you have .NET 6.0
+# In addition to downloading the Illumina Connected Annotations data files, make sure you have .NET 6.0
 # installed on your computer:
 # https://www.microsoft.com/net/download/core
 
@@ -86,9 +86,9 @@ create_dir $DATA_DIR
 dotnet $DOWNLOADER_BIN --ga $GENOME_ASSEMBLY --out $DATA_DIR
 
 # ==============================
-# run Illumina Annotator on a test VCF file
+# run Illumina Connected Annotations on a test VCF file
 # ==============================
-echo "run Illumina Annotator on a test VCF file"
+echo "run Illumina Connected Annotations on a test VCF file"
 if [ ! -f $VCF_PATH ]
 then
     curl -O https://illumina.github.io/IlluminaAnnotatorDocumentation/files/HiSeq.10000.vcf.gz

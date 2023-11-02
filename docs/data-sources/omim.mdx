@@ -20,7 +20,7 @@ This is a Professional data source and is not available freely. Please contact a
 
 ## Parse OMIM data
 
-Illumina Annotator uses gene symbols as the gene identifiers internally. To generate the OMIM database, we first map the MIM numbers, which are the primary identifiers used by OMIM, to gene symbols supported by Illumina Annotator. Please note that there can be multiple MIM numbers mapped to one gene symbol. Only MIM numbers successfully mapped to an Illumina Annotator gene symbol are further processed. The OMIM API is used to fetch all the information associated with a gene MIM number, except the gene symbols.
+Illumina Connected Annotations uses gene symbols as the gene identifiers internally. To generate the OMIM database, we first map the MIM numbers, which are the primary identifiers used by OMIM, to gene symbols supported by Illumina Connected Annotations. Please note that there can be multiple MIM numbers mapped to one gene symbol. Only MIM numbers successfully mapped to an Illumina Connected Annotations gene symbol are further processed. The OMIM API is used to fetch all the information associated with a gene MIM number, except the gene symbols.
 
 ### mim2gene.txt
 
@@ -43,11 +43,11 @@ This mim2gene.txt ([http://omim.org/static/omim/data/mim2gene.txt](http://omim.o
 100678  gene    39  ACAT2   ENSG00000120437
 ```
 
-The information in the "Entrez Gene ID (NCBI)",  "Approved Gene Symbol (HGNC)" and "Ensembl Gene ID (Ensembl)" columns are used to find the proper gene symbol supported by Illumina Annotator, which may or may not be the same as the gene symbol listed here.
+The information in the "Entrez Gene ID (NCBI)",  "Approved Gene Symbol (HGNC)" and "Ensembl Gene ID (Ensembl)" columns are used to find the proper gene symbol supported by Illumina Connected Annotations, which may or may not be the same as the gene symbol listed here.
 
 ### OMIM API
 
-Illumina Annotator retrieves the OMIM annotations from the [OMIM API](https://www.omim.org/api) JSON responses. The "entry" handler is used to fetch all the annotations associated with a given OMIM gene. A sample JSON response from the API is provided there.
+Illumina Connected Annotations retrieves the OMIM annotations from the [OMIM API](https://www.omim.org/api) JSON responses. The "entry" handler is used to fetch all the annotations associated with a given OMIM gene. A sample JSON response from the API is provided there.
 
 ```json
 {
@@ -176,11 +176,11 @@ Illumina Annotator retrieves the OMIM annotations from the [OMIM API](https://ww
 }
 ```
 
-Content from the OMIM API JSON response is reorganized as shown in the Illumina Annotator [JSON Output](#json-output)
+Content from the OMIM API JSON response is reorganized as shown in the Illumina Connected Annotations [JSON Output](#json-output)
 
-Mappings between the Illumina Annotator JSON output and OMIM JSON API are listed in the table below:
+Mappings between the Illumina Connected Annotations JSON output and OMIM JSON API are listed in the table below:
 
-| Illumina Annotator JSON key chain       | OMIM API JSON key chain                                                                                                          |
+| Illumina Connected Annotations JSON key chain       | OMIM API JSON key chain                                                                                                          |
 |:-----------------------------|:---------------------------------------------------------------------------------------------------------------------------------|
 | omim:mimNumber               | omim:entryList:entry:mimNumber                                                                                                   |
 | omim:geneName                | omim:entryList:entry:geneMap:geneName                                                                                            |

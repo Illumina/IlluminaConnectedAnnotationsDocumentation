@@ -2,16 +2,16 @@
 title: Getting Started
 ---
 
-Illumina Annotator is written in C# using [.NET Core](https://www.microsoft.com/net/download/core) (an amazing runtime environment that currently runs on Windows, Linux, Mac OS X, and in Docker images). Once .NET Core has been downloaded, all you need to do is grab the source, compile it, and grab the data files.
+Illumina Connected Annotations is written in C# using [.NET Core](https://www.microsoft.com/net/download/core) (an amazing runtime environment that currently runs on Windows, Linux, Mac OS X, and in Docker images). Once .NET Core has been downloaded, all you need to do is grab the source, compile it, and grab the data files.
 
 :::tip
-Illumina Annotator currently uses .NET6.0. Please make sure that you have the most current runtime from the [.NET Core downloads](https://www.microsoft.com/net/download/core) page.
+Illumina Connected Annotations currently uses .NET6.0. Please make sure that you have the most current runtime from the [.NET Core downloads](https://www.microsoft.com/net/download/core) page.
 :::
 
-## Getting Illumina Annotator
+## Getting Illumina Connected Annotations
 
 ### Latest Release
-Please visit [Illumina Annotator](https://developer.illumina.com/IlluminaAnnotator). to obtain the latest release.
+Please visit [Illumina Connected Annotations](https://developer.illumina.com/IlluminaAnnotator). to obtain the latest release.
 
 ```bash
 mkdir -p IlluminaAnnotator/Data
@@ -20,7 +20,7 @@ unzip IlluminaAnnotator-3.18.1-net6.0.zip
 ```
 
 ### Quick Start
-If you want to get started right away, we've created [a script](TestIlluminaAnnotator.sh) that unzips the Illumina Annotator build, downloads the annotation data, and starts annotating a test file:
+If you want to get started right away, we've created [a script](TestIlluminaAnnotator.sh) that unzips the Illumina Connected Annotations build, downloads the annotation data, and starts annotating a test file:
 
 ```bash
 bash ./TestIlluminaAnnotator.sh IlluminaAnnotatorBuild.zip
@@ -50,7 +50,7 @@ docker run --rm -it -v local/data/folder:/scratch IlluminaAnnotator:v3.21.0 Illu
      -i /scratch/HiSeq.10000.vcf.gz -o /scratch/HiSeq
 ```
 :::caution
-We think Docker is fantastic. However, because our data files are usually accessed through a Docker volume, there is a noticeable performance penalty when running Illumina Annotator in Docker.
+We think Docker is fantastic. However, because our data files are usually accessed through a Docker volume, there is a noticeable performance penalty when running Illumina Connected Annotations in Docker.
 :::
 :::tip
 For convenience, the user is encouraged to create aliases for the docker commands. For example:
@@ -88,7 +88,7 @@ Here's [a toy VCF file](https://illumina.github.io/IlluminaAnnotatorDocumentatio
 curl -O https://illumina.github.io/IlluminaAnnotatorDocumentation/files/HiSeq.10000.vcf.gz
 ```
 
-## Running Illumina Annotator
+## Running Illumina Connected Annotations
 
 Once you have downloaded the data sets, use the following command to annotate your VCF:
 
@@ -107,7 +107,7 @@ dotnet Annotator.dll \
 * the `-i` argument specifies the input VCF path
 * the `-o` argument specifies the output filename prefix
 
-When running Illumina Annotator, performance metrics are shown as it evaluates each chromosome in the input VCF file:
+When running Illumina Connected Annotations, performance metrics are shown as it evaluates each chromosome in the input VCF file:
 
 ```bash
 ---------------------------------------------------------------------------
@@ -135,7 +135,7 @@ Time: 00:00:04.4
 
 The output will be a JSON file called `HiSeq.10000.json.gz`. Here's [the full JSON file](https://illumina.github.io/IlluminaAnnotatorDocumentation/files/HiSeq.10000.json.gz).
 
-## The Illumina Annotator command line
+## The Illumina Connected Annotations command line
 The full command line options can be viewed by using the `-h` option or no options
 ```bash
 dotnet Annotator.dll
@@ -173,7 +173,7 @@ OPTIONS:
 Supplementary annotation version: 69, Reference version: 7
 ```
 ### Specifying annotation sources
-By default, Illumina Annotator will use all available data sources. However, the user can customize the set of sources using the `--sources|-s` option. If an unknown source is specified, a warning message will be printed.
+By default, Illumina Connected Annotations will use all available data sources. However, the user can customize the set of sources using the `--sources|-s` option. If an unknown source is specified, a warning message will be printed.
 ```bash
 dotnet Annotator.dll \
      -c Data/Cache/GRCh37 \
