@@ -40,7 +40,7 @@ module.exports = {
     },
     navbar: {
       logo: {
-        src: 'img/Logo.svg'
+        src: 'img/ICAnnotations.png'
       },
       items: [
         {
