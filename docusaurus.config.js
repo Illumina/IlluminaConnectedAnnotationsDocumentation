@@ -18,7 +18,7 @@ function getNextVersionName() {
 
 module.exports = {
   title: 'IlluminaConnectedAnnotations',
-  tagline: 'Clinical-grade variant annotation',
+  tagline: 'Translational researcy-grade variant annotation',
   url: 'https://illumina.github.io',
   baseUrl: '/IlluminaConnectedAnnotationsDocumentation/',
   onBrokenLinks: 'throw',

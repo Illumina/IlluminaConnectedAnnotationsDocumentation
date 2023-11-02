@@ -8,7 +8,7 @@ While the team tries to keep data sources up-to-date, you might want to start in
 common use case involves protected health information (PHI). Custom annotations are a mechanism that enables both use cases.
 
 Here are some examples of how our collaborators use custom annotations:
-* associating context from both a patient-level and a patient cohort level with the variant annotations
+* associating context from both a sample-level and a sample cohort level with the variant annotations
 * adding content that is licensed (e.g. HGMD) to the variant annotations
 
 At the moment, we have two different custom annotation file formats. One provides additional annotations to variants (both small variants and SVs)
