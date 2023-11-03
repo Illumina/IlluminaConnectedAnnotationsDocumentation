@@ -24,7 +24,7 @@ Our JSON file is arranged as follows:
 Knowing this, you can load each position line as an independent JSON object and extract the information you need. 
 
 :::info Jupyter Notebook
-To demonstrate this, we have put together a [Jupyter notebook demonstrating how to do this in Python](https://github.com/Illumina/IlluminaConnectedAnnotationsDocumentation/blob/master/static/files/parse-nirvana-json-python.ipynb) and a [R version](https://github.com/Illumina/IlluminaConnectedAnnotationsDocumentation/blob/master/static/files/parse-nirvana-json-r.ipynb) as well.
+To demonstrate this, we have put together a [Jupyter notebook demonstrating how to do this in Python](https://github.com/Illumina/IlluminaConnectedAnnotationsDocumentation/blob/master/static/files/parse-json-python.ipynb) and a [R version](https://github.com/Illumina/IlluminaConnectedAnnotationsDocumentation/blob/master/static/files/parse-json-r.ipynb) as well.
 :::
 
 ### JASIX
