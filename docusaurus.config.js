@@ -74,6 +74,7 @@ module.exports = {
           editUrl:
             'https://github.com/Illumina/IlluminaConnectedAnnotationsDocumentation/edit/master/',
           lastVersion: 'current',
+          onlyIncludeVersions:['current'],
           versions: {
             current: {
               label: `${getNextVersionName()} (unreleased)`,
