@@ -122,6 +122,7 @@ We've put together a [new section that discusses how to parse our JSON files](..
    {
       "chromosome":"chr2",
       "position":48010488,
+      "id": "4"
       "repeatUnit":"GGCCCC",
       "refRepeatCount":3,
       "svEnd":48020488,
@@ -152,6 +153,7 @@ We've put together a [new section that discusses how to parse our JSON files](..
 |:--------------------------|:-------------:|:-------------:|:------|
 | chromosome                | string        | all           | exactly as displayed in the vcf |
 | position                  | integer       | all           | exactly as displayed in the vcf (1-based notation). Range: 1 - 250 million |
+| id                        | string        | all           | provided from ID column in the VCF file, this field will be omitted if empty or has "." value |
 | repeatUnit                | string        | STR           | provided by ExpansionHunter |
 | refRepeatCount            | integer       | STR           | provided by ExpansionHunter |
 | svEnd                     | integer       | SV            | |
