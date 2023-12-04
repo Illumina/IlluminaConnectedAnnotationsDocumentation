@@ -35,77 +35,9 @@ Obtain the docker image in a zip file (e.g. IlluminaConnectedAnnotations-v3.21.0
 docker load < IlluminaConnectedAnnotations-v3.21.0-net6.0-docker.tar.gz
 ```
 
-If you want to build your own docker image, it is really easy to use. You just need to download Illumina Connected Annotations zip file and follow the script below:
+If you want to build your own docker image, it is really easy to use. You just need to download Illumina Connected Annotations zip file and then download the [Dockerfile](https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/files/Dockerfile.sh) and [this script](https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/files/create_docker_image.sh).
 
-```bash
-#!/bin/bash
-set -e
-
-########## Help function #############
-PrintHelp(){
-	echo "USAGE: ./create_docker_image.sh [path to zip file] [image tag]"
-	echo "       ./create_docker_image.sh ~/Download/IlluminaConnectedAnnotations-3.22.0-0-gc13dcb61-net6.0.zip 3.22.0"
-}
-#######################################
-Clean(){
-    echo "Cleaning code and build directories"
-    rm -rf app
-}
-#######################################
-BuildDocker(){
-    echo "Start building Illumina Connected Annotations docker...."
-    docker build -t $1:$2 .
-	echo "Building docker image for $1 finished!"
-}
-#######################################
-TestDocker(){
-    echo "Test $1 docker"
-    docker run --rm $1:$2 Annotator --version
-	echo "Test finished"
-}
-#######################################
-
-############ Checking arguments ########
-if [ "$#" -eq 0 ] || [ "$#" -gt 2 ] ; then
-	PrintHelp
-	exit
-fi
-
-FILE_PATH=$1
-TAG=$2
-IMAGE_NAME=illumina-connected-annotations
-
-Clean
-unzip $FILE_PATH -d app
-BuildDocker $IMAGE_NAME $TAG
-TestDocker $IMAGE_NAME $TAG
-Clean
-```
-
-Save the script above with filename `create_docker_image.sh`.
-
-Create `Dockerfile` below:
-
-```bash
-# syntax=docker/dockerfile:1
-
-# Use the .NET SDK as the base image for building the application
-FROM mcr.microsoft.com/dotnet/runtime:6.0 AS runtime
-
-# Set the working directory inside the container
-WORKDIR /app
-# the app/ folder contains the unzipped release files
-COPY app/ /app
-
-RUN echo '#!/bin/bash\ndotnet /app/Nirvana.dll "$@"' > /usr/bin/Nirvana && chmod +x /usr/bin/Nirvana
-RUN echo '#!/bin/bash\ndotnet /app/Annotator.dll "$@"' > /usr/bin/Annotator && chmod +x /usr/bin/Annotator
-RUN echo '#!/bin/bash\ndotnet /app/Downloader.dll "$@"' > /usr/bin/Downloader && chmod +x /usr/bin/Downloader
-RUN echo '#!/bin/bash\ndotnet /app/Jasix.dll "$@"' > /usr/bin/Jasix && chmod +x /usr/bin/Jasix
-RUN echo '#!/bin/bash\ndotnet /app/SAUtils.dll "$@"' > /usr/bin/SAUtils && chmod +x /usr/bin/SAUtils
-RUN echo '#!/bin/bash\ndotnet /app/Jist.dll "$@"' > /usr/bin/Jist && chmod +x /usr/bin/Jist
-```
-
-Put both `create_docker_image.sh` and `Dockerfile` inside the same folder.
+Put both file (`create_docker_image.sh` and `Dockerfile`) inside the same folder.
 
 In terminal, execute command below inside the folder where you put those scripts:
 
