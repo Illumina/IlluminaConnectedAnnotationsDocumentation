@@ -35,19 +35,6 @@ Obtain the docker image in a zip file (e.g. IlluminaConnectedAnnotations-v3.21.0
 docker load < IlluminaConnectedAnnotations-v3.21.0-net6.0-docker.tar.gz
 ```
 
-If you want to build your own docker image, it is really easy to use. You just need to download Illumina Connected Annotations zip file and then download the [Dockerfile](https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/files/Dockerfile.sh) and [this script](https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/files/create_docker_image.sh).
-
-Put both file (`create_docker_image.sh` and `Dockerfile`) inside the same folder.
-
-In terminal, execute command below inside the folder where you put those scripts:
-
-```bash
-chmod +x create_docker_image.sh
-./create_docker_image.sh [path to zip file] [image tag]
-```
-
-After you run the script, the docker image will be available in your local machine with image name `illumina-connected-annotations:[image tag specified]`.
-
 For Docker, we have special instructions for running the Downloader:
 
 ```bash
