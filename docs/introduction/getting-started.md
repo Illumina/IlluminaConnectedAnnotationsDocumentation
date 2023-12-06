@@ -111,8 +111,8 @@ When running Illumina Connected Annotations, performance metrics are shown as it
 
 ```bash
 ---------------------------------------------------------------------------
-IlluminaConnectedAnnotations                                   (c) 2020 Illumina, Inc.
-Stromberg, Roy, Platzer, Siddiqui, Ouyang, et al                     3.21.0
+Illumina Connected Annotations                      (c) 2023 Illumina, Inc.
+                                                                     3.22.0
 ---------------------------------------------------------------------------
 
 Initialization                                         Time     Positions/s
@@ -140,8 +140,8 @@ The full command line options can be viewed by using the `-h` option or no optio
 ```bash
 dotnet Annotator.dll
 ---------------------------------------------------------------------------
-IlluminaConnectedAnnotations                                   (c) 2020 Illumina, Inc.
-Stromberg, Roy, Platzer, Siddiqui, Ouyang, et al                     3.21.0
+Illumina Connected Annotations                      (c) 2023 Illumina, Inc.
+                                                                     3.22.0
 ---------------------------------------------------------------------------
 
 USAGE: dotnet Annotator.dll -i <vcf path> -c <cache dir> --sd <sa dir> -r <ref path> -o <base output filename>
@@ -183,8 +183,8 @@ dotnet Annotator.dll \
      -o HiSeq.10000 \
 	 -s omim,gnomad,ense
  ---------------------------------------------------------------------------
- IlluminaConnectedAnnotations                                   (c) 2020 Illumina, Inc.
- Stromberg, Roy, Platzer, Siddiqui, Ouyang, et al                     3.21.0
+ Illumina Connected Annotations                      (c) 2023 Illumina, Inc.
+                                                                     3.22.0
  ---------------------------------------------------------------------------
 
  WARNING: Unknown tag in data-sources: ense.
