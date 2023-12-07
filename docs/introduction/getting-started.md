@@ -16,7 +16,7 @@ Please visit [Illumina Connected Annotations](https://developer.illumina.com/Ill
 ```bash
 mkdir -p IlluminaConnectedAnnotations/Data
 cd IlluminaConnectedAnnotations
-unzip IlluminaConnectedAnnotations-3.18.1-net6.0.zip
+unzip IlluminaConnectedAnnotations-3.22.0-0-gc13dcb61-net6.0.zip
 ```
 
 ### Quick Start
@@ -29,22 +29,35 @@ We have verified that this script works on Windows (using Git Bash or WSL), Linu
 
 ### Docker
 
-Obtain the docker image in a zip file (e.g. IlluminaConnectedAnnotations-v3.21.0-net6.0-docker.tar.gz), and load it as follows
+Obtain the docker image in a zip file (e.g. IlluminaConnectedAnnotations-3.22.0-0-gc13dcb61-net6.0-docker.tar.gz), and load it as follows
 
 ```bash
-docker load < IlluminaConnectedAnnotations-v3.21.0-net6.0-docker.tar.gz
+docker load < IlluminaConnectedAnnotations-3.22.0-0-gc13dcb61-net6.0-docker.tar.gz
 ```
+
+If you want to build your own docker image, it is really easy to do. You just need to have Illumina Connected Annotations zip file and then download the [Dockerfile](https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/files/Dockerfile.sh) and [this script](https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/files/create_docker_image.sh).
+
+Put both files (`create_docker_image.sh` and `Dockerfile`) inside the same folder.
+
+In terminal, execute command below inside the folder where you put those scripts:
+
+```bash
+chmod +x create_docker_image.sh
+./create_docker_image.sh [path to zip file] [image tag]
+```
+
+After you run the script, the docker image will be available in your local machine with image name `illumina-connected-annotations:[image tag specified]`.
 
 For Docker, we have special instructions for running the Downloader:
 
 ```bash
-docker run --rm -it -v local/data/folder:/scratch IlluminaConnectedAnnotations:v3.21.0 Downloader --ga GRCh37 -o /scratch
+docker run --rm -it -v local/data/folder:/scratch illumina-connected-annotations:v3.22.0 Downloader --ga GRCh37 -o /scratch
 ```
 
 Similarly, we have special instructions for running IlluminaConnectedAnnotations (Here's [a toy VCF](https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/files/HiSeq.10000.vcf.gz) in case you need it):
 
 ```bash
-docker run --rm -it -v local/data/folder:/scratch IlluminaConnectedAnnotations:v3.21.0 IlluminaConnectedAnnotations -c /scratch/Cache/ \
+docker run --rm -it -v local/data/folder:/scratch illumina-connected-annotations:v3.22.0 IlluminaConnectedAnnotations -c /scratch/Cache/ \
      -r /scratch/References/Homo_sapiens.GRCh37.Nirvana.dat \
      --sd /scratch/SupplementaryAnnotation/GRCh37 \
      -i /scratch/HiSeq.10000.vcf.gz -o /scratch/HiSeq
@@ -55,7 +68,7 @@ Please note that since our data files are usually accessed through a Docker volu
 :::tip
 For convenience, the user is encouraged to create aliases for the docker commands. For example:
 ```bash
-alias IlluminaConnectedAnnotations="docker run --rm -it -v local/data/folder:/scratch IlluminaConnectedAnnotations:v3.21.0 IlluminaConnectedAnnotations"
+alias IlluminaConnectedAnnotations="docker run --rm -it -v local/data/folder:/scratch illumina-connected-annotations:v3.22.0 IlluminaConnectedAnnotations"
 ```
 :::
 
@@ -111,8 +124,8 @@ When running Illumina Connected Annotations, performance metrics are shown as it
 
 ```bash
 ---------------------------------------------------------------------------
-IlluminaConnectedAnnotations                                   (c) 2020 Illumina, Inc.
-Stromberg, Roy, Platzer, Siddiqui, Ouyang, et al                     3.21.0
+Illumina Connected Annotations                      (c) 2023 Illumina, Inc.
+                                                                     3.22.0
 ---------------------------------------------------------------------------
 
 Initialization                                         Time     Positions/s
@@ -140,8 +153,8 @@ The full command line options can be viewed by using the `-h` option or no optio
 ```bash
 dotnet Annotator.dll
 ---------------------------------------------------------------------------
-IlluminaConnectedAnnotations                                   (c) 2020 Illumina, Inc.
-Stromberg, Roy, Platzer, Siddiqui, Ouyang, et al                     3.21.0
+Illumina Connected Annotations                      (c) 2023 Illumina, Inc.
+                                                                     3.22.0
 ---------------------------------------------------------------------------
 
 USAGE: dotnet Annotator.dll -i <vcf path> -c <cache dir> --sd <sa dir> -r <ref path> -o <base output filename>
@@ -183,8 +196,8 @@ dotnet Annotator.dll \
      -o HiSeq.10000 \
 	 -s omim,gnomad,ense
  ---------------------------------------------------------------------------
- IlluminaConnectedAnnotations                                   (c) 2020 Illumina, Inc.
- Stromberg, Roy, Platzer, Siddiqui, Ouyang, et al                     3.21.0
+ Illumina Connected Annotations                      (c) 2023 Illumina, Inc.
+                                                                      3.22.0
  ---------------------------------------------------------------------------
 
  WARNING: Unknown tag in data-sources: ense.
