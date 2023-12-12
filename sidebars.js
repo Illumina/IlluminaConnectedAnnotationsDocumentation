@@ -6,7 +6,8 @@ module.exports = {
       items: [
         'introduction/introduction',
         'introduction/dependencies',
-        'introduction/getting-started'
+        'introduction/getting-started',
+        'introduction/parsing-json'
       ],
     },
     {

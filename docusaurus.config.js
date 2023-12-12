@@ -1,10 +1,6 @@
 const versions = require('./versions.json');
 
 function getNextVersionName() {
-  // TODO remove this if condition after release of 3.22
-  if (versions.length === 0) {
-    return '3.21';
-  }
 
   const expectedPrefix = '3.';
 
