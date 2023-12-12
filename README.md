@@ -4,13 +4,13 @@ This website is built using [Docusaurus 2](https://v2.docusaurus.io/), a modern 
 
 ## Installation
 
-```console
+```shell
 yarn install
 ```
 
 ## Local Development
 
-```console
+```shell
 yarn start
 ```
 
@@ -18,7 +18,7 @@ This command starts a local development server and open up a browser window. Mos
 
 ## Build
 
-```console
+```shell
 yarn build
 ```
 
@@ -26,8 +26,14 @@ This command generates static content into the `build` directory and can be serv
 
 ## Deployment
 
-```console
+```shell
 GIT_USER=<Your GitHub username> USE_SSH=true yarn deploy
 ```
 
 If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
+
+
+## Bump Version
+```shell
+npm run docusaurus docs:version 3.22
+```
