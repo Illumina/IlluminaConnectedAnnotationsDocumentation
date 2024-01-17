@@ -2,18 +2,65 @@
 title: PhyloP
 ---
 
-import JSON from './phylop-json.md'
+import PHYLOPJSON from './phylop-json.md'
+import PHYLOPPRIMATEJSON from './phylopprimate-json.md'
 
 ## Overview
 
-PhyloP (phylogenetic p-values) conservation scores are obtained from the [PHAST package] (http://compgen.bscb.cornell.edu/phast/) for multiple alignments of vertebrate genomes to the human genome. For GRCh38, the multiple alignments are against 19 mammals and for GRCh37, it is against 45 vertebrate genomes.
-
 :::info Publication
+Kuderna, L.F.K., Ulirsch, J.C., Rashid, S. et al. Identification of constrained sequence elements across 239 primate genomes. **Nature 2023**. (https://doi.org/10.1038/s41586-023-06798-8)
+
 Siepel A, Bejerano G, Pedersen JS, Hinrichs AS, Hou M, Rosenbloom K, Clawson H, Spieth J, Hillier LW, Richards S, et al. Evolutionarily conserved elements in vertebrate, insect, worm, and yeast genomes. **Genome Res. 2005** Aug;15(8):1034-50.  (http://www.genome.org/cgi/doi/10.1101/gr.3715005)
 :::
 
 
-## WigFix File
+### PhyloP Primate
+PhyloP primate analyzes 239 primate species and identifies 111,318 hypersensitivity sites and 267,410 binding sites constrained specifically in primates.
+It enriches that with human genetic variants, these elements influence gene expression and impact complex traits and diseases.
+
+PhyloP Primate is only available for GRCh38 assembly.
+
+#### BigWig File
+The original file is `primates_msa.phylop.conacc.lrt.bw` which is a bigwig file. This file was converted to wig file using:
+(https://genome.ucsc.edu/goldenPath/help/bigWig.html)
+After conversion the wig file provides the scores in the following format:
+```scss
+0.14
+0.074
+-2.487
+0.073
+0.052
+0.073
+fixedStep chrom=chr1 start=10558 step=1 span=1
+-1.991
+0.052
+-2.047
+0.052
+0.052
+0.074
+-1.992
+0.074
+0.052
+0.073
+0.074
+0.052
+0.074
+-2.05
+-2.059
+0.074
+0.074
+0.074
+```
+#### JSON Output
+Unlike other supplemetary datasources, phyloP scores are reported in the variants section.
+<PHYLOPPRIMATEJSON />
+
+### PhyloP
+
+PhyloP (phylogenetic p-values) conservation scores are obtained from the [PHAST package] (http://compgen.bscb.cornell.edu/phast/) for multiple alignments of vertebrate genomes to the human genome. For GRCh38, the multiple alignments are against 19 mammals and for GRCh37, it is against 45 vertebrate genomes.
+
+
+#### WigFix File
 The data is provided in WigFix files which is a text file that provides conservation scores for contiguous intervals in the following format:
 ```scss
 fixedStep chrom=chr1 start=10918 step=1
@@ -37,12 +84,12 @@ fixedStep chrom=chr1 start=34045 step=1
 -1.636
 ```
 We convert them to binary files with indexes for fast query. Note that these are scores for genomic positions and are reported only for SNVs.
-## Download URL
+#### Download URL
 
 GRCh37: [http://hgdownload.cse.ucsc.edu/goldenpath/hg19/phyloP46way/vertebrate/](http://hgdownload.cse.ucsc.edu/goldenpath/hg19/phyloP46way/vertebrate/)
 
 GRCh38: [http://hgdownload.cse.ucsc.edu/goldenPath/hg38/phyloP20way/](http://hgdownload.cse.ucsc.edu/goldenPath/hg38/phyloP20way/)
 
-## JSON Output
+### JSON Output
 Unlike other supplemetary datasources, phyloP scores are reported in the variants section.
-<JSON />
+<PHYLOPJSON />
