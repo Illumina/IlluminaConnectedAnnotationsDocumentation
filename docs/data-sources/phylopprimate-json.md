@@ -14,6 +14,6 @@
 ]
 ```
 
-| Field              | Type  | Notes                  |
-|:-------------------|:-----:|:-----------------------|
-| phyloPPrimateScore | float | range:  |
+| Field              | Type  | Notes               |
+|:-------------------|:-----:|:--------------------|
+| phyloPPrimateScore | float | range: -20 to 1.951 |
