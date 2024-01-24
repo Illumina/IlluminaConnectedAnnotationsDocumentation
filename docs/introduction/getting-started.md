@@ -92,6 +92,29 @@ Every once in a while, the download process does not go smoothly. Perhaps the in
 :::tip
 From time to time, you can re-run the Downloader to get the latest annotation files. It will only download the files that changed.
 :::
+### Preserving old data file
+By default, while rerunning, the Downloader will replace old files with the latest versions. For example, if at some point, your `SupplementaryAnnotation` folder contained `ClinVar_20231101.nsa` and the latest available version is `ClinVar_20231203.nsa`, next time the Downloader is run, `ClinVar_20231101.nsa` will be replaced with `ClinVar_20231203.nsa`. 
+
+Currently, there is no way to override this behavior. If you do not want to replace/update any particular file, we recommend saving those files to a different location, rerun the Downloader to update the other data files and then manually replace the files you did not want updated. Please make sure to remove the latest version of the files you did not want. Note that the Annotator will throw an error if multiple versions of the same data source is present in the `SupplementaryAnnotation` folder. In other words, the `SupplementaryAnnotation` folder cannot contain both `ClinVar_20231101.nsa` and `ClinVar_20231203.nsa`.
+
+Here is an example of how to proceed if a user doesn't want the latest version of ClinVar.
+
+```bash
+ls Data/SupplementaryAnnotation/GRCh38
+...
+ClinGen_disease_validity_curations_20231011.nga
+ClinVar_20230930.nsa
+ClinVar_20230930.nsa.idx
+...
+mv Data/SupplementaryAnnotation/GRCh38/ClinVar* <tmp_dir>/GRCh38/
+
+dotnet bin/Release/net6.0/Downloader.dll \
+     --ga GRCh38 \
+     -o Data
+
+rm Data/SupplementaryAnnotation/GRCh38/ClinVar*
+mv <tmp_dir>/GRCh38/ClinVar* Data/SupplementaryAnnotation/GRCh38/
+```
 
 ## Download a test VCF file
 
