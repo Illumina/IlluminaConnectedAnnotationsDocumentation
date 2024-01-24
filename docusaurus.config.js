@@ -1,6 +1,7 @@
 const versions = require('./versions.json');
 
 function getNextVersionName() {
+
   const expectedPrefix = '3.';
 
   const lastReleasedVersion = versions[0];

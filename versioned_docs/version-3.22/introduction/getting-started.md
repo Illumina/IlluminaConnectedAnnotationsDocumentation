@@ -35,7 +35,7 @@ Obtain the docker image in a zip file (e.g. IlluminaConnectedAnnotations-3.22.0-
 docker load < IlluminaConnectedAnnotations-3.22.0-0-gc13dcb61-net6.0-docker.tar.gz
 ```
 
-If you want to build your own docker image, it is really easy to do. You just need to have Illumina Connected Annotations zip file and then download the [Dockerfile](https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/files/Dockerfile) and [this script](https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/files/create_docker_image.sh).
+If you want to build your own docker image, it is really easy to do. You just need to have Illumina Connected Annotations zip file and then download the [Dockerfile](https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/files/Dockerfile.sh) and [this script](https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/files/create_docker_image.sh).
 
 Put both files (`create_docker_image.sh` and `Dockerfile`) inside the same folder.
 
@@ -197,7 +197,7 @@ dotnet Annotator.dll \
 	 -s omim,gnomad,ense
  ---------------------------------------------------------------------------
  Illumina Connected Annotations                      (c) 2023 Illumina, Inc.
-                                                                     3.22.0
+                                                                      3.22.0
  ---------------------------------------------------------------------------
 
  WARNING: Unknown tag in data-sources: ense.

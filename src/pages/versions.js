@@ -21,15 +21,14 @@ function Version() {
     (version) => version !== latestVersion && version.name !== 'current',
   );
   const stableVersion = pastVersions.shift();
-  const repoUrl = `https://github.com/Illumina/Nirvana`;
 
   return (
     <Layout
       title="Versions"
       permalink="/versions"
-      description="Nirvana Versions page listing all documented site versions">
+      description="Illumina Connected Annotations Versions page listing all documented site versions">
       <main className="container margin-vert--lg">
-        <h1>Nirvana documentation versions</h1>
+        <h1>Illumina Connected Annotations documentation versions</h1>
 
         {stableVersion && (
           <div className="margin-bottom--lg">
@@ -43,11 +42,6 @@ function Version() {
                   <th>{stableVersion.name}</th>
                   <td>
                     <Link to={stableVersion.path}>Documentation</Link>
-                  </td>
-                  <td>
-                    <a href={`${repoUrl}/releases/tag/v${stableVersion.name}.0`}>
-                      Release Notes
-                    </a>
                   </td>
                 </tr>
               </tbody>
@@ -83,9 +77,6 @@ function Version() {
                   <td>
                     <Link to={currentVersion.path}>Documentation</Link>
                   </td>
-                  <td>
-                    <a href={repoUrl}>Source Code</a>
-                  </td>
                 </tr>
               </tbody>
             </table>
@@ -95,8 +86,7 @@ function Version() {
           <div className="margin-bottom--lg">
             <h3 id="archive">Past versions</h3>
             <p>
-              Here you can find documentation for previous versions of
-              Nirvana.
+              Here you can find documentation for previous versions.
             </p>
             <table>
               <tbody>
@@ -105,11 +95,6 @@ function Version() {
                     <th>{version.label}</th>
                     <td>
                       <Link to={version.path}>Documentation</Link>
-                    </td>
-                    <td>
-                      <a href={`${repoUrl}/releases/tag/v${version.name}.0`}>
-                        Release Notes
-                      </a>
                     </td>
                   </tr>
                 ))}
