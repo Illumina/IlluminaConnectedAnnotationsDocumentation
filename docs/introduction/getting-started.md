@@ -197,7 +197,7 @@ dotnet Annotator.dll \
 	 -s omim,gnomad,ense
  ---------------------------------------------------------------------------
  Illumina Connected Annotations                      (c) 2023 Illumina, Inc.
-                                                                      3.22.0
+                                                                     3.22.0
  ---------------------------------------------------------------------------
 
  WARNING: Unknown tag in data-sources: ense.
