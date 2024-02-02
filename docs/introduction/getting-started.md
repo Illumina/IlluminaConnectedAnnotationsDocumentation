@@ -11,7 +11,7 @@ Illumina Connected Annotations currently uses .NET6.0. Please make sure that you
 ## Getting Illumina Connected Annotations
 
 ### Latest Release
-Please visit [Illumina Connected Annotations](https://developer.illumina.com/IlluminaConnectedAnnotations). to obtain the latest release.
+Please visit [Illumina Connected Annotations](https://developer.illumina.com/illumina-connected-annotations). to obtain the latest release.
 
 ```bash
 mkdir -p IlluminaConnectedAnnotations/Data
