@@ -57,7 +57,7 @@ docker run --rm -it -v local/data/folder:/scratch illumina-connected-annotations
 Similarly, we have special instructions for running IlluminaConnectedAnnotations (Here's [a toy VCF](https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/files/HiSeq.10000.vcf.gz) in case you need it):
 
 ```bash
-docker run --rm -it -v local/data/folder:/scratch illumina-connected-annotations:v3.22.0 IlluminaConnectedAnnotations -c /scratch/Cache/ \
+docker run --rm -it -v local/data/folder:/scratch illumina-connected-annotations:v3.22.0 Annotator -c /scratch/Cache/ \
      -r /scratch/References/Homo_sapiens.GRCh37.Nirvana.dat \
      --sd /scratch/SupplementaryAnnotation/GRCh37 \
      -i /scratch/HiSeq.10000.vcf.gz -o /scratch/HiSeq
