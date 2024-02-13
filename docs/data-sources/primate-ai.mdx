@@ -1,5 +1,5 @@
 ---
-title: Primate AI
+title: Primate AI-3D
 ---
 
 import JSON from './primate-ai-json.md'
@@ -24,30 +24,25 @@ For more details, refer to these publications:
 This is a Professional data source and is not available freely. Please contact annotation_support@illumina.com if you would like to obtain it.
 :::
 
+## Parsing
 
-Primate AI is available in two versions based on assembly:
-1. Primate AI 3D: Only available for GRCh38
-1. Primate AI: Only available for GRCh37
-
-Both have different file structures, and information. Therefore, they are handled separately:
-
-## Primate AI 3D: GRCh38
-### Parsing
-
-#### CSV File
+### TSV File
 
 ```scss
-,chr,pos,non_flipped_ref,non_flipped_alt,gene_name,change_position_1based,ref_aa,alt_aa,score_PAI3D,percentile_PAI3D,refseq
-0,chr1,69094,G,A,ENST00000335137.4,2,V,M,0.6169436463713646,0.5200308441794135,NM_001005484.1
-1,chr1,69094,G,C,ENST00000335137.4,2,V,L,0.5557043975591658,0.4271457250214688,NM_001005484.1
-2,chr1,69094,G,T,ENST00000335137.4,2,V,L,0.5557043975591658,0.4271457391722522,NM_001005484.1
+chr	pos	non_flipped_ref	non_flipped_alt	gene_name	change_position_1based	ref_aa	alt_aa	score_PAI3D	percentile_PAI3D	refseq	prediction
+chr1	69094	G	A	ENST00000335137.4	2	V	M	0.6169436463713646	0.5200308441794135	NM_001005484.1	pathogenic
+chr1	69094	G	C	ENST00000335137.4	2	V	L	0.5557043975591658	0.4271457250214688	NM_001005484.1	benign
+chr1	69094	G	T	ENST00000335137.4	2	V	L	0.5557043975591658	0.4271457391722522	NM_001005484.1	benign
+chr1	69095	T	A	ENST00000335137.4	2	V	E	0.8063537482917307	0.8032228720356267	NM_001005484.1	pathogenic
+chr1	69095	T	C	ENST00000335137.4	2	V	A	0.5795628190040587	0.4631329075815453	NM_001005484.1	benign
+chr1	69095	T	G	ENST00000335137.4	2	V	G	0.7922330142557621	0.7834049546930125	NM_001005484.1	pathogenic
 ```
 
 From the CSV file, all columns are parsed:
 * `chr`
 * `pos`
-* `ref`
-* `alt`
+* `non_flipped_ref`
+* `non_flipped_alt`
 * `gene_name`
 * `change_position_1based`
 * `ref_aa`
@@ -55,16 +50,30 @@ From the CSV file, all columns are parsed:
 * `score_PAI3D`
 * `percentile_PAI3D`
 * `refseq`
+* `prediction`
 
 The fields `gene_name` and `refseq` define the Ensembl and RefSeq transcript IDs respectively.
 These transcripts are passed as-is and some of them might be unrecognized/deprecated by RefSeq/Ensembl.
 
-#### Parsing Command
+:::note GRCh37
+Note that for GRCh37, a lifted over file is provided.
+The file is not sorted, therefore it must first be sorted.
+Also note that certain RefSeq transcripts appear not to have been mapped during the lift-over process.
+:::
+
+### Pre-processing
+Sorting
+
+```shell
+gzcat PrimateAI-3D.hg19.txt.gz | sort -t $'\t'  -k1,1 -k2,2n | gzip > PrimateAI-3D.hg19_sorted.tsv.gz
+```
+
+### SA Generation
 ```shell
 dotnet SAUtils.dll \
 PrimateAi \
 --r "${References}/Homo_sapiens.GRCh38.Nirvana.dat" \
---i "${ExternalDataSources}/PrimateAI/3D/PAI3D_wholeProteome_23_04_11.percentiles.pkg.refseq.csv.gz" \
+--i "${ExternalDataSources}/PrimateAI/3D/PrimateAI-3D.hg38.txt.gz" \
 --o "${SaUtilsOutput]"
 ```
 
@@ -86,92 +95,6 @@ They are not removed or modified by Illumina Connected Annotations, and are pass
 [https://primad.basespace.illumina.com/](https://primad.basespace.illumina.com/)
 
 
-## Primate AI: GRCh37
-### Parsing
-
-#### TSV File
-
-```scss
-chr	pos	ref	alt	refAA	altAA	strand_1pos_0neg	trinucleotide_context	UCSC_gene	ExAC_coverage	primateDL_score
-chr10	1046704	C	T	R	C	1	CCG	uc001ift.3	45.49	0.849114537239
-chr10	1046704	C	G	R	G	1	CCG	uc001ift.3	45.49	0.795686006546
-```
-
-From the TSV file, we're mainly interested in the following columns:
-* `chr`
-* `pos`
-* `ref`
-* `alt`
-* `primateDL_score`
-
-We also use `UCSC_gene` to filter out variants that don't have matching gene models in Illumina Connected Annotations.
-
-### Pre-processing
-
-#### Converting UCSC IDs
-
-Primate AI only provides UCSC IDs. As an initial pre-processing step, we'll need to convert these to either Entrez or Ensembl Gene IDs.
-
-The following queries are used to download the conversions from UCSC:
-
-```bash
-mysql -h genome-mysql.soe.ucsc.edu -u genome -A -P 3306 \
-      -e "select * FROM knownToLocusLink;" hg19 > ucsc_locuslink.tsv
-
-mysql -h genome-mysql.soe.ucsc.edu -u genome -A -P 3306 \
-      -e "select knownToEnsembl.name, knownToEnsembl.value, ensGene.name2 FROM knownToEnsembl, ensGene WHERE knownToEnsembl.value = ensGene.name;" \
-      hg19 > ucsc_ensembl.tsv
-```
-
-#### Running the Pre-Processor
-
-The Primate AI pre-processor can be run as follows:
-
-```bash
-dotnet PrimateAiPreProcessor.dll UGA_develop.tsv PrimateAI_scores_v0.2.tsv.gz \
-     ucsc_locuslink.tsv ucsc_ensembl.tsv PrimateAI_0.2_GRCh37.tsv.gz
-```
-
-During conversion, 0.5% of the UCSC Ids cannot be converted to either Entrez or Ensembl gene IDs. Once the gene IDs have been acquired, we check to see which are available in Illumina Connected Annotations.
-
-The following Entrez Gene IDs were not found:
-
-```scss
-399753
-401980
-504189
-504191
-100293534
-```
-
-Here is the output from the pre-processor:
-
-```scss
-- loading UCSC to Entrez Gene ID dictionary... 73,432 genes loaded.
-- loading UCSC to Ensembl Gene ID dictionary... 76,178 genes loaded.
-- loading UGA gene ID to gene dictionary... 103,277 genes loaded.
-- parsing Primate AI variants... 70,121,953 variants parsed.
-
-# variants with unknown gene ID: 27,253 / 70,121,953
-# genes with unknown gene ID:    109 / 19,614
-
-# variants not in UGA: 2,036 / 70,121,953
-# genes not in UGA:    6 / 19,614
-```
-
-### Known Issues
-
-:::caution Known Issues
-The Primate AI data set provides raw scores, but the scores are biased according to gene context. I.e. a 0.4 means something different in `TP53` than it does in `KRAS`.
-
-As a result, the Primate AI team provided guidance on aggregating these scores and presenting them as percentiles with respect to the associated gene. According to their research, the 25<sup>th</sup> percentile is a good proxy for benign variants and the 75<sup>th</sup> percentile is a good proxy for pathogenic variants.
-:::
-
-### Download URL
-
-[https://basespace.illumina.com/s/cPgCSmecvhb4](https://basespace.illumina.com/s/cPgCSmecvhb4)
-
-
 ## JSON Output
 
-<JSON />
+<JSON/>

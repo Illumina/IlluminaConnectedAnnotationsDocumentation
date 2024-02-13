@@ -1,4 +1,3 @@
-#### GRCh38
 ```json
 "primateAI-3D": [
   {
@@ -24,17 +23,3 @@
 | scorePercentile     | float  | range: 0 - 1.0                      |
 | score               | float  | range: 0 - 1.0                      |
 | classification      | string | pathogenic or benign classification |
-
-#### GRCh37
-```json
-"primateAI": [
-   {
-      "hgnc":"TP53",
-      "scorePercentile":0.3,
-   }
-]
-```
-| Field            |   Type    | Notes            |
-|:-----------------|:---------:|:-----------------|
-| hgnc             |  string   | HGNC Gene Symbol |
-| scorePercentile  | float     | range: 0 - 1.0   |
