@@ -236,6 +236,12 @@ Here is a list of examples about how the description section supposed to be proc
 <JSON />
 
 ## Building the supplementary files
+There are 2 ways of building your own OMIM supplementary files using ``SAUtils``.
+
+The first way is to use ``SAUtils`` command's subcommands ``downloadOMIM`` and ``omim``.
+
+The second way is to use ``SAUtils`` command's subcommands ``AutoDownloadGenerate``. To use ``AutoDownloadGenerate``, read more in ``SAUtils`` section.
+### Using subcommands ``downloadOMIM`` and ``omim``
 The first step in builing the OMIM ``.nga`` files is to use the ``SAUtils`` command's subcommand ``downloadOMIM`` to download the necessary data. In order to download the data the user must possess an API key obtained from OMIM. This key has to be set as the environment variable *OmimApiKey*.
 ```scss
 export OmimApiKey=<users-omim-api-key>
