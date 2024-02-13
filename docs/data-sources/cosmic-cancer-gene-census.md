@@ -17,5 +17,5 @@
 | Field        |     Type     | Notes                   |
 |:-------------|:------------:|:------------------------|
 | roleInCancer | string array | Possible roles in caner |
-| tier         |    number    | Cosmic tiers 1 or 2     |
+| tier         |    number    | Cosmic tiers [1, 2]     |
 
