@@ -15,28 +15,19 @@ License may be customized to allow access to one of more of the above at the tim
 :::
 
 ## How to obtain the license?
-Please contact annotation_support@illumina.com to obtain a special license file for the data sources of interest.
+Please contact annotation_support@illumina.com to obtain a special credentials file for the data sources of interest.
 
 Visit [Illumina Connected Annotations](https://developer.illumina.com/illumina-connected-annotations) for more details.
 
-## How to use the license file?
-After obtaining the license file, it may be used in two ways:
+## How to use the credentials file?
+After obtaining the credentials file, it may be used in two ways:
 1. Home folder
 2. Commandline argument
 
+The default location of the license file is `~/.ilmnAnnotations/credentials.json`.
+However, this can be overridden by the command line argument while downloading/annotating.
 
-### Home folder
-The licensed file may be placed under the home folder for convenience:
-
-```scss
-~/.ilmnAnnotations/credentials.json
-```
-
-### Commandline argument
-Or, it can also be supplied as a commandline argument while downloading/annotating.
-In addition, this will override any file placed under the home folder.
-
-#### Download licensed content
+### Download licensed content
 ```shell
 dotnet Downloader.dll \
 -o ~/data \
@@ -45,7 +36,7 @@ dotnet Downloader.dll \
 ```
 
 
-#### Annotate with licensed content
+### Annotate with licensed content
 ```shell
 dotnet Annotator.dll \
 --ref ~/data/References/7/Homo_sapiens.GRCh38.Nirvana.dat \
@@ -55,3 +46,10 @@ dotnet Annotator.dll \
 -o ~/output \
 --credentialsFile ~/credentials.json
 ```
+
+
+## Licensing Errors
+If the license has expired, Illumina Connected Annotations will stop annotating and exit with an error code.
+These errors may be skipped by using the `--ignoreLicenseError` command line argument.
+After doing this, only basic data sources will be used for annotations.
+This can also be achieved by deleting the credentials file from the home folder.
