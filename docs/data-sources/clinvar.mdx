@@ -322,21 +322,30 @@ etc.) as their alternate allele
 <JSON />
 
 ## Building the supplementary files
+There are 2 ways of building your own OMIM supplementary files using ``SAUtils``.
+
+The first way is to use ``SAUtils`` command's subcommands ``clinvar``.
 The ClinVar ``.nsa`` and ``.nsi`` for Illumina Connected Annotations can be built using the ``SAUtils`` command's ``clinvar`` subcommand.
-### Source data files
+
+The second way is to use ``SAUtils`` command's subcommands ``AutoDownloadGenerate``. To use ``AutoDownloadGenerate``, read more in ``SAUtils`` section.
+### Using ``clinvar`` subcommands and source data files
 Two input ``.xml`` files and a ``.version`` file are required in order to build the ``.nsa`` and ``.nsi`` file. You should have the following files:
 
 ```scss
 ClinVarFullRelease_00-latest.xml.gz		ClinVarVariationRelease_00-latest.xml.gz
 ClinVarFullRelease_00-latest.xml.gz.version
 ```
-The version file is a text file with the follwoing format.
+The version file is a json file with the following format.
 ```scss
-NAME=ClinVar
-VERSION=20220505
-DATE=2022-05-05
-DESCRIPTION=A freely accessible, public archive of reports of the relationships among human variations and phenotypes, with supporting evidence
+{
+  "name": "ClinVar",
+  "version": "20231230",
+  "description": "A freely accessible, public archive of reports of the relationships among human variations and phenotypes, with supporting evidence",
+  "releaseDate": "2024-01-10"
+}
 ```
+You have to adjust the version and release date according to the actual date of the ClinVar.
+
 The help menu for the utility is as follows:
 ```scss
 dotnet SAUtils.dll clinvar

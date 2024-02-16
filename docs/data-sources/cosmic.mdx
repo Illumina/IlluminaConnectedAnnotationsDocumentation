@@ -180,6 +180,7 @@ GENE_NAME       CELL_TYPE       PUBMED_PMID     HALLMARK        IMPACT  DESCRIPT
 PRDM16		18496560	role in cancer	oncogene	oncogene
 PRDM16		16015645	role in cancer	fusion	fusion
 ```
+
 #### Parsing
 To extract information about TSGs and oncogenes, the data based on the "role in cancer" attribute is filtered.
 For tumor suppressor genes, rows with the value "TSG" and for oncogenes, rows with the value "oncogene" are filtered.
@@ -193,13 +194,6 @@ Only following columns are needed to gather required roles in cancer:
 
 
 ##### Possible Roles in Cancer
-While parsing, only following roles in cancer are found:
-* `fusion`
-* `TSG`
-* `oncogene`
-
-
-##### Parsing Stats
 The file contained following number of instances for each role type
 
 | Role in cancer | Total Instances |
@@ -209,11 +203,34 @@ The file contained following number of instances for each role type
 | oncogene       |       181       |
 | Total          |       525       |
 
+### CSV Extraction
+COSMIC Tiers are extracted from `cancer_gene_census.csv` file:
+
+```scss
+Gene Symbol,Name,Entrez GeneId,Genome Location,Tier,Hallmark,Chr Band,Somatic,Germline,Tumour Types(Somatic),Tumour Types(Germline),Cancer Syndrome,Tissue Type,Molecular Genetics,Role in Cancer,Mutation Types,Translocation Partner,Other Germline Mut,Other Syndrome,COSMIC ID,cosmic gene name,Synonyms
+"AR","Androgen Receptor ","367","X:67544036-67730619","1","Yes","Xq12","yes","yes","prostate","","","E","Dom","oncogene","Mis","","yes  ","Androgen insensitivity, Hypospadias 1, X-linked, Spinal and bulbar muscular atrophy of Kennedy ","COSG292497","AR","367,AIS,AR,DHTR,ENSG00000169083.16,HUMARA,NR3C4,P10275,SBMA,SMAX1"
+"FH","fumarate hydratase","2271","1:241497603-241519761","1","","1q43","","yes","","leiomyomatosis, renal","hereditary leiomyomatosis and renal cell cancer","E, M","Rec","TSG","Mis, N, F","","","","COSG255037","FH","2271,ENSG00000091483.6,FH,P07954"
+"ALK","anaplastic lymphoma kinase (Ki-1)","238","2:29192774-29921566","1","Yes","2p23.2","yes","yes","ALCL, NSCLC, neuroblastoma, inflammatory myofibroblastic tumour, Spitzoid tumour","neuroblastoma","familial neuroblastoma","L, E, M","Dom","oncogene, fusion","T, Mis, A","NPM1, TPM3, TFG, TPM4, ATIC, CLTC, MSN, RNF213, CARS, EML4, KIF5B, C2orf22, DCTN1, HIP1, TPR, RANBP2, PPFIBP1, SEC31A, STRN, VCL, C2orf44, KLC1","","","COSG383409","ALK","238,ALK,CD246,ENSG00000171094.17,Q9UM73"
+"APC","adenomatous polyposis of the colon gene","324","5:112737888-112846239","1","Yes","5q22.2","yes","yes","colorectal, pancreatic, desmoid, hepatoblastoma, glioma, other CNS","colorectal, pancreatic, desmoid, hepatoblastoma, glioma, other CNS","adenomatous polyposis coli; Turcot syndrome","E, M, O","Rec","TSG","D, Mis, N, F, S","","","","COSG208824","APC","324,APC,DP2,DP2.5,DP3,ENSG00000134982.16,P25054,PPP1R46"
+```
+
+##### Columns
+Only following columns are needed to gather required roles in cancer:
+* `Gene Symbol`
+* `Tier`
+
+First the tiers are found from the CSV; based on gene symbols, the tiers' information is added while parsing through the TSV
+
+
 ### Known Issues
 None
 
 ### Download URL
-* [Cancer_Gene_Census_Hallmarks_Of_Cancer.tsv.gz](https://cancer.sanger.ac.uk/cosmic/file_download/GRCh38/cosmic/v97/Cancer_Gene_Census_Hallmarks_Of_Cancer.tsv.gz)
+* [Cancer_Gene_Census_Hallmarks_Of_Cancer.tsv.gz](https://cancer.sanger.ac.uk/cosmic/file_download/GRCh38/cosmic/v99/Cancer_Gene_Census_Hallmarks_Of_Cancer.tsv.gz)
+* [cancer_gene_census.csv](https://cancer.sanger.ac.uk/cosmic/file_download/GRCh38/cosmic/v99/cancer_gene_census.csv)
 
 ### JSON output
 <CancerGeneCensusJSON/>
+
+## Building the supplementary files
+You can generate COSMIC supplementary annotation files if you have COSMIC account credentials. Please refer to SAUtils section for more details.
