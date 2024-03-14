@@ -266,7 +266,7 @@ If a sample does not contain any entries, we will create a sample object that co
 ```json
 "variants":[
    {
-      "vid":"2:48010488:A",
+      "vid":"2-48010488-G-A",
       "chromosome":"chr2",
       "begin":48010488,
       "end":48010488,
@@ -275,9 +275,6 @@ If a sample does not contain any entries, we will create a sample object that co
       "refAllele":"G",
       "altAllele":"A",
       "variantType":"SNV",
-      "isDecomposedVariant":true,
-      "isRecomposedVariant":true,
-      "linkedVids":["2:48010488:GTA:ATC"],
       "hgvsg":"NC_000002.11:g.48010488G>A",
       "phylopScore":0.459
 ```
@@ -294,9 +291,6 @@ If a sample does not contain any entries, we will create a sample object that co
 | refAllele              | string       | parsimonious representation of the reference allele                                                                  |
 | altAllele              | string       | parsimonious representation of the alternate allele.                                                                 |
 | variantType            | string       | uses [Sequence Ontology sequence alterations](http://www.sequenceontology.org/browser/current_svn/term/SO:0001059)   |
-| isDecomposedVariant    | bool         | true when the decomposed variant has been used to create another recomposed variant                                  |
-| isRecomposedVariant    | bool         | true when the variant is recomposed from two or more decomposed variants                                             |
-| linkedVids             | string array | list of [VIDs](../core-functionality/variant-ids) for variants connecting decomposed and recomposed variants         |
 | hgvsg                  | string       | HGVS g. notation                                                                                                     |
 | phylopScore            | float        | phyloP conservation score. Range: -14.08 to 6.424                                                                    |
 
@@ -316,20 +310,21 @@ Similarly, the recomposed variant will be shown as a new VCF position. This reco
    {
       "transcript":"ENST00000445503.1",
       "source":"Ensembl",
-      "bioType":"nonsense_mediated_decay",
+      "bioType":"NMD_transcript_variant",
       "codons":"gGg/gAg",
       "aminoAcids":"G/E",
-      "cdnaPos":"268",
-      "cdsPos":"116",
+      "cdnaPos":"268/4158",
+      "cdsPos":"116/483",
       "exons":"1/9",
       "introns":"1/8",
-      "proteinPos":"39",
+      "proteinPos":"39/160",
       "geneId":"ENSG00000116062",
       "hgnc":"MSH6",
       "consequence":[
          "missense_variant",
          "NMD_transcript_variant"
       ],
+      "impact": "moderate",
       "hgvsc":"ENST00000445503.1:c.116G>A",
       "hgvsp":"ENSP00000405294.1:p.(Gly39Glu)",
       "geneFusion":{
@@ -349,11 +344,7 @@ Similarly, the recomposed variant will be shown as a new VCF position. This reco
          ]
       },
       "isCanonical":true,
-      "polyPhenScore":0.95,
-      "polyPhenPrediction":"probably damaging",
       "proteinId":"ENSP00000405294.1",
-      "siftScore":0.61,
-      "siftPrediction":"tolerated",
       "completeOverlap":true
    }
 ]
@@ -366,43 +357,27 @@ Similarly, the recomposed variant will be shown as a new VCF position. This reco
 | bioType            | string       | descriptions of the [biotypes from Ensembl](https://uswest.ensembl.org/info/genome/genebuild/biotypes.html) |
 | codons             | string       |                                                                                                             |
 | aminoAcids         | string       |                                                                                                             |
-| cdnaPos            | string       |                                                                                                             |
-| cdsPos             | string       |                                                                                                             |
+| cdnaPos            | string       | Format: start-end/Length                                                                                    |
+| cdsPos             | string       | Format: start-end/Length                                                                                    |
 | exons              | string       | exons affected by the variant                                                                               |
 | introns            | string       | introns affected by the variant                                                                             |
-| proteinPos         | string       |                                                                                                             |
+| proteinPos         | string       | Format: start-end/Length                                                                                    |
 | geneId             | string       | gene ID. e.g. ENSG00000116062                                                                               |
 | hgnc               | string       | gene symbol. e.g. MSH6                                                                                      |
 | consequence        | string array | [Sequence Ontology Consequences](http://www.sequenceontology.org/browser/obob.cgi)                          |
+| impact             | string       | See [Consequence Impact](../core-functionality/transcript-consequence-impacts.md) for details              |
 | hgvsc              | string       | HGVS coding nomenclature                                                                                    |
 | hgvsp              | string       | HGVS protein nomenclature                                                                                   |
 | geneFusion         | object       | see [Gene Fusions entry below](#gene-fusions)                                                               |
 | isCanonical        | bool         | true when this is a canonical transcript                                                                    |
 | isManeSelect       | bool         | true when this is a MANE select transcript                                                                  |
-| polyPhenScore      | float        | range: 0 - 1.0                                                                                              |
-| polyPhenPrediction | string       | see [possible values below](#polyphen)                                                                      |
 | proteinId          | string       | protein ID. E.g. ENSP00000405294.1                                                                          |
-| siftScore          | float        | range: 0 - 1.0                                                                                              |
-| siftPrediction     | string       | see [possible values below](#sift)                                                                          |
 | completeOverlap    | bool         | true when this transcript is completely overlapped by the variant                                           |
 | cancerHotspots     | string array | see [Cancer Hotspots entry below](#cancer-hotspots)                                                         |
 
 :::caution MANE Select
 MANE select tags are only available for RefSeq transcripts on GRCh38.
 :::
-#### PolyPhen
-
-* probably damaging
-* possibly damaging
-* benign
-* unknown
-
-#### SIFT
-
-* tolerated
-* deleterious
-* tolerated - low confidence
-* deleterious - low confidence
 
 #### Amino Acid Conservation
 <AminoAcidConservation/>
