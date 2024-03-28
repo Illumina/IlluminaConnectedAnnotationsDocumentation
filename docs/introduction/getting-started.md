@@ -203,6 +203,8 @@ OPTIONS:
       --vcf-sample-info <VALUE>
                              additional vcf format field keys (comma separated)
                                 desired in the output
+      --output-format <VALUE>
+                             output file format, available options: json, vcf. default is json.
       --help, -h             displays the help menu
       --version, -v          displays the version
 
