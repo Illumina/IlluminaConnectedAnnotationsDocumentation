@@ -86,9 +86,10 @@ When you put these calls together, the resulting genomic rearrangement looks som
 
 The annotation for the first variant in the VCF looks like this:
 
-```json {139,141-205,218,220-230}
+```json {36-58}
+{"positions":[
 {
-  "chromosome": "chr12",
+  "chromosome": "12",
   "position": 12026270,
   "refAllele": "C",
   "altAlleles": [
@@ -98,128 +99,21 @@ The annotation for the first variant in the VCF looks like this:
     "PASS"
   ],
   "cytogeneticBand": "12p13.2",
-  "clingen": [
-    {
-      "chromosome": "12",
-      "begin": 173786,
-      "end": 34835837,
-      "variantType": "copy_number_gain",
-      "id": "nsv995956",
-      "clinicalInterpretation": "pathogenic",
-      "phenotypes": [
-        "Decreased calvarial ossification",
-        "Delayed gross motor development",
-        "Feeding difficulties",
-        "Frontal bossing",
-        "Morphological abnormality of the central nervous system",
-        "Patchy alopecia"
-      ],
-      "phenotypeIds": [
-        "HP:0002007",
-        "HP:0002011",
-        "HP:0002194",
-        "HP:0002232",
-        "HP:0005474",
-        "HP:0011968",
-        "MedGen:C0232466",
-        "MedGen:C1862862",
-        "MedGen:CN001816",
-        "MedGen:CN001820",
-        "MedGen:CN001989",
-        "MedGen:CN004852"
-      ],
-      "observedGains": 1,
-      "validated": true
-    }
-  ],
   "variants": [
     {
       "vid": "12-12026270-C-[chr21:36420865[C",
-      "chromosome": "chr12",
+      "chromosome": "12",
       "begin": 12026270,
       "end": 12026270,
       "isStructuralVariant": true,
       "refAllele": "C",
       "altAllele": "[chr21:36420865[C",
-      "variantType": "translocation_breakend",
-      "cosmicGeneFusions": [
-        {
-          "id": "COSF2245",
-          "numSamples": 249,
-          "geneSymbols": [
-            "ETV6",
-            "RUNX1"
-          ],
-          "hgvsr": "ENST00000396373.4(ETV6):r.1_1283::ENST00000300305.3(RUNX1):r.504_6222",
-          "histologies": [
-            {
-              "name": "acute lymphoblastic B cell leukaemia",
-              "numSamples": 169
-            },
-            {
-              "name": "acute lymphoblastic leukaemia",
-              "numSamples": 80
-            }
-          ],
-          "sites": [
-            {
-              "name": "haematopoietic and lymphoid tissue",
-              "numSamples": 249
-            }
-          ],
-          "pubMedIds": [
-            7761424,
-            7780150,
-            8609706,
-            8751464,
-            8982044,
-            9067587,
-            9207408,
-            9226156,
-            9628428,
-            10463610,
-            10774753,
-            11091202,
-            12621238,
-            12661004,
-            12750722,
-            15104290,
-            15642392,
-            24557455,
-            26925663
-          ]
-        }
-      ],
-      "fusionCatcher": [
-        {
-          "genes": {
-            "first": {
-              "hgnc": "ETV6",
-              "isOncogene": true
-            },
-            "second": {
-              "hgnc": "RUNX1",
-              "isOncogene": true
-            }
-          },
-          "somaticSources": [
-            "DepMap CCLE",
-            "Cancer Genome Project",
-            "ChimerKB 4.0",
-            "ChimerPub 4.0",
-            "ChimerSeq 4.0",
-            "Known",
-            "Mitelman DB",
-            "OncoKB",
-            "TICdb"
-          ]
-        }
-      ],
+      "variantType": "translocation",
       "transcripts": [
         {
           "transcript": "ENST00000396373.4",
           "source": "Ensembl",
-          "bioType": "protein_coding",
+          "bioType": "mRNA",
           "introns": "5/7",
           "geneId": "ENSG00000139083",
           "hgnc": "ETV6",
@@ -227,78 +121,39 @@ The annotation for the first variant in the VCF looks like this:
             "transcript_variant",
             "unidirectional_gene_fusion"
           ],
+          "impact": "modifier",
           "geneFusions": [
             {
               "transcript": "ENST00000437180.1",
-              "bioType": "protein_coding",
-              "intron": 2,
+              "bioType": "mRNA",
+              "source": "Ensembl",
               "geneId": "ENSG00000159216",
+              "proteinId": "ENSP00000409227.1",
+              "intron": 2,
               "hgnc": "RUNX1",
               "hgvsr": "ENST00000437180.1(RUNX1):r.?_58+274::ENST00000396373.4(ETV6):r.1009+3367_?",
-              "directionality":"uniDirectional"
+              "directionality": "unidirectional"
             },
             {
               "transcript": "ENST00000300305.3",
-              "bioType": "protein_coding",
-              "intron": 1,
+              "bioType": "mRNA",
+              "source": "Ensembl",
+              "isCanonical": true,
               "geneId": "ENSG00000159216",
+              "proteinId": "ENSP00000300305.3",
+              "intron": 1,
               "hgnc": "RUNX1",
               "hgvsr": "ENST00000300305.3(RUNX1):r.?_58+274::ENST00000396373.4(ETV6):r.1009+3367_?",
-              "directionality":"uniDirectional"
-            },
-            {
-              "transcript": "ENST00000482318.1",
-              "bioType": "nonsense_mediated_decay",
-              "intron": 2,
-              "geneId": "ENSG00000159216",
-              "hgnc": "RUNX1",
-              "hgvsr": "ENST00000482318.1(RUNX1):r.?_58+274::ENST00000396373.4(ETV6):r.1009+3367_?",
-              "directionality":"uniDirectional"
-            },
-            {
-              "transcript": "ENST00000486278.2",
-              "bioType": "protein_coding",
-              "intron": 2,
-              "geneId": "ENSG00000159216",
-              "hgnc": "RUNX1",
-              "hgvsr": "ENST00000486278.2(RUNX1):r.?_-15+274::ENST00000396373.4(ETV6):r.1009+3367_?",
-              "directionality":"uniDirectional"
-            },
-            {
-              "transcript": "ENST00000455571.1",
-              "bioType": "protein_coding",
-              "intron": 2,
-              "geneId": "ENSG00000159216",
-              "hgnc": "RUNX1",
-              "hgvsr": "ENST00000455571.1(RUNX1):r.?_58+274::ENST00000396373.4(ETV6):r.1009+3367_?",
-              "directionality":"uniDirectional"
-            },
-            {
-              "transcript": "ENST00000475045.2",
-              "bioType": "protein_coding",
-              "intron": 11,
-              "geneId": "ENSG00000159216",
-              "hgnc": "RUNX1",
-              "hgvsr": "ENST00000475045.2(RUNX1):r.?_58+274::ENST00000396373.4(ETV6):r.1009+3367_?",
-              "directionality":"uniDirectional"
-            },
-            {
-              "transcript": "ENST00000416754.1",
-              "bioType": "protein_coding",
-              "intron": 2,
-              "geneId": "ENSG00000159216",
-              "hgnc": "RUNX1",
-              "hgvsr": "ENST00000416754.1(RUNX1):r.?_58+274::ENST00000396373.4(ETV6):r.1009+3367_?",
-              "directionality":"uniDirectional"
+              "directionality": "unidirectional"
             }
           ],
           "isCanonical": true,
           "proteinId": "ENSP00000379658.3"
         },
         {
-          "transcript": "NM_001987.4",
+          "transcript": "NM_001987.5",
           "source": "RefSeq",
-          "bioType": "protein_coding",
+          "bioType": "mRNA",
           "introns": "5/7",
           "geneId": "2120",
           "hgnc": "ETV6",
@@ -306,15 +161,19 @@ The annotation for the first variant in the VCF looks like this:
             "transcript_variant",
             "unidirectional_gene_fusion"
           ],
+          "impact": "modifier",
           "geneFusions": [
             {
-              "transcript": "NM_001754.4",
-              "bioType": "protein_coding",
-              "intron": 2,
+              "transcript": "NM_001754.5",
+              "bioType": "mRNA",
+              "source": "RefSeq",
+              "isCanonical": true,
               "geneId": "861",
+              "proteinId": "NP_001745.2",
+              "intron": 2,
               "hgnc": "RUNX1",
-              "hgvsr": "NM_001754.4(RUNX1):r.?_58+274::NM_001987.4(ETV6):r.1009+3367_?",
-              "directionality":"uniDirectional"
+              "hgvsr": "NM_001754.5(RUNX1):r.?_58+274::NM_001987.5(ETV6):r.1009+3367_?",
+              "directionality": "unidirectional"
             }
           ],
           "isCanonical": true,
@@ -324,6 +183,8 @@ The annotation for the first variant in the VCF looks like this:
     }
   ]
 }
+]}
+
 ```
 
 | Field            | Type   | Notes                                     |

@@ -304,14 +304,14 @@ Illumina Connected Annotations supports annotating reference minor alleles. In s
    {
       "transcript":"ENST00000445503.1",
       "source":"Ensembl",
-      "bioType":"nonsense_mediated_decay",
+      "bioType":"NMD_transcript_variant",
       "codons":"gGg/gAg",
       "aminoAcids":"G/E",
-      "cdnaPos":"268",
-      "cdsPos":"116",
+      "cdnaPos":"268/4158",
+      "cdsPos":"116/483",
       "exons":"1/9",
       "introns":"1/8",
-      "proteinPos":"39",
+      "proteinPos":"39/160",
       "geneId":"ENSG00000116062",
       "hgnc":"MSH6",
       "consequence":[
@@ -351,11 +351,11 @@ Illumina Connected Annotations supports annotating reference minor alleles. In s
 | bioType            | string       | descriptions of the [biotypes from Ensembl](https://uswest.ensembl.org/info/genome/genebuild/biotypes.html) |
 | codons             | string       |                                                                                                             |
 | aminoAcids         | string       |                                                                                                             |
-| cdnaPos            | string       |                                                                                                             |
-| cdsPos             | string       |                                                                                                             |
+| cdnaPos            | string       | Format: start-end/Length                                                                                    |
+| cdsPos             | string       | Format: start-end/Length                                                                                    |
 | exons              | string       | exons affected by the variant                                                                               |
 | introns            | string       | introns affected by the variant                                                                             |
-| proteinPos         | string       |                                                                                                             |
+| proteinPos         | string       | Format: start-end/Length                                                                                    |
 | geneId             | string       | gene ID. e.g. ENSG00000116062                                                                               |
 | hgnc               | string       | gene symbol. e.g. MSH6                                                                                      |
 | consequence        | string array | [Sequence Ontology Consequences](http://www.sequenceontology.org/browser/obob.cgi)                          |
