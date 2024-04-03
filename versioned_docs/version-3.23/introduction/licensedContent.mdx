@@ -1,0 +1,55 @@
+---
+title: Licensed Content
+---
+
+
+Illumina Conncted Annotations supports following content which is available through a license from Illumina.
+The license file will allow users to download and annotate with these data sources.
+* COSMIC
+* OMIM
+* Primate AI-3D
+* Splice AI
+
+:::note
+License may be customized to allow access to one of more of the above at the time of license creation.
+:::
+
+## How to obtain the license?
+Please contact annotation_support@illumina.com to obtain a special credentials file for the data sources of interest.
+
+Visit [Illumina Connected Annotations](https://developer.illumina.com/illumina-connected-annotations) for more details.
+
+## How to use the credentials file?
+After obtaining the credentials file, it may be used in two ways:
+1. Home folder
+2. Commandline argument
+
+The default location of the license file is `~/.ilmnAnnotations/credentials.json`.
+However, this can be overridden by the command line argument while downloading/annotating.
+
+### Download licensed content
+```shell
+dotnet Downloader.dll \
+-o ~/data \
+-ga GRCh38 \
+--credentialsFile ~/credentials.json
+```
+
+
+### Annotate with licensed content
+```shell
+dotnet Annotator.dll \
+--ref ~/data/References/7/Homo_sapiens.GRCh38.Nirvana.dat \
+--sd ~/data/SupplementaryDatabase \
+-c ~/data/Cache/32 \
+-i ~/input_vcf-hg38.vcf.gz \
+-o ~/output \
+--credentialsFile ~/credentials.json
+```
+
+
+## Licensing Errors
+If the license has expired, Illumina Connected Annotations will stop annotating and exit with an error code.
+These errors may be skipped by using the `--ignoreLicenseError` command line argument.
+After doing this, only basic data sources will be used for annotations.
+This can also be achieved by deleting the credentials file from the home folder.
