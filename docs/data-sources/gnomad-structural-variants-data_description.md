@@ -10,16 +10,16 @@ The bed file was obtained from original source for GRCh37
 The source files represented the structural variants with keys using various naming conventions.
 In the Illumina Connected Annotations JSON output, these keys will be mapped according to the following. 
 
-| Illumina Connected Annotations JSON SV Type Key      | GRCh37 Source SV Type Key | GRCh38 Source SV Type Key |
-|-------------------------------|---------------------------|---------------------------|
-| copy_number_variation         |                           | copy number variation     |
-| deletion                      | DEL, CN=0                 | deletion                  |
-| duplication                   | DUP                       | duplication               |
-| insertion                     | INS                       | insertion                 |
-| inversion                     | INV                       | inversion                 |
-| mobile_element_insertion      | INS:ME                    | mobile element insertion  |
-| mobile_element_insertion      | INS:ME:ALU                | alu insertion             |
-| mobile_element_insertion      | INS:ME:LINE1              | line1 insertion           |
-| mobile_element_insertion      | INS:ME:SVA                | sva insertion             |
-| structural alteration         |                           | sequence alteration       |
-| complex_structural_alteration | CPX                       |                           |
+| Illumina Connected Annotations JSON SV Type Key | GRCh37 Source SV Type Key |
+|-------------------------------------------------|---------------------------|
+| copy_number_variation                           |                           |
+| deletion                                        | DEL, CN=0                 |
+| duplication                                     | DUP                       |
+| insertion                                       | INS                       |
+| inversion                                       | INV                       |
+| mobile_element_insertion                        | INS:ME                    |
+| mobile_element_insertion                        | INS:ME:ALU                |
+| mobile_element_insertion                        | INS:ME:LINE1              |
+| mobile_element_insertion                        | INS:ME:SVA                |
+| structural alteration                           |                           |
+| complex_structural_alteration                   | CPX                       |

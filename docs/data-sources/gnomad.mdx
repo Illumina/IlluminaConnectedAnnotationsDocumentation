@@ -25,7 +25,7 @@ Illumina Connected Analysis will support gnomAD v4.0 for GRCh38 assembly and gno
 ## gnomAD v4.0 (GRCh38)
 
 ### Small Variants
-In gnomAD v4.0, there are genome and exome data source. Illumina Connected Annotation will provide both of them with different JSON output field.
+In gnomAD v4.0, like gnomAD v2.1, there are genome and exome data. Compare to gnomAD v2.1 which the data for genome and exome are merged, for gnomAD 4.0, Illumina Connected Annotation will separate them with different JSON output field.
 For gnomAD genome, the field name would be `gnomad`. For gnomAD exome, the field name would be `gnomad-exome`.
 Despite this difference in the field name, the JSON data format would be identical for both genome and exome.
 
@@ -73,7 +73,24 @@ We currently extract the following info fields from both gnomAD genome and exome
 
 <JSONV40/>
 
+#### Calculation
+To calculate allele frequency for each group, we divide the allele count with allele number for each group.
+
 ### LoF Gene Metrics
+In gnomAD 4.0, the gene score data for LOF is given per transcript. Since this is gene level data, we have to select one of the value.
+We will show the transcript ID that we select in the JSON output.
+The rule to select transcript ID is based on priority. Below is the priority list:
+1. Transcript ID is Ensembl transcript ID and has mane_select column true
+2. Transcript ID is Ensembl transcript ID and it is marked as canonical in Illumina Connected Annotation cache data
+3. Transcript ID is RefSeq transcript ID and has mane_select column true
+4. Transcript ID is RefSeq transcript ID and it is marked as canonical in Illumina Connected Annotation cache data
+5. Transcript ID has the lowest lof.oe_ci.upper value compare to other transcript for the same gene
+
+:::info Differences with gnomAD browser
+Due to difference in Ensembl version between Illumina Connected Annotation and gnomAD, there are several transcript ID that are marked as canonical in gnomAD browser but not in Illumina Connected Analysis.
+If this is thh case, the gene score that is shown in Illumina Connected Annotation will be different compare to gene score that is shown in the gnomAD browser.
+The transcriptId field in the JSON output will tell you which transcript is selected by Illumina Connected Annotation.
+:::
 
 #### Tab delimited file example
 
@@ -83,18 +100,48 @@ SCHIP1	ENST00000445224	false	8	3.0392e+01	157	2.6323e-01	3.5111e-07	9.9024e-01	5
 ```
 
 #### JSON key to TSV column mapping
-| JSON key | TSV column      | Description                                                                                                                  |
-|----------|-----------------|------------------------------------------------------------------------------------------------------------------------------|
-| pLi      | lof.pLI         | probability of being intolerant of a single loss-of-function variant (like haploinsufficient genes, observed ~ 0.1*expected) |
-| pNull    | lof.pNull       | probability of being completely tolerant of loss of function variation (observed = expected)                                 |
-| pRec     | lof.pRec        | probability of being intolerant of two loss of function variants (like recessive genes, observed ~ 0.5*expected)             |
-| synZ     | syn.z_score     | corrected synonymous Z score                                                                                                 |
-| misZ     | mis.z_score     | corrected missense Z score                                                                                                   |
-| loeuf    | lof.oe_ci.upper | loss of function observed/expected upper bound fraction (LOEUF)                                                              |
+| JSON key      | TSV column      | Description                                                                                                                  |
+|---------------|-----------------|------------------------------------------------------------------------------------------------------------------------------|
+| pLi           | lof.pLI         | probability of being intolerant of a single loss-of-function variant (like haploinsufficient genes, observed ~ 0.1*expected) |
+| pNull         | lof.pNull       | probability of being completely tolerant of loss of function variation (observed = expected)                                 |
+| pRec          | lof.pRec        | probability of being intolerant of two loss of function variants (like recessive genes, observed ~ 0.5*expected)             |
+| synZ          | syn.z_score     | corrected synonymous Z score                                                                                                 |
+| misZ          | mis.z_score     | corrected missense Z score                                                                                                   |
+| loeuf         | lof.oe_ci.upper | loss of function observed/expected upper bound fraction (LOEUF)                                                              |
+| transcriptId  | transcript      | transcript ID which the values we select                                                                                     |
 
 <JSONG40/>
 
 ### Structural Variants
+
+Structural variants in gnomAD 4.0 is available in VCF format and has the same population data as small variants.
+
+#### Structural Variant Type Mapping
+The source files represented the structural variants with keys using various naming conventions.
+In the Illumina Connected Annotations JSON output, these keys will be mapped according to the following.
+
+| Illumina Connected Annotations JSON SV Type Key | GRCh37 Source SV Type Key |
+|-------------------------------------------------|---------------------------|
+| deletion                                        | DEL, CN=0                 |
+| duplication                                     | DUP                       |
+| insertion                                       | INS                       |
+| inversion                                       | INV                       |
+| mobile_element_insertion                        | INS:ME                    |
+| mobile_element_insertion                        | INS:ME:ALU                |
+| mobile_element_insertion                        | INS:ME:LINE1              |
+| mobile_element_insertion                        | INS:ME:SVA                |
+| complex_structural_alteration                   | CPX                       |
+
+:::info gnomAD Copy Number Variation
+In gnomAD 4.0 structural variants data, there are CNV data in the VCF file. Since it is not shown in the browser, we don't include CNV in our output.
+We will evaluate in the future whether to include copy number variation from structural variation data together with new rare CNV data taht is available in gnomAD 4.0.
+:::
+
+:::info gnomAD duplication variant type
+In gnomAD 4.0 structural variants VCF, only DUP is shown as symbolic allele for duplication variant type.
+Based on the information in gnomAD browser, duplication variant that has split read or paired end reads evidence can be inferred as tandem duplication.
+With this, we check the evidence data in each DUP variants entry to decide whether it can be assign tandem duplication as variant type or it is just duplication.
+:::
 
 #### JSON output
 
