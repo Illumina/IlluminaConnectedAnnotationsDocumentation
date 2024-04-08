@@ -77,19 +77,20 @@ We currently extract the following info fields from both gnomAD genome and exome
 To calculate allele frequency for each group, we divide the allele count with allele number for each group.
 
 ### LoF Gene Metrics
-In gnomAD 4.0, the gene score data for LOF is given per transcript. Since this is gene level data, we have to select one of the value.
-We will show the transcript ID that we select in the JSON output.
-The rule to select transcript ID is based on priority. Below is the priority list:
-1. Transcript ID is Ensembl transcript ID and has mane_select column true
-2. Transcript ID is Ensembl transcript ID and it is marked as canonical in Illumina Connected Annotation cache data
-3. Transcript ID is RefSeq transcript ID and has mane_select column true
-4. Transcript ID is RefSeq transcript ID and it is marked as canonical in Illumina Connected Annotation cache data
-5. Transcript ID has the lowest lof.oe_ci.upper value compare to other transcript for the same gene
+In gnomAD 4.0, the gene score data for LOF is given per transcript. 
+Since this is gene level data, one of the transcripts need to be chosen and value reported.
+The transcript ID of the selected transcript will be reported.
+Transcripts are prioritized (from higher to lower) as follows:
+1. Ensembl Transcript has mane_select column true from source (gnomAD).
+2. Transcript is marked as Ensembl canonical in Illumina Connected Annotation cache data.
+3. RefSeq transcript has mane_select column true.
+4. Transcript is marked as RefSeq canonical in Illumina Connected Annotation cache data.
+5. Transcript has the lowest lof.oe_ci.upper value compare to other transcript for the same gene.
 
 :::info Differences with gnomAD browser
 Due to difference in Ensembl version between Illumina Connected Annotation and gnomAD, there are several transcript ID that are marked as canonical in gnomAD browser but not in Illumina Connected Analysis.
-If this is thh case, the gene score that is shown in Illumina Connected Annotation will be different compare to gene score that is shown in the gnomAD browser.
-The transcriptId field in the JSON output will tell you which transcript is selected by Illumina Connected Annotation.
+If this is the case, the gene score shown in Illumina Connected Annotation will be different compared to the gene score shown in the gnomAD browser.
+The `transcriptId` field in the JSON output will report which transcript was used by Illumina Connected Annotation.
 :::
 
 #### Tab delimited file example
