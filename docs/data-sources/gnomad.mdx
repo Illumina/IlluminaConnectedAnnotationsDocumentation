@@ -3,8 +3,11 @@ title: gnomAD
 ---
 
 import JSONV from './gnomad-small-variants-json.md'
+import JSONV40 from './gnomad4.0-small-variants-json.md'
 import JSONG from './gnomad-lof-json.md'
+import JSONG40 from './gnomad4.0-lof-json.md'
 import JSONSV from './gnomad-structural-variants-json.md'
+import JSONSV40 from './gnomad40-structural-variants-json.md'
 import SVDATADESCRIPTION from './gnomad-structural-variants-data_description.md'
 
 
@@ -16,9 +19,140 @@ The Genome Aggregation Database ([gnomAD](https://gnomad.broadinstitute.org/)) i
 Koch, L., 2020. Exploring human genomic diversity with gnomAD. *Nature Reviews Genetics*, **21(8)**, pp.448-448.
 :::
 
-## Small Variants
+Illumina Connected Analysis will support gnomAD v4.0 for GRCh38 assembly and gnomAD v2.1 for GRCh37.
 
-### VCF extraction
+
+## gnomAD v4.0 (GRCh38)
+
+### Small Variants
+In gnomAD v4.0, like gnomAD v2.1, there are genome and exome data. Compare to gnomAD v2.1 which the data for genome and exome are merged, for gnomAD 4.0, Illumina Connected Annotation will separate them with different JSON output field.
+For gnomAD genome, the field name would be `gnomad`. For gnomAD exome, the field name would be `gnomad-exome`.
+Despite this difference in the field name, the JSON data format would be identical for both genome and exome.
+
+#### VCF extraction
+We currently extract the following info fields from both gnomAD genome and exome VCF files:
+```scss
+##INFO=<ID=AC,Number=A,Type=Integer,Description="Alternate allele count">
+##INFO=<ID=AN,Number=1,Type=Integer,Description="Total number of alleles">
+##INFO=<ID=AC_XX,Number=A,Type=Integer,Description="Alternate allele count for XX samples">
+##INFO=<ID=AN_XX,Number=1,Type=Integer,Description="Total number of alleles in XX samples">
+##INFO=<ID=nhomalt_XX,Number=A,Type=Integer,Description="Count of homozygous individuals in XX samples">
+##INFO=<ID=AC_XY,Number=A,Type=Integer,Description="Alternate allele count for XY samples">
+##INFO=<ID=AN_XY,Number=1,Type=Integer,Description="Total number of alleles in XY samples">
+##INFO=<ID=nhomalt_XY,Number=A,Type=Integer,Description="Count of homozygous individuals in XY samples">
+##INFO=<ID=nhomalt,Number=A,Type=Integer,Description="Count of homozygous individuals">
+##INFO=<ID=AC_afr,Number=A,Type=Integer,Description="Alternate allele count for samples of African/African-American ancestry">
+##INFO=<ID=AN_afr,Number=1,Type=Integer,Description="Total number of alleles in samples of African/African-American ancestry">
+##INFO=<ID=nhomalt_afr,Number=A,Type=Integer,Description="Count of homozygous individuals in samples of African/African-American ancestry">
+##INFO=<ID=AC_amr,Number=A,Type=Integer,Description="Alternate allele count for samples of Latino ancestry">
+##INFO=<ID=AN_amr,Number=1,Type=Integer,Description="Total number of alleles in samples of Latino ancestry">
+##INFO=<ID=nhomalt_amr,Number=A,Type=Integer,Description="Count of homozygous individuals in samples of Latino ancestry">
+##INFO=<ID=AC_asj,Number=A,Type=Integer,Description="Alternate allele count for samples of Ashkenazi Jewish ancestry">
+##INFO=<ID=AN_asj,Number=1,Type=Integer,Description="Total number of alleles in samples of Ashkenazi Jewish ancestry">
+##INFO=<ID=nhomalt_asj,Number=A,Type=Integer,Description="Count of homozygous individuals in samples of Ashkenazi Jewish ancestry">
+##INFO=<ID=AC_eas,Number=A,Type=Integer,Description="Alternate allele count for samples of East Asian ancestry">
+##INFO=<ID=AN_eas,Number=1,Type=Integer,Description="Total number of alleles in samples of East Asian ancestry">
+##INFO=<ID=nhomalt_eas,Number=A,Type=Integer,Description="Count of homozygous individuals in samples of East Asian ancestry">
+##INFO=<ID=AC_fin,Number=A,Type=Integer,Description="Alternate allele count for samples of Finnish ancestry">
+##INFO=<ID=AN_fin,Number=1,Type=Integer,Description="Total number of alleles in samples of Finnish ancestry">
+##INFO=<ID=nhomalt_fin,Number=A,Type=Integer,Description="Count of homozygous individuals in samples of Finnish ancestry">
+##INFO=<ID=AC_mid,Number=A,Type=Integer,Description="Alternate allele count for samples of Middle Eastern ancestry">
+##INFO=<ID=AN_mid,Number=1,Type=Integer,Description="Total number of alleles in samples of Middle Eastern ancestry">
+##INFO=<ID=nhomalt_mid,Number=A,Type=Integer,Description="Count of homozygous individuals in samples of Middle Eastern ancestry">
+##INFO=<ID=AC_nfe,Number=A,Type=Integer,Description="Alternate allele count for samples of Non-Finnish European ancestry">
+##INFO=<ID=AN_nfe,Number=1,Type=Integer,Description="Total number of alleles in samples of Non-Finnish European ancestry">
+##INFO=<ID=nhomalt_nfe,Number=A,Type=Integer,Description="Count of homozygous individuals in samples of Non-Finnish European ancestry">
+##INFO=<ID=AC_remaining,Number=A,Type=Integer,Description="Alternate allele count for samples of Remaining individuals ancestry">
+##INFO=<ID=AN_remaining,Number=1,Type=Integer,Description="Total number of alleles in samples of Remaining individuals ancestry">
+##INFO=<ID=nhomalt_remaining,Number=A,Type=Integer,Description="Count of homozygous individuals in samples of Remaining individuals ancestry">
+##INFO=<ID=AC_sas,Number=A,Type=Integer,Description="Alternate allele count for samples of South Asian ancestry">
+##INFO=<ID=AN_sas,Number=1,Type=Integer,Description="Total number of alleles in samples of South Asian ancestry">
+```
+
+#### JSON output
+
+<JSONV40/>
+
+#### Calculation
+To calculate allele frequency for each group, we divide the allele count with allele number for each group.
+
+### LoF Gene Metrics
+In gnomAD 4.0, the gene score data for LOF is given per transcript. 
+Since this is gene level data, one of the transcripts need to be chosen and value reported.
+The transcript ID of the selected transcript will be reported.
+Transcripts are prioritized (from higher to lower) as follows:
+1. Ensembl Transcript has mane_select column true from source (gnomAD).
+2. Transcript is marked as Ensembl canonical in Illumina Connected Annotation cache data.
+3. RefSeq transcript has mane_select column true.
+4. Transcript is marked as RefSeq canonical in Illumina Connected Annotation cache data.
+5. Transcript has the lowest lof.oe_ci.upper value compare to other transcript for the same gene.
+
+:::info Differences with gnomAD browser
+Due to difference in Ensembl version between Illumina Connected Annotation and gnomAD, there are several transcript ID that are marked as canonical in gnomAD browser but not in Illumina Connected Analysis.
+If this is the case, the gene score shown in Illumina Connected Annotation will be different compared to the gene score shown in the gnomAD browser.
+The `transcriptId` field in the JSON output will report which transcript was used by Illumina Connected Annotation.
+:::
+
+#### Tab delimited file example
+
+```scss
+gene	transcript	mane_select	lof_hc_lc.obs	lof_hc_lc.exp	lof_hc_lc.possible	lof_hc_lc.oe	lof_hc_lc.mu	lof_hc_lc.pLI	lof_hc_lc.pNull	lof_hc_lc.pRec	lof.obs	lof.exp	lof.possible	lof.oe	lof.mu	lof.pLI	lof.pNull	lof.pRec	lof.oe_ci.lower	lof.oe_ci.upper	lof.z_raw	lof.z_score	mis.obs	mis.exp	mis.possible	mis.oe	mis.mu	mis.oe_ci.lower	mis.oe_ci.upper	mis.z_raw	mis.z_score	mis_pphen.obs	mis_pphen.exp	mis_pphen.possible	mis_pphen.oe	syn.obs	syn.exp	syn.possible	syn.oe	syn.mu	syn.oe_ci.lower	syn.oe_ci.upper	syn.z_raw	syn.z_score	constraint_flags
+SCHIP1	ENST00000445224	false	8	3.0392e+01	157	2.6323e-01	3.5111e-07	9.9024e-01	5.8227e-06	9.7579e-03	8	3.0392e+01	157	2.6323e-01	3.5111e-07	9.9066e-01	5.3097e-06	9.3341e-03	1.5300e-01	4.7500e-01	4.0617e+00	3.4377e+00	193	3.0914e+02	1659	6.2431e-01	1.5780e-06	5.5400e-01	7.0300e-01	6.6055e+00	2.4115e+00	87	1.4959e+02	813	5.8160e-01	76	1.0011e+02	393	7.5914e-01	7.9269e-07	6.3000e-01	9.1900e-01	2.4099e+00	1.3142e+00	[]
+```
+
+#### JSON key to TSV column mapping
+| JSON key      | TSV column      | Description                                                                                                                  |
+|---------------|-----------------|------------------------------------------------------------------------------------------------------------------------------|
+| pLi           | lof.pLI         | probability of being intolerant of a single loss-of-function variant (like haploinsufficient genes, observed ~ 0.1*expected) |
+| pNull         | lof.pNull       | probability of being completely tolerant of loss of function variation (observed = expected)                                 |
+| pRec          | lof.pRec        | probability of being intolerant of two loss of function variants (like recessive genes, observed ~ 0.5*expected)             |
+| synZ          | syn.z_score     | corrected synonymous Z score                                                                                                 |
+| misZ          | mis.z_score     | corrected missense Z score                                                                                                   |
+| loeuf         | lof.oe_ci.upper | loss of function observed/expected upper bound fraction (LOEUF)                                                              |
+| transcriptId  | transcript      | transcript ID which the values we select                                                                                     |
+
+<JSONG40/>
+
+### Structural Variants
+
+Structural variants in gnomAD 4.0 is available in VCF format and has the same population data as small variants.
+
+#### Structural Variant Type Mapping
+The source files represented the structural variants with keys using various naming conventions.
+In the Illumina Connected Annotations JSON output, these keys will be mapped according to the following.
+
+| Illumina Connected Annotations JSON SV Type Key | GRCh37 Source SV Type Key |
+|-------------------------------------------------|---------------------------|
+| deletion                                        | DEL, CN=0                 |
+| duplication                                     | DUP                       |
+| insertion                                       | INS                       |
+| inversion                                       | INV                       |
+| mobile_element_insertion                        | INS:ME                    |
+| mobile_element_insertion                        | INS:ME:ALU                |
+| mobile_element_insertion                        | INS:ME:LINE1              |
+| mobile_element_insertion                        | INS:ME:SVA                |
+| complex_structural_alteration                   | CPX                       |
+
+:::info gnomAD Copy Number Variation
+In gnomAD 4.0 structural variants data, there are CNV data in the VCF file. Since it is not shown in the browser, we don't include CNV in our output.
+We will evaluate in the future whether to include copy number variation from structural variation data together with new rare CNV data taht is available in gnomAD 4.0.
+:::
+
+:::info gnomAD duplication variant type
+In gnomAD 4.0 structural variants VCF, only DUP is shown as symbolic allele for duplication variant type.
+Based on the information in gnomAD browser, duplication variant that has split read or paired end reads evidence can be inferred as tandem duplication.
+With this, we check the evidence data in each DUP variants entry to decide whether it can be assign tandem duplication as variant type or it is just duplication.
+:::
+
+#### JSON output
+
+<JSONSV40/>
+
+## gnomAD v2.1 (GRCh37)
+
+### Small Variants
+
+#### VCF extraction
 
 We currently extract the following info fields from gnomAD genome and exome VCF files:
 
@@ -68,7 +202,7 @@ We also extract the following extra fields from gnomAD exome VCF file:
 ##INFO=<ID=nhomalt_sas,Number=A,Type=Integer,Description="Count of homozygous individuals in samples of South Asian ancestry">
 ```
 
-### Computation
+#### Computation
 
 Using these, we compute the following:
 * Coverage
@@ -92,16 +226,15 @@ Using these, we compute the following:
 * Allele Count, Homozygous count, allele number and allele frequencies for control groups are also provided for the global population.
 :::
 
-### Merging genomes and exomes
+#### Merging genomes and exomes
 
 When merging the genomes and exomes, the allele counts and allele numbers will be summed across both of the data sets.
 
 :::info
 * For GRCh37, Illumina Connected Annotations currently uses gnomAD version 2.1 which contains both genomes and exomes data. Genomes and exomes data are merged in the output.
-* For GRCh38, Illumina Connected Annotations currently uses gnomAD version 3.0 which doesn't contain the exomes data. Therefore, only genomes data are presented in the output.
 :::
 
-### Filters
+#### Filters
 
 The following strategy will be used when there's a conflict in filter status:
 
@@ -110,16 +243,16 @@ The following strategy will be used when there's a conflict in filter status:
 |   **Exomes PASS**   |         PASS         | Only use exome data  |
 | **Exomes Filtered** | Only use genome data |       Filtered       |
 
-### VCF download instructions
+#### VCF download instructions
 [https://gnomad.broadinstitute.org/downloads](https://gnomad.broadinstitute.org/downloads)
 
-### JSON output
+#### JSON output
 
 <JSONV/>
 
-### Building the supplementary files
+##### Building the supplementary files
 The gnomAD ``.nsa`` for Illumina Connected Annotations can be built using the ``SAUtils`` command's ``gnomad`` subcommand. We will describe building gnomAD version 3.1 here.
-#### Source data files
+##### Source data files
 Input VCF files (one per chromosome) and a ``.version`` file are required in a folder to build the ``.nsa`` file. For example, my directory contains:
 ```scss
 chr10.vcf.bgz  chr22.vcf.bgz
@@ -172,16 +305,16 @@ dotnet SAUtils.dll Gnomad \\
 --ref ~/References/7/Homo_sapiens.GRCh38.Nirvana.dat --genome genomes/ \\
 --out ~/SupplementaryDatabase/63/GRCh38 --temp ~/ExternalDataSources/gnomAD/3.1/GRCh38/temp
 ```
-## LoF Gene Metrics
+### LoF Gene Metrics
 
-### Tab delimited file example
+#### Tab delimited file example
 
 ```scss
 gene transcript obs_mis exp_mis oe_mis mu_mis possible_mis obs_mis_pphen exp_mis_pphen oe_mis_pphen possible_mis_pphen obs_syn exp_syn oe_syn mu_syn possible_syn obs_lof mu_lof possible_lof exp_lof pLI pNull pRec oe_lof oe_syn_lower oe_syn_upper oe_mis_lower oe_mis_upper oe_lof_lower oe_lof_upper constraint_flag syn_zmis_z lof_z oe_lof_upper_rank oe_lof_upper_bin oe_lof_upper_bin_6 n_sites classic_caf max_af no_lofs obs_het_lof obs_hom_lof defined p exp_hom_lof classic_caf_afr classic_caf_amr classic_caf_asj classic_caf_eas classic_caf_fin classic_caf_nfe classic_caf_oth classic_caf_sas p_afr p_amr p_asj p_eas p_fin p_nfep_oth p_sas transcript_type gene_id transcript_level cds_length num_coding_exons gene_type gene_length exac_pLI exac_obs_lof exac_exp_lof exac_oe_lof brain_expression chromosome start_positionend_position
 MED13 ENST00000397786 871 1.1178e+03 7.7921e-01 5.5598e-05 14195 314 5.2975e+02 5.9273e-01 6708 422 3.8753e+02 1.0890e+00 1.9097e-05 4248 0 4.9203e-06 1257 9.8429e+01 1.0000e+00 8.9436e-40 1.8383e-16 0.0000e+00 1.0050e+00 1.1800e+00 7.3600e-01 8.2400e-01 0.0000e+00 3.0000e-02 -1.3765e+00 2.6232e+00 9.1935e+00 0 0 0 2 1.2058e-05 8.0492e-06 124782 3 0 124785 1.2021e-05 1.8031e-05 0.0000e+00 0.0000e+00 0.0000e+00 0.0000e+00 9.2812e-05 8.8571e-06 0.0000e+00 0.0000e+00 0.0000e+00 0.0000e+00 0.0000e+00 0.0000e+00 9.2760e-05 8.8276e-06 0.0000e+00 0.0000e+00 protein_coding ENSG00000108510 2 6522 30 protein_coding 122678 1.0000e+00 0 6.4393e+01 0.0000e+00 NA 17 60019966 60142643
 ```
 
-### JSON key to TSV column mapping
+#### JSON key to TSV column mapping
 | JSON key | TSV column   | Description                                                                                                                  |
 |----------|--------------|------------------------------------------------------------------------------------------------------------------------------|
 | pLi      | pLI          | probability of being intolerant of a single loss-of-function variant (like haploinsufficient genes, observed ~ 0.1*expected) |
@@ -191,11 +324,11 @@ MED13 ENST00000397786 871 1.1178e+03 7.7921e-01 5.5598e-05 14195 314 5.2975e+02 
 | misZ     | mis_z        | corrected missense Z score                                                                                                   |
 | loeuf    | oe_lof_upper | loss of function observed/expected upper bound fraction (LOEUF)                                                              |
 
-### Gene symbol update
+#### Gene symbol update
 
 The input file provides Ensembl gene ids for each entry. We observed that they were unique while gene symbols may be repeated (multiple lines may have the same gene symbol). Since Ensembl gene Ids are more stable, and Illumina Connected Annotations transcript cache data contains Ensembl gene ids, we use these ids to extract the gene symbols from the transcript cache. For example, if ENSG0001 has gene symbol GENE1 in the input but Illumina Connected Annotations cache say ENSG0001 maps to GENE2, we use GENE2 as the gene symbol for that entry.
 
-### Conflict resolution
+#### Conflict resolution
 
 gnomAD uses Ensembl GeneID as unique identifiers in the [source file](https://storage.googleapis.com/gnomad-public/release/2.1.1/constraint/gnomad.v2.1.1.lof_metrics.by_gene.txt.bgz) but Illumina Connected Annotations uses HGNC gene symbols. Multiple Ensembl GeneIDs can map to the same HGNC symbol and therefore may result is conflict.
 
@@ -279,38 +412,31 @@ FAM231D:
 * If the same, pick the lowest pLI
 * Otherwise pick the entry with the max absolute value of synZ + misZ
 
-### Download URL
+#### Download URL
 [https://storage.googleapis.com/gnomad-public/release/2.1.1/constraint/gnomad.v2.1.1.lof_metrics.by_gene.txt.bgz](https://storage.googleapis.com/gnomad-public/release/2.1.1/constraint/gnomad.v2.1.1.lof_metrics.by_gene.txt.bgz)
 
-### JSON output
+#### JSON output
 
 <JSONG/>
 
-## Structural Variants
+### Structural Variants
 :::info Publication
 Collins, R.L., Brand, H., Karczewski, K.J. et al. 2020. A structural variation reference for medical and population genetics. *Nature* **581**, pp.444–451. https://doi.org/10.1038/s41586-020-2287-8
 :::
-
 
 **Note**
 The gnomAD structural variant annotations are in a preview stage at the moment.
 Currently, the annotations do not include translocation breakends.
 Future updates will include a better way of annotating the structural variants.
 
-### Source Files
+#### Source Files
 <SVDATADESCRIPTION/>
 
-### Download URLs
-#### GRCh37
+#### Download URLs
+##### GRCh37
 The GRCh37 file was downloaded from the original source. Following table gives some essential data metrics:
 
 [https://storage.googleapis.com/gcp-public-data--gnomad/papers/2019-sv/gnomad_v2.1_sv.sites.bed.gz](https://storage.googleapis.com/gcp-public-data--gnomad/papers/2019-sv/gnomad_v2.1_sv.sites.bed.gz)
 
-#### GRCh38
-Note: The data was unavailable from gnomAD 2.1 original source, however the lifted over structural variant dataset was created by dbVar and was obtained from them [https://www.ncbi.nlm.nih.gov/sites/dbvarapp/studies/nstd166/](https://www.ncbi.nlm.nih.gov/sites/dbvarapp/studies/nstd166/).
-
-#### Download URL
-[https://ftp.ncbi.nlm.nih.gov/pub/dbVar/data/Homo_sapiens/by_study/tsv/nstd166.GRCh38.variant_call.tsv.gz](https://ftp.ncbi.nlm.nih.gov/pub/dbVar/data/Homo_sapiens/by_study/tsv/nstd166.GRCh38.variant_call.tsv.gz)
-
-### JSON output
+#### JSON output
 <JSONSV/>
