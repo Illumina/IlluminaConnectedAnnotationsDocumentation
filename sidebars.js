@@ -43,7 +43,8 @@ module.exports = {
       label: 'File Formats',
       items: [
         'file-formats/illumina-annotator-json-file-format',
-        'file-formats/custom-annotations'
+        'file-formats/illumina-annotator-vcf-file-format',
+        'file-formats/custom-annotations',
       ],
     },
     {
