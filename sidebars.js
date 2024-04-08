@@ -20,6 +20,7 @@ module.exports = {
         'data-sources/cancer-hotspots',
         'data-sources/clingen',
         'data-sources/clinvar',
+        'data-sources/clinvar-preview',
         'data-sources/cosmic',
         'data-sources/dann',
         'data-sources/dbsnp',
