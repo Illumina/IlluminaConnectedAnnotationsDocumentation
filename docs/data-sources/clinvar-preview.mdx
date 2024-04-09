@@ -18,9 +18,10 @@ Following sections describe the parsing and subsequent json format provided by I
 
 ClinVar [recommends](https://github.com/ncbi/clinvar/blob/master/FTPSiteXmlChanges.md) using the VCV XML file because it contains comprehensive information.
 
-Parsing is simplified by using the XSD file generation
+Parsing is simplified by using the XSD file generation.
 Command for generating XSD file
 ```shell
+xsd ClinVar_VCV.xsd /n:VariationArchive /c
 ```
 
 
@@ -495,25 +496,24 @@ Conditions object from XML path `VariationArchive.ClassifiedRecord.ClinicalAsser
 
 :::caution Known Issues
 Entries with following missing/incorrect information are skipped
-1. Invalid Ref Allele
-2. Invalid Alt Allele
+1. Invalid Ref Allele: `VCV000437934`
+2. Invalid Alt Allele: `VCV000006637`
 3. Following variant types are not supported:
-  1. `Variation`
-  2. `fusion`
-  3. `unknown`
-  4. `protein only`
-  5. `Complex`
-  6. `Translocation`
-  7. `no_sequence_alteration`
-4. only records of type `classified` are included
-5. Records with missing genomic location are skipped
+    1. `Variation`: `VCV000001101`
+    2. `fusion`: `VCV000015269`
+    3. `unknown`: `VCV000017564`
+    4. `protein only`: `VCV000132152`
+    5. `Complex`: `VCV000221337`
+    6. `Translocation`: `VCV000267801`
+    7. `no_sequence_alteration`: `VCV000010504`
+4. Only records of type `classified` are included [VCV with type `included` is skipped: `VCV000431749`]
+5. Records with missing genomic location are skipped: `VCV000000254`
 :::
 
 ## Download URLs
 
-[ftp://ftp.ncbi.nlm.nih.gov/pub/clinvar/xml/ClinVarFullRelease_00-latest.xml.gz](ftp://ftp.ncbi.nlm.nih.gov/pub/clinvar/xml/ClinVarFullRelease_00-latest.xml.gz)
+[https://ftp.ncbi.nlm.nih.gov/pub/clinvar/xml/ClinVarVCVRelease_00-latest.xml.gz](https://ftp.ncbi.nlm.nih.gov/pub/clinvar/xml/ClinVarVCVRelease_00-latest.xml.gz)
 
-[https://ftp.ncbi.nlm.nih.gov/pub/clinvar/xml/clinvar_variation/ClinVarVariationRelease_00-latest.xml.gz](https://ftp.ncbi.nlm.nih.gov/pub/clinvar/xml/clinvar_variation/ClinVarVariationRelease_00-latest.xml.gz)
 
 ## JSON Output
 
@@ -588,196 +588,8 @@ NSA writing completed in 11.5 mins.
 Writing 76122 Large Varaints
 Writing 76122 intervals to database...
 NSI writing completed in 1.1 mins.
-Valid ClinVar Items
-{
-  "TotalXmlEntries": 2440498,
-  "ValidCount": 2427734,
-  "SmallVariants": {
-    "Classifications": {
-      "Likely benign": 624603,
-      "Uncertain significance": 1136943,
-      "Benign": 191778,
-      "Conflicting classifications of pathogenicity": 107582,
-      "Benign/Likely benign": 40741,
-      "Pathogenic": 136537,
-      "Likely pathogenic": 75178,
-      "not provided": 10146,
-      "Pathogenic/Likely pathogenic": 23003,
-      "risk factor": 424,
-      "Affects": 140,
-      "association": 339,
-      "Benign; other": 10,
-      "Pathogenic; risk factor": 24,
-      "Conflicting classifications of pathogenicity; other": 25,
-      "drug response": 1855,
-      "Conflicting classifications of pathogenicity; association": 7,
-      "Uncertain risk allele": 31,
-      "other": 1598,
-      "Uncertain significance; risk factor": 9,
-      "Likely pathogenic; risk factor": 11,
-      "Likely benign; association": 1,
-      "Likely risk allele": 100,
-      "Pathogenic/Likely pathogenic; other": 8,
-      "Pathogenic; other": 76,
-      "Pathogenic/Likely pathogenic/Pathogenic, low penetrance": 3,
-      "protective": 40,
-      "Pathogenic/Likely pathogenic; risk factor": 6,
-      "Benign/Likely benign; risk factor": 1,
-      "Uncertain significance/Uncertain risk allele": 123,
-      "Pathogenic; association; protective": 1,
-      "protective; risk factor": 4,
-      "Benign/Likely benign; other; risk factor": 1,
-      "Benign/Likely benign; association": 1,
-      "Likely pathogenic, low penetrance": 6,
-      "Benign; association": 5,
-      "Affects; association; other": 1,
-      "Pathogenic; protective": 1,
-      "Conflicting classifications of pathogenicity; drug response; other": 1,
-      "Conflicting classifications of pathogenicity; drug response": 2,
-      "Benign; drug response": 2,
-      "Likely pathogenic; other": 3,
-      "Conflicting classifications of pathogenicity; protective": 2,
-      "Pathogenic/Likely pathogenic; drug response": 3,
-      "Benign/Likely benign; other": 7,
-      "Likely pathogenic/Likely risk allele": 21,
-      "Uncertain risk allele; protective": 1,
-      "association not found": 3,
-      "Affects; association": 1,
-      "Uncertain significance; association": 7,
-      "Likely benign; other": 12,
-      "Uncertain significance; other": 5,
-      "Conflicting classifications of pathogenicity; association; risk factor": 2,
-      "Pathogenic; association": 7,
-      "Benign; risk factor": 4,
-      "Conflicting classifications of pathogenicity; other; risk factor": 3,
-      "Pathogenic/Likely risk allele; risk factor": 1,
-      "Uncertain significance; drug response": 11,
-      "Conflicting classifications of pathogenicity; risk factor": 16,
-      "other; risk factor": 1,
-      "Pathogenic/Likely pathogenic/Likely risk allele": 3,
-      "Likely pathogenic; drug response": 17,
-      "Conflicting classifications of pathogenicity; Affects": 1,
-      "Pathogenic; Affects": 8,
-      "Pathogenic; drug response": 54,
-      "Affects; risk factor": 1,
-      "Pathogenic; drug response; other": 1,
-      "Likely pathogenic; protective": 1,
-      "confers sensitivity": 11,
-      "Likely pathogenic; association": 5,
-      "Benign; Affects": 1,
-      "Likely pathogenic; Affects": 1,
-      "Uncertain risk allele; risk factor": 1,
-      "drug response; risk factor": 2,
-      "Pathogenic/Likely risk allele": 9,
-      "Likely benign; drug response; other": 4,
-      "Benign/Likely benign; drug response": 2,
-      "Benign/Likely benign; drug response; other": 3,
-      "drug response; other": 1,
-      "association; drug response": 1,
-      "Pathogenic; confers sensitivity": 1,
-      "association; risk factor": 1,
-      "Pathogenic/Pathogenic, low penetrance; other": 1,
-      "Benign; confers sensitivity": 2,
-      "confers sensitivity; other": 1,
-      "Likely pathogenic/Pathogenic, low penetrance": 1,
-      "Likely benign; risk factor": 1
-    },
-    "ReviewStatuses": {
-      "criteria provided, single submitter": 1816264,
-      "criteria provided, multiple submitters, no conflicts": 352347,
-      "criteria provided, conflicting classifications": 107355,
-      "no assertion criteria provided": 49923,
-      "no classification provided": 10145,
-      "reviewed by expert panel": 15528,
-      "practice guideline": 50
-    },
-    "ClassificationTypes": {
-      "germlineClassification": 2351612
-    },
-    "VariantTypes": {
-      "SNV": 2148028,
-      "duplication": 47678,
-      "deletion": 125335,
-      "delins": 12339,
-      "insertion": 17156,
-      "inversion": 1076
-    },
-    "TotalCount": 2351612
-  },
-  "LargeVariants": {
-    "Classifications": {
-      "Pathogenic": 18995,
-      "Benign": 20557,
-      "Likely pathogenic": 3491,
-      "Uncertain significance": 27160,
-      "Likely benign": 4571,
-      "Benign/Likely benign": 187,
-      "not provided": 839,
-      "conflicting data from submitters": 177,
-      "Pathogenic/Likely pathogenic": 26,
-      "risk factor": 16,
-      "Conflicting classifications of pathogenicity": 64,
-      "Pathogenic; risk factor": 2,
-      "Pathogenic, low penetrance": 5,
-      "association": 9,
-      "drug response": 20,
-      "other": 1,
-      "Uncertain significance; Pathogenic/Likely pathogenic": 1,
-      "protective": 1
-    },
-    "ReviewStatuses": {
-      "no assertion criteria provided": 47208,
-      "criteria provided, single submitter": 27819,
-      "criteria provided, multiple submitters, no conflicts": 93,
-      "no classification provided": 839,
-      "reviewed by expert panel": 130,
-      "criteria provided, conflicting classifications": 33
-    },
-    "ClassificationTypes": {
-      "germlineClassification": 76122
-    },
-    "VariantTypes": {
-      "copy_number_loss": 29838,
-      "copy_number_gain": 27880,
-      "deletion": 11438,
-      "duplication": 6786,
-      "delins": 95,
-      "inversion": 21,
-      "insertion": 63,
-      "tandem_duplication": 1
-    },
-    "TotalCount": 76122
-  }
-}
-Invalid ClinVar Items
-Invalid items statistics
-{
-  "InvalidRefAlleleCount": 29,
-  "InvalidAltAlleleCount": 271,
-  "InvalidVcvCount": 11322,
-  "UnsupportedVariantTypes": {
-    "Total": 1468,
-    "Variation": 500,
-    "fusion": 6,
-    "unknown": 52,
-    "protein only": 94,
-    "Complex": 82,
-    "Translocation": 275,
-    "no_sequence_alteration": 459
-  },
-  "UnsupportedChromosomeTypes": {
-    "Total": 2,
-    "Un": 2
-  },
-  "UnsupportedOther": {
-    "Total": 9552,
-    "Location": 8796,
-    "included": 756
-  }
-}
 
 Time: 00:32:10.9
-
 Process finished with exit code 0.
 
 
