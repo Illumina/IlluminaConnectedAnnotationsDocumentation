@@ -20,6 +20,7 @@ module.exports = {
         'data-sources/cancer-hotspots',
         'data-sources/clingen',
         'data-sources/clinvar',
+        'data-sources/clinvar-preview',
         'data-sources/cosmic',
         'data-sources/dann',
         'data-sources/dbsnp',
@@ -43,7 +44,8 @@ module.exports = {
       label: 'File Formats',
       items: [
         'file-formats/illumina-annotator-json-file-format',
-        'file-formats/custom-annotations'
+        'file-formats/illumina-annotator-vcf-file-format',
+        'file-formats/custom-annotations',
       ],
     },
     {

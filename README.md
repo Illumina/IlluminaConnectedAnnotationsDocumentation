@@ -37,3 +37,9 @@ If you are using GitHub pages for hosting, this command is a convenient way to b
 ```shell
 npm run docusaurus docs:version 3.22
 ```
+
+## Generate PDF
+```shell
+npm install -g docs-to-pdf@v0.6.2
+npx docs-to-pdf docusaurus --initialDocURLs="https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/" --contentSelector="article" --paginationSelector="div.pagination-nav__item.pagination-nav__item--next > a.pagination-nav__link"
+```
