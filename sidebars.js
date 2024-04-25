@@ -59,12 +59,19 @@ module.exports = {
         'core-functionality/variant-ids'
       ],
     },
-	{
+	 {
       type: 'category',
       label: 'Utilities',
       items: [
         'utilities/jasix',
         'utilities/sautils'
+      ],
+    },
+    {
+      type: 'category',
+      label: 'FAQs',
+      items: [
+        'frequently-asked-questions/Annotator-vs-data-update'
       ],
     },
   ],
