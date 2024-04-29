@@ -28,6 +28,4 @@ Let us look at a few update scenarios.
 | New transcripts and gene symbols | Cache files from RefSeq and Ensembl | Run Downloader         |
 | Update ClinVar                   | ClinVar SA files                    | Run Downloader         |
 | New external annotation          | New SA files required               | Submit feature request |
-| New variant consequence          | Annotator                           | Submit feature request |
-| License checking                 | Annotator                           | Submit feature request |
-| Encrypted data files             | Annotator and new SA files          | Feature request        |
+| New annotation feature           | Annotator                           | Submit feature request |
