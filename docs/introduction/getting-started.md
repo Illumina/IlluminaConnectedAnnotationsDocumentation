@@ -176,40 +176,57 @@ The full command line options can be viewed by using the `-h` option or no optio
 ```bash
 dotnet Annotator.dll
 ---------------------------------------------------------------------------
-Illumina Connected Annotations                      (c) 2023 Illumina, Inc.
-                                                                     3.22.0
+Illumina Connected Annotations                      (c) 2024 Illumina, Inc.
+                                                                     3.24.0
 ---------------------------------------------------------------------------
 
-USAGE: dotnet Annotator.dll -i <vcf path> -c <cache dir> --sd <sa dir> -r <ref path> -o <base output filename>
+USAGE: dotnet Nirvana.dll -i <vcf path> -c <cache dir> --sd <sa dir> -r <ref path> -o <base output filename>
 Annotates a set of variants
 
 OPTIONS:
       --cache, -c <directory>
                              input cache directory
       --in, -i <path>        input VCF path
+      --tsv <path>           input VCF path
       --out, -o <file path>  output file path
       --ref, -r <path>       input compressed reference sequence path
       --sd <directory>       input supplementary annotation directory
       --sources, -s <VALUE>  annotation data sources to be used (comma
                                separated list of supported tags)
+      --credentialsFile <VALUE>
+                             File path to user credentials, default is set to ~
+                               /.ilmnAnnotations/credentials.json
+      --ignoreLicenseError   ignore error due to invalid license and skip
+                               related data sources
       --force-mt             forces to annotate mitochondrial variants
       --legacy-vids          enables support for legacy VIDs
       --enable-dq            report DQ from VCF samples field
       --enable-bidirectional-fusions
                              enables support for bidirectional gene fusions
+      --disable-junction-preservation
+                             disable junction preserving functional annotation
       --str <VALUE>          user provided STR annotation TSV file
       --vcf-info <VALUE>     additional vcf info field keys (comma separated)
                                desired in the output
       --vcf-sample-info <VALUE>
                              additional vcf format field keys (comma separated)
                                 desired in the output
+      --sa-cutoff <VALUE>    Any SV larger than or equal to this value will
+                               not have any supplementary annotations
       --output-format <VALUE>
-                             output file format, available options: json, vcf. default is json.
+                             output file format, available options: json, vcf.
       --help, -h             displays the help menu
       --version, -v          displays the version
 
-Supplementary annotation version: 69, Reference version: 7
+##### Supported Annotation Sources #####
+Basic Tier: DECIPHER, GME, GERP, DANN, REVEL, ClinGen, gnomAD, phyloP, TOPMed, DGV, 1000 Genomes, CliinVar, dbSNP, FusionCatcher, MITOMAP, MultiZ100Way
+
+Professional Tier: PrimateAI(GRCh37), PrimateAI-3D(GRCh38), SpliceAI, COSMIC, OMIM.
+
+##### Contact #####
+Professional content licensing, feedback and technical support: annotation_support@illumina.com.
 ```
+
 ### Specifying annotation sources
 By default, Illumina Connected Annotations will use all available data sources. However, the user can customize the set of sources using the `--sources|-s` option. If an unknown source is specified, a warning message will be printed.
 ```bash
