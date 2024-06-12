@@ -53,9 +53,10 @@ module.exports = {
       label: 'Core Functionality',
       items: [
         'core-functionality/canonical-transcripts',
+        'core-functionality/gene-fusions',
+        'core-functionality/iscn-notation',
         'core-functionality/junction-preserving',
         'core-functionality/transcript-consequence-impacts',
-        'core-functionality/gene-fusions',
         'core-functionality/variant-ids'
       ],
     },
@@ -65,13 +66,6 @@ module.exports = {
       items: [
         'utilities/jasix',
         'utilities/sautils'
-      ],
-    },
-    {
-      type: 'category',
-      label: 'FAQs',
-      items: [
-        'frequently-asked-questions/Annotator-vs-data-update'
       ],
     },
   ],
