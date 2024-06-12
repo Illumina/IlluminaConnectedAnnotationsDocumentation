@@ -68,5 +68,12 @@ module.exports = {
         'utilities/sautils'
       ],
     },
+    {
+      type: 'category',
+      label: 'FAQs',
+      items: [
+        'frequently-asked-questions/Annotator-vs-data-update'
+      ],
+    },
   ],
 };
