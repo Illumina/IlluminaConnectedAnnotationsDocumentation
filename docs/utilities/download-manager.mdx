@@ -228,7 +228,7 @@ clinvar                        | SmallVariant                   | ClinVar       
 ### Create config
 
 The second command is `make-config`. This command will generate a config file that will be used to define which annotation data and which version to download.
-The config file is basically a template which you can edit manually.
+The generated config file is basically a template which you can edit manually. It will contain latest version of all data source. In case you want to exclude some data source or require a different version, you can edit it manually.
 
 ```bash
 dotnet DownloadManager.dll make-config
@@ -259,4 +259,73 @@ Professional Tier: PrimateAI(GRCh37), PrimateAI-3D(GRCh38), SpliceAI, COSMIC, OM
 Professional content licensing, feedback and technical support: annotation_support@illumina.com.
 ```
 
+There are several parameters for `make-config` command.
+- Param `--credential` or `-l` is an optional parameter. This param is the path to your credential file.
+- Param `--ref` or `-r` is a required parameter. This is to filter data based on genome assembly reference. The value is either GRCh37 or GRCh38
+- Param `--out` or `-o` is an optional parameter. This param is the path where the config file will be written to. If not specified, it will write to ~/.ilmnAnnotation/{assembly}_annotation_config.json.
 
+Below is example of the generated config file.
+
+```json
+{
+  "Ensembl": {
+    "GeneModels": "110"
+  },
+  "RefSeq": {
+    "GeneModels": "GCF_000001405.40-RS_2023_03"
+  },
+  "GenomeAssembly": {
+    "GenomeAssembly": "GRCh38.p12"
+  },
+  "clinvar": {
+    "SmallVariant": "20240502",
+    "StructuralVariant": "20240502"
+  },
+  ...
+}
+```
+
+### Download file
+The third command available is `download`. This command will do the actual file download.
+It will also do sync with the data that are already exist in the local directory. It will automatically detect if there are files that already downloaded.
+It will also auto update if you have older version of the data by deleting the old version and downloading the new version.
+
+```bash
+dotnet DownloadManager.dll download
+---------------------------------------------------------------------------
+DownloadManager                                     (c) 2024 Illumina, Inc.
+                                                                     3.24.0
+---------------------------------------------------------------------------
+
+USAGE: dotnet DownloadManager.dll download [options]
+Download file
+
+OPTIONS:
+      --credential, -l <VALUE>
+                             Path to credential file. The default file
+                               location is ~/.ilmnAnnotations/credentials.json
+      --ref, -r <VALUE>      Assembly reference (GRCh38/GRCh37)
+      --config, -c <VALUE>   Download file config. By default, it will use
+                               file ~/.ilmnAnnotation/GRChXX_annotation_config.
+                               json
+      --dir, -d <VALUE>      Download file directory
+      --thread, -t <VALUE>   Number of concurrent download
+      --help, -h             displays the help menu
+      --version, -v          displays the version
+
+##### Supported Annotation Sources #####
+Basic Tier: DECIPHER, GME, GERP, DANN, REVEL, ClinGen, gnomAD, phyloP, TOPMed, DGV, 1000 Genomes, CliinVar, dbSNP, FusionCatcher, MITOMAP, MultiZ100Way
+
+Professional Tier: PrimateAI(GRCh37), PrimateAI-3D(GRCh38), SpliceAI, COSMIC, OMIM.
+
+##### Contact #####
+Professional content licensing, feedback and technical support: annotation_support@illumina.com.
+```
+
+There are several parameters for the `download` command.
+- Param `--credential` or `-l` is an optional parameter. This param is the path to your credential file.
+- Param `--ref` or `-r` is a required parameter. This is to filter data based on genome assembly reference. The value is either GRCh37 or GRCh38
+- Param `--config` or `-c` is an optional parameter. This is the file config that contains database and version that you want to download. If not specified, it will use ~/.ilmnAnnotation/GRChXX_annotation_config.
+json
+- Param `--dir` or `-d` is a required pqrameter. It specified the directory that will be used to store all downloaded files.
+- Param `--thread` or `-t` is an optional parameter. It is the number of thread that will be used to download file simultaneously. By default, the value is 4.
