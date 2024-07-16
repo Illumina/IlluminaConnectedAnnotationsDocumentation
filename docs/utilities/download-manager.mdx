@@ -4,8 +4,8 @@ title: Download Manager
 
 ## Overview
 
-Download Manager is a utility software from Illumina Connected Annotation software suite for user to easily pick and choose annotation database provided by Illumina.
-Previously, we provided Downloader software that the user can run to download the latest annotation database automatically. With the new Download Manager, user can actually choose which database and which version to download.
+`Download Manager` is a utility software from Illumina Connected Annotation software suite for user to easily pick and choose prebuilt annotation databases compatible with Illumina Connected Annotation.
+Previously, we provided the `Downloader` software that the user can run to download the latest annotation database automatically. With the new Download Manager, users can choose the exact version of an annotation database they want.
 
 ## Prerequisite
 
@@ -23,6 +23,7 @@ In the Manage API Keys, click Generate Button and enter the API key name. Once y
 
 ![](api-key-page.png)
 
+### Storing Illumina API key in your system
 Copy the API key and store it into a file with json format like below:
 
 ```json
@@ -86,9 +87,9 @@ There are several parameters that you can pass.
 - Param `--ref` or `-r` is a required parameter. This is to filter data based on genome assembly reference. The value is either GRCh37 or GRCh38
 - Param `--dir` or `-d` is an optional parameter. This param is the path to your local data directory. If you provide this param, the list will mark file that you have already downloaded.
 - Param `--credential` or `-l` is an optional parameter. This param is the path to your credential file.
--- Param `--sources` or `-s` is a filter based on data source. Without this param, the list will display all data source but only display the latest version available. If you filter using this param, you will see all available version.
+- Param `--sources` or `-s` is a filter based on data source. Without this param, the list will display all data source but only display the latest version available. If you filter using this param, you will see all available version.
 
-Below are some esample of the output:
+Below are some example of the output:
 
 ```bash
 dotnet DownloadManager.dll list -r GRCh38 -d /path/to/folder
@@ -286,8 +287,7 @@ Below is example of the generated config file.
 ```
 
 ### Download file
-The third command available is `download`. This command will do the actual file download.
-It will also do sync with the data that are already exist in the local directory. It will automatically detect if there are files that already downloaded.
+The third command available is `download`. This command will download the database files. Files that already exist in the output folder will be skipped (if the md5checksum match). You may think of this more like a `sync` command than a download or copy.
 It will also auto update if you have older version of the data by deleting the old version and downloading the new version.
 
 ```bash
