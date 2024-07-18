@@ -329,3 +329,65 @@ There are several parameters for the `download` command.
 json
 - Param `--dir` or `-d` is a required pqrameter. It specified the directory that will be used to store all downloaded files.
 - Param `--thread` or `-t` is an optional parameter. It is the number of thread that will be used to download file simultaneously. By default, the value is 4.
+
+Below is an example where you download new release of reference file and Ensembl and RefSeq cache. Tge downloader will first detect that you have an existing reference and cache files with different version.
+The downloader then will delete those files and download the new files.
+```bash
+dotnet DownloadManager.dll download -r GRCh38 -t 8 -d /target/directory
+---------------------------------------------------------------------------
+DownloadManager                                     (c) 2024 Illumina, Inc.
+                                                                     3.24.0
+---------------------------------------------------------------------------
+
+Listing annotation files in local directory...
+- File .DS_Store is not supported, skipping file
+Requesting remote file information to be downloaded...
+Remote file list received!
+Syncing local files with requested files
+Deleting file /target/directory/Cache/GRCh38.Ensembl.ndb...
+Deleting file /target/directory/Cache/GRCh38.Ensembl.ndb.idx...
+Deleting file /target/directory/References/Homo_sapiens.GRCh38.Nirvana.dat...
+Deleting file /target/directory/Cache/GeneSymbols.ndb...
+Deleting file /target/directory/Cache/GeneSymbols.ndb.version.json...
+Deleting file /target/directory/Cache/GRCh38.RefSeq.ndb...
+Deleting file /target/directory/Cache/GRCh38.RefSeq.ndb.idx...
+Requesting remote file information to be downloaded...
+Downloading GRCh38.Ensembl.ndb (92.81 MB)
+Downloading index file GRCh38.Ensembl.ndb (17.01 KB)
+Downloading Homo_sapiens.GRCh38.Nirvana.dat (824.89 MB)
+Downloading GeneSymbols.ndb (137.12 KB)
+Downloading index file GeneSymbols.ndb (0.15 KB)
+Downloading GRCh38.RefSeq.ndb (59.5 MB)
+Downloading index file GRCh38.RefSeq.ndb (16.51 KB)
+Finish downloading file GeneSymbols.ndb
+Finish downloading index file GeneSymbols.ndb
+Finish downloading index file GRCh38.Ensembl.ndb
+Finish downloading index file GRCh38.RefSeq.ndb
+Finish downloading file GRCh38.RefSeq.ndb
+Finish downloading file GRCh38.Ensembl.ndb
+Finish downloading file Homo_sapiens.GRCh38.Nirvana.dat
+Download all files finished!
+```
+
+Below is an example where one of your file is incomplete. In this case, there is no index file. The downloader will detect this and delete the file and redownload both the SA file and its index.
+
+```bash
+dotnet DownloadManager.dll download -r GRCh38 -t 8 -d /target/directory
+---------------------------------------------------------------------------
+DownloadManager                                     (c) 2024 Illumina, Inc.
+                                                                     3.24.0
+---------------------------------------------------------------------------
+
+Listing annotation files in local directory...
+- File .DS_Store is not supported, skipping file
+- Error reading local file. File or index file not found for ClinVar_20240502.nsa. Deleting ClinVar_20240502.nsa
+Requesting remote file information to be downloaded...
+Remote file list received!
+Syncing local files with requested files
+Requesting remote file information to be downloaded...
+Downloading ClinVar_20240502.nsa (95.17 MB)
+Downloading index file ClinVar_20240502.nsa (3.73 KB)
+Finish downloading index file ClinVar_20240502.nsa
+Finish downloading file ClinVar_20240502.nsa
+Download all files finished!
+```
