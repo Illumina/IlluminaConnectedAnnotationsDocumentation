@@ -1,0 +1,596 @@
+---
+title: ClinVar Preview
+---
+
+import JSON from './clinvar-preview-json.md'
+
+## Overview
+ClinVar is a freely accessible, public archive of reports of the relationships among human variations and phenotypes, with supporting evidence. ClinVar thus facilitates access to and communication about the relationships asserted between human variation and observed health status, and the history of that interpretation.
+
+:::info Publication
+Melissa J Landrum, Jennifer M Lee, Mark Benson, Garth R Brown, Chen Chao, Shanmuga Chitipiralla, Baoshan Gu, Jennifer Hart, Douglas Hoffman, Wonhee Jang, Karen Karapetyan, Kenneth Katz, Chunlei Liu, Zenith Maddipatla, Adriana Malheiro, Kurt McDaniel, Michael Ovetsky, George Riley, George Zhou, J Bradley Holmes, Brandi L Kattman, Donna R Maglott, ClinVar: improving access to variant interpretations and supporting evidence, *Nucleic Acids Research*, **46**, Issue D1, 4 January 2018, Pages D1062–D1067, [https://doi.org/10.1093/nar/gkx1153](https://doi.org/10.1093/nar/gkx1153)
+:::
+
+ClinVar Preview relates to the new ClinVar XML format introduced in 2024.
+Following sections describe the parsing and subsequent json format provided by Illumina Connected Annotations.
+
+## Parsing
+
+ClinVar [recommends](https://github.com/ncbi/clinvar/blob/master/FTPSiteXmlChanges.md) using the VCV XML file because it contains comprehensive information.
+
+Parsing is simplified by using the XSD file generation.
+Command for generating XSD file
+```shell
+xsd ClinVar_VCV.xsd /n:VariationArchive /c
+```
+
+
+### Overall XML to JSON mapping
+| key                  | type      | description                                         | XML path                                                                                             |
+|----------------------|-----------|-----------------------------------------------------|------------------------------------------------------------------------------------------------------|
+| `variantType`        | string    | sequence ontology                                   | `VariationArchive.VariationType`                                                                     |
+| `accession`          | string    | VCV Id from ClinVar                                 | `VariationArchive.Accession`                                                                         |
+| `version`            | string    | VCV Id version                                      | `VariationArchive.Version`                                                                           |
+| `recordType`         | string    | `classified`                                        | `VariationArchive.RecordType`                                                                        |
+| `dateLastUpdated`    | date time | date VCV was last updated                           | `VariationArchive.DateLastUpdated`                                                                   |
+| `chromosome`         | string    | chromosome (large variants only)                    | `VariationArchive.ClassifiedRecord.SimpleAllele.Location.SequenceLocation.Chr`                       |
+| `begin`              | number    | start position of the variant (large variants only) | `VariationArchive.ClassifiedRecord.SimpleAllele.Location.SequenceLocation.positionVCF`               |
+| `end`                | number    | end position of the variant (large variants only)   | `VariationArchive.ClassifiedRecord.SimpleAllele.Location.SequenceLocation.displayStop` or calculated |
+| `refAllele`          | string    | reference alleles (small variants only)             | `VariationArchive.ClassifiedRecord.SimpleAllele.Location.SequenceLocation.referenceAlleleVCF`        |
+| `altAllele`          | string    | alternate alleles (small variants only)             | `VariationArchive.ClassifiedRecord.SimpleAllele.Location.SequenceLocation.alternateAlleleVCF`        |
+| `rcvs`               | list      | list of RCV objects                                 | `VariationArchive.ClassifiedRecord.RCVList`                                                          |
+| `classifications`    | list      | list of classification objects                      | `VariationArchive.ClassifiedRecord.Classifications`                                                  |
+| `clinicalAssertions` | list      | list of clinicalAssertion objects                   | `VariationArchive.ClassifiedRecord.ClinicalAssertionList`                                            |
+
+
+### Variation fields
+** XML **
+```xml {4-8}
+<VariationArchive
+    VariationID="1381081"
+    VariationName="NM_003000.3(SDHB):c.19_41dup (p.Pro14_Ala15insSerProTer)"
+    VariationType="Indel"
+    Accession="VCV001381081"
+    Version="3"
+    RecordType="classified"
+    DateLastUpdated="2024-01-26"
+    NumberOfSubmissions="1"
+    NumberOfSubmitters="1"
+    DateCreated="2022-03-28"
+    MostRecentSubmission="2023-02-07"
+>
+...
+```
+
+** JSON **
+```json
+{
+  "variantType": "delins",
+  "accession": "VCV001381081",
+  "version": "3",
+  "recordType": "classified",
+  "dateLastUpdated": "2024-01-26",
+  ...
+}
+```
+
+### Location fields
+```xml {9-15}
+<SimpleAllele
+    AlleleID="196495"
+    VariationID="1381081"
+    >
+    <Location>
+        <CytogeneticLocation>1p36.13</CytogeneticLocation>
+        <SequenceLocation
+            Accession="NC_000001.11"
+            Chr="1"
+            Assembly="GRCh38"
+            positionVCF="17053978"
+            referenceAlleleVCF="C"
+            alternateAlleleVCF="CGGCAACCGGCGCCTCAAGGAGAG"
+            display_start="17053978"
+            display_stop="17053979"
+            AssemblyAccessionVersion="GCF_000001405.38"
+            forDisplay="true"
+            AssemblyStatus="current"
+            start="17053978"
+            stop="17053979"
+            variantLength="23"
+        />
+        <SequenceLocation Assembly="GRCh37" AssemblyAccessionVersion="GCF_000001405.25"
+                          AssemblyStatus="previous" Chr="1" Accession="NC_000001.10" start="17380473"
+                          stop="17380474" display_start="17380473" display_stop="17380474"
+                          variantLength="23" positionVCF="17380473" referenceAlleleVCF="C"
+                          alternateAlleleVCF="CGGCAACCGGCGCCTCAAGGAGAG"/>
+    </Location>
+    ...
+    </SimpleAllele>
+```
+
+** JSON Small Variant**
+
+note the alleles are trimmed
+
+```json
+{
+  "altAllele": "GGCAACCGGCGCCTCAAGGAGAG",
+  "refAllele": "-",
+  ...
+}
+```
+
+** JSON Large Variant**
+```json
+{
+  "chromosome": "17",
+  "begin": 150732,
+  "end": 14764202,
+  ...
+}
+```
+
+### RCVs
+
+RCV Object from XML path `VariationArchive.ClassifiedRecord.RCVList`
+
+| key                    | type   | description                    | XML sub-path                                   |
+|------------------------|--------|--------------------------------|------------------------------------------------|
+| `accession`            | string | VCV Id from ClinVar            | `RCVList.RCVAccession.Accession`               |
+| `version`              | string | VCV Id version                 | `RCVList.RCVAccession.Accession`               |
+| `classifications`      | list   | list of classification objects | `RCVList.RCVAccession.RCVClassifications`      |
+| `classifiedConditions` | list   | list of classified conditions  | `RCVList.RCVAccession.ClassifiedConditionList` |
+
+** XML **
+```xml
+<RCVList>
+    <RCVAccession
+        Title="NM_003000.3(SDHB):c.19_41dup (p.Pro14_Ala15insSerProTer) AND multiple conditions"
+        Accession="RCV001921860"
+        Version="3">
+        <ClassifiedConditionList TraitSetID="23696">
+            ...
+        </ClassifiedConditionList>
+        <RCVClassifications>
+            ...
+        </RCVClassifications>
+    </RCVAccession>
+</RCVList>
+...
+```
+** JSON **
+```json
+{
+  "rcvs": [
+    {
+      "accession": "RCV001921860",
+      "version": "3",
+      "classifications": {
+        ...
+      },
+      "classifiedConditions": [
+        ...
+      ]
+    }
+  ]
+}
+```
+
+
+#### Classifications
+Classification object from XML path `VariationArchive.ClassifiedRecord.RCVList.RCVAccession.RCVClassifications`
+`classification` can be of following types:
+1. `germlineClassification`
+2. `somaticClinicalImpact`
+3. `oncogenicityClassification`
+
+##### Germline Classification
+Classification object from XML path `VariationArchive.ClassifiedRecord.RCVList.RCVAccession.RCVClassifications.GermlineClassification`
+
+| key | type | description | XML sub-path|
+| --| -- | --| -- |
+| `reviewStatus`| string | review status | `GermlineClassification.ReviewStatus` |
+| `descriptions` | list| list of classification objects| `GermlineClassification.Description` |
+| `descriptions[].classification` | string | classification |`GermlineClassification.Description.Value` |
+| `descriptions[].dateLastEvaluated` | date| date last evaluated |`GermlineClassification.Description.DateLastEvaluated` |
+
+** XML **
+```xml
+<RCVClassifications>
+    <GermlineClassification>
+        <ReviewStatus>criteria provided, single submitter</ReviewStatus>
+        <Description DateLastEvaluated="2021-08-04" SubmissionCount="1">Pathogenic</Description>
+    </GermlineClassification>
+</RCVClassifications>
+```
+** JSON **
+```json
+{
+  "classifications": {
+    "germlineClassification": {
+      "reviewStatus": "criteria provided, single submitter",
+      "descriptions": [
+        {
+          "dateLastEvaluated": "2021-08-04",
+          "classification": "Pathogenic"
+        }
+      ]
+    }
+  }
+}
+```
+
+
+##### Classified Conditions
+Classified conditions object from XML path `VariationArchive.ClassifiedRecord.RCVList.RCVAccession.ClassifiedConditionList`
+
+| key         | type   | description                    | XML sub-path                                        |
+|-------------|--------|--------------------------------|-----------------------------------------------------|
+| `condition` | string | VCV Id from ClinVar            | `ClassifiedConditionList.ClassifiedCondition.Value` |
+| `db`        | string | list of classification objects | `ClassifiedConditionList.ClassifiedCondition.DB`    |
+| `id`        | string | classification                 | `ClassifiedConditionList.ClassifiedCondition.ID`    |
+
+
+
+** XML **
+```xml
+<ClassifiedConditionList TraitSetID="23696">
+    <ClassifiedCondition DB="MedGen" ID="C0238198">Gastrointestinal stromal tumor</ClassifiedCondition>
+    <ClassifiedCondition DB="MedGen" ID="C1861848">Paragangliomas 4</ClassifiedCondition>
+    <ClassifiedCondition DB="MedGen" ID="C0031511">Pheochromocytoma</ClassifiedCondition>
+</ClassifiedConditionList>
+```
+** JSON **
+```json
+{
+  "classifiedConditions": [
+    {
+      "condition": "Gastrointestinal stromal tumor",
+      "db": "MedGen",
+      "id": "C0238198"
+    },
+    {
+      "condition": "Paragangliomas 4",
+      "db": "MedGen",
+      "id": "C1861848"
+    },
+    {
+      "condition": "Pheochromocytoma",
+      "db": "MedGen",
+      "id": "C0031511"
+    }
+  ]
+}
+```
+
+
+### Classifications
+Classification object from XML path `VariationArchive.ClassifiedRecord.Classifications`
+`classification` can be of following types:
+1. `germlineClassification`
+2. `somaticClinicalImpact`
+3. `oncogenicityClassification`
+
+** XML **
+```xml
+<Classifications>
+    <GermlineClassification DateLastEvaluated="2021-08-04" NumberOfSubmissions="1" NumberOfSubmitters="1"
+                            DateCreated="2022-03-28" MostRecentSubmission="2023-02-07">
+    ...
+    </GermlineClassification>
+</Classifications>
+```
+** JSON **
+```json
+"classifications": {
+    "germlineClassification": {...}
+}
+```
+
+##### Germline Classification
+Classification object from XML path `VariationArchive.ClassifiedRecord.Classifications.GermlineClassification`
+
+| key                    | type   | description         | XML sub-path                                  |
+|------------------------|--------|---------------------|-----------------------------------------------|
+| `classification`       | string | classification      | `GermlineClassification.Description`          |
+| `reviewStatus`         | string | review status       | `GermlineClassification.ReviewStatus`         |
+| `dateLastEvaluated`    | date   | date last evaluated | `GermlineClassification.DateLastEvaluated`    |
+| `mostRecentSubmission` | date   | date last evaluated | `GermlineClassification.MostRecentSubmission` |
+| `pubMedIds`            | list   | list of PubMedIds   | `GermlineClassification.Citation.ID.Value`    |
+| `conditions`           | list   | list of conditions  | `GermlineClassification.ConditionList`        |
+
+
+** XML **
+```xml
+<Classifications>
+    <GermlineClassification DateLastEvaluated="2021-08-04" NumberOfSubmissions="1" NumberOfSubmitters="1"
+                            DateCreated="2022-03-28" MostRecentSubmission="2023-02-07">
+        <ReviewStatus>criteria provided, single submitter</ReviewStatus>
+        <Description>Pathogenic</Description>
+        <Citation Type="general">
+            <ID Source="PubMed">19454582</ID>
+        </Citation>
+        <Citation Type="general">
+            <ID Source="PubMed">19802898</ID>
+        </Citation>
+        <ConditionList>
+            ...
+        </ConditionList>
+    </GermlineClassification>
+</Classifications>
+```
+** JSON **
+```json
+{
+  "classifications": {
+    "germlineClassification": {
+      "classification": "Pathogenic",
+      "reviewStatus": "criteria provided, single submitter",
+      "dateLastEvaluated": "2021-08-04",
+      "mostRecentSubmission": "2023-02-07",
+      "conditions": [...],
+      "pubMedIds": [
+        "19454582",
+        "19802898"
+      ]
+    }
+  }
+}
+```
+
+###### Conditions
+Conditions object from XML path `VariationArchive.ClassifiedRecord.Classifications.GermlineClassification.ConditionList`
+
+| key                                    | type          | description                               | XML sub-path                                                  |
+|----------------------------------------|---------------|-------------------------------------------|---------------------------------------------------------------|
+| `type`                                 | string        | classification                            | `ConditionList.TraitSet.Type`                                 |
+| `contributesToAggregateClassification` | True or blank | contributes to aggregate classifcation    | `ConditionList.TraitSet.ContributesToAggregateClassification` |
+| `traits`                               | list          | trait objects                             | `ConditionList.TraitSet.Trait`                                |
+| `traits[].id`                          | date          | date last evaluated                       | `ConditionList.TraitSet.Trait`                                |
+| `traits[].name`                        | object        | trait name object                         | `ConditionList.TraitSet.Trait`                                |
+| `traits[].name.value`                  | string        | preferred trait name                      | `ConditionList.TraitSet.Trait.Name.ElementValue.Type`         |
+| `traits[].name.xRefs`                  | list          | list of cross references                  | `ConditionList.TraitSet.Trait.Name.XRef`                      |
+| `traits[].name.xRefs[].db`             | string        | preferred name cross reference database   | `ConditionList.TraitSet.Trait.Name.XRef.DB`                   |
+| `traits[].name.xRefs[].id`             | string        | preferred name cross reference identifier | `ConditionList.TraitSet.Trait.Name.XRef.ID`                   |
+
+** XML **
+```xml
+<Classifications>
+    <GermlineClassification DateLastEvaluated="2021-08-04" NumberOfSubmissions="1" NumberOfSubmitters="1"
+                            DateCreated="2022-03-28" MostRecentSubmission="2023-02-07">
+        <ConditionList>
+            <TraitSet ID="23696" Type="Disease" ContributesToAggregateClassification="true">
+                <Trait ID="3796" Type="Disease">
+                    <Name>
+                        <ElementValue Type="Preferred">Pheochromocytoma</ElementValue>
+                        <XRef ID="Pheochromocytoma/5718" DB="Genetic Alliance"/>
+                        <XRef ID="HP:0002666" DB="Human Phenotype Ontology"/>
+                        <XRef ID="MONDO:0008233" DB="MONDO"/>
+                    </Name>
+                    <Name>
+                        <ElementValue Type="Alternate">Chromaffinoma</ElementValue>
+                    </Name>
+                    ...
+                </Trait>
+            </TraitSet>
+        </ConditionList>
+    </GermlineClassification>
+</Classifications>
+```
+** JSON **
+```json
+{
+  "classifications": {
+    "germlineClassification": {
+      "classification": "Pathogenic",
+      "reviewStatus": "criteria provided, single submitter",
+      "dateLastEvaluated": "2021-08-04",
+      "mostRecentSubmission": "2023-02-07",
+      "conditions": [
+        {
+          "type": "Disease",
+          "contributesToAggregateClassification": true,
+          "traits": [
+            {
+              "id": "3796",
+              "name": {
+                "xRefs": [
+                  {
+                    "db": "Genetic Alliance",
+                    "id": "Pheochromocytoma/5718"
+                  },
+                  {
+                    "db": "Human Phenotype Ontology",
+                    "id": "HP:0002666"
+                  },
+                  {
+                    "db": "MONDO",
+                    "id": "MONDO:0008233"
+                  }
+                ],
+                "value": "Pheochromocytoma"
+              }
+            }
+          ]
+        }
+      ],
+      "pubMedIds": [
+        "19454582",
+        "19802898"
+      ]
+    }
+  }
+}
+```
+
+### Clinical Assertions
+Conditions object from XML path `VariationArchive.ClassifiedRecord.ClinicalAssertionList`
+
+| key         | type   | description         | XML sub-path                                                             |
+|-------------|--------|---------------------|--------------------------------------------------------------------------|
+| `accession` | string | SCV Id from ClinVar | `ClinicalAssertionList.ClinVarAccession.Accession`                       |
+| `pubMedIds` | list   | list of PubMedIds   | `ClinicalAssertionList.ClinicalAssertion.AttributeSet.Citation.ID.Value` |
+
+** XML **
+```xml
+<ClinicalAssertionList>
+    <ClinicalAssertion ID="4172562" SubmissionDate="2023-01-11" DateLastUpdated="2023-02-07"
+                       DateCreated="2022-03-28">
+        <ClinVarSubmissionID localKey="12475853|MedGen:C0238198;C1861848;C0031511"
+                             submittedAssembly="GRCh37"/>
+        <ClinVarAccession
+            Accession="SCV002152762"
+            DateUpdated="2023-02-07"
+            DateCreated="2022-03-28"
+            Type="SCV"
+            Version="2"
+            SubmitterName="Invitae"
+            OrgID="500031"
+            OrganizationCategory="laboratory"
+            OrgAbbreviation="Invitae"
+        />
+        <RecordStatus>current</RecordStatus>
+        <Classification DateLastEvaluated="2021-08-04">
+            ...
+        </Classification>
+        <Assertion>variation to disease</Assertion>
+        <AttributeSet>
+            <Attribute Type="AssertionMethod">Invitae Variant Classification Sherloc (09022015)</Attribute>
+            <Citation>
+                <ID Source="PubMed">28492532</ID>
+            </Citation>
+        </AttributeSet>
+        <ObservedInList>
+            ...
+        </ObservedInList>
+        <SimpleAllele>
+            ...
+        </SimpleAllele>
+        <TraitSet Type="Disease">
+            ...
+        </TraitSet>
+        <SubmissionNameList>
+            ...
+        </SubmissionNameList>
+    </ClinicalAssertion>
+</ClinicalAssertionList>
+```
+
+** JSON **
+```json
+{
+"clinicalAssertions": [
+    {
+      "accession": "SCV002152762",
+      "pubMedIds": [
+        "28492532"
+      ]
+    }
+  ]
+}
+```
+
+
+
+## Known Issues
+
+:::caution Known Issues
+Entries with following missing/incorrect information are skipped
+1. Invalid Ref Allele (example  `VCV000437934`)
+2. Invalid Alt Allele (example  `VCV000006637`)
+3. Following variant types are not supported:
+    1. `Variation` (example  `VCV000001101`)
+    2. `fusion` (example  `VCV000015269`)
+    3. `unknown` (example  `VCV000017564`)
+    4. `protein only` (example  `VCV000132152`)
+    5. `Complex` (example  `VCV000221337`)
+    6. `Translocation` (example  `VCV000267801`)
+    7. `no_sequence_alteration` (example  `VCV000010504`)
+4. Only records of type `classified` are included [VCV with type `included` is skipped (example  `VCV000431749`)]
+5. Records with missing genomic location are skipped (example  `VCV000000254`)
+:::
+
+## Download URLs
+
+[https://ftp.ncbi.nlm.nih.gov/pub/clinvar/xml/ClinVarVCVRelease_00-latest.xml.gz](https://ftp.ncbi.nlm.nih.gov/pub/clinvar/xml/ClinVarVCVRelease_00-latest.xml.gz)
+
+
+## JSON Output
+
+<JSON/>
+
+## Building the supplementary files
+There are 2 ways of building your own OMIM supplementary files using ``SAUtils``.
+
+The first way is to use ``SAUtils`` command's subcommands ``clinvar``.
+The ClinVar ``.nsa`` and ``.nsi`` for Illumina Connected Annotations can be built using the ``SAUtils`` command's ``clinvar`` subcommand.
+
+The second way is to use ``SAUtils`` command's subcommands ``AutoDownloadGenerate``. To use ``AutoDownloadGenerate``, read more in ``SAUtils`` section.
+### Using ``clinvar`` subcommands and source data files
+Two input ``.xml`` files and a ``.version`` file are required in order to build the ``.nsa`` and ``.nsi`` file. You should have the following files:
+
+```scss
+ClinVarVCVRelease_00-latest.xml.gz
+ClinVarVCVRelease_00-latest.xml.gz.version
+```
+The version file is a json file with the following format.
+```scss
+{
+  "name": "ClinVar",
+  "version": "20240501",
+  "description": "A freely accessible, public archive of reports of the relationships among human variations and phenotypes, with supporting evidence",
+  "releaseDate": "2024-05-01"
+}
+```
+You have to adjust the version and release date according to the actual date of the ClinVar.
+
+Here is a sample execution:
+```shell
+dotnet SAUtils ClinVarPreview \
+--r ~/References/7/Homo_sapiens.GRCh38.Nirvana.dat\
+--vcv ClinVarVCVRelease_00-latest.xml.gz\
+--o output
+---------------------------------------------------------------------------
+SAUtils                                             (c) 2024 Illumina, Inc.
+                                                                     3.24.0
+---------------------------------------------------------------------------
+
+Parsing XML completed in 14.7 mins.
+Sorting and adjusting completed in 4.7 mins.
+Writing 2351609 Small Varaints
+Chromosome 1 completed in 00:00:57.1
+Chromosome 2 completed in 00:01:30.8
+Chromosome 3 completed in 00:00:32.9
+Chromosome 4 completed in 00:00:21.2
+Chromosome 5 completed in 00:00:31.7
+Chromosome 6 completed in 00:00:34.6
+Chromosome 7 completed in 00:00:27.9
+Chromosome 8 completed in 00:00:17.9
+Chromosome 9 completed in 00:00:34.0
+Chromosome 10 completed in 00:00:26.6
+Chromosome 11 completed in 00:00:35.4
+Chromosome 12 completed in 00:00:31.5
+Chromosome 13 completed in 00:00:22.7
+Chromosome 14 completed in 00:00:22.7
+Chromosome 15 completed in 00:00:23.7
+Chromosome 16 completed in 00:00:39.6
+Chromosome 17 completed in 00:00:46.7
+Chromosome 18 completed in 00:00:10.2
+Chromosome 19 completed in 00:00:32.9
+Chromosome 20 completed in 00:00:10.7
+Chromosome 21 completed in 00:00:05.3
+Chromosome 22 completed in 00:00:11.0
+Chromosome X completed in 00:00:19.6
+Chromosome Y completed in 00:00:00.1
+Chromosome MT completed in 00:00:00.3
+Maximum bp shifted for any variant:1
+NSA writing completed in 11.5 mins.
+Writing 76122 Large Varaints
+Writing 76122 intervals to database...
+NSI writing completed in 1.1 mins.
+
+Time: 00:32:10.9
+Process finished with exit code 0.
+
+
+```
