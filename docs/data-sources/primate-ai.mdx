@@ -29,16 +29,16 @@ This is a Professional data source and is not available freely. Please contact a
 ### TSV File
 
 ```scss
-chr	pos	non_flipped_ref	non_flipped_alt	gene_name	change_position_1based	ref_aa	alt_aa	score_PAI3D	percentile_PAI3D	refseq	prediction
-chr1	69094	G	A	ENST00000335137.4	2	V	M	0.6169436463713646	0.5200308441794135	NM_001005484.1	pathogenic
-chr1	69094	G	C	ENST00000335137.4	2	V	L	0.5557043975591658	0.4271457250214688	NM_001005484.1	benign
-chr1	69094	G	T	ENST00000335137.4	2	V	L	0.5557043975591658	0.4271457391722522	NM_001005484.1	benign
-chr1	69095	T	A	ENST00000335137.4	2	V	E	0.8063537482917307	0.8032228720356267	NM_001005484.1	pathogenic
-chr1	69095	T	C	ENST00000335137.4	2	V	A	0.5795628190040587	0.4631329075815453	NM_001005484.1	benign
-chr1	69095	T	G	ENST00000335137.4	2	V	G	0.7922330142557621	0.7834049546930125	NM_001005484.1	pathogenic
+chr	pos	non_flipped_ref	non_flipped_alt	gene_name	change_position_1based	ref_aa	alt_aa	score_PAI3D	percentile_PAI3D	 refseq	prediction	 per_gene_percentile_PAI3D	hgnc
+chr1	69094	G	A	ENST00000335137.4	2	V	M	0.6169436463713646	 0.5200308441794135	 NM_001005484.1	pathogenic	 0.699207135777998	OR4F5
+chr1	69094	G	C	ENST00000335137.4	2	V	L	0.5557043975591658	 0.4271457250214688	 NM_001005484.1	benign	0.6053022794846382	 OR4F5
+chr1	69094	G	T	ENST00000335137.4	2	V	L	0.5557043975591658	 0.4271457391722522	 NM_001005484.1	benign	0.6053022794846382	 OR4F5
+chr1	69095	T	A	ENST00000335137.4	2	V	E	0.8063537482917307	 0.8032228720356267	 NM_001005484.1	pathogenic	 0.9202180376610506	 OR4F5
+chr1	69095	T	C	ENST00000335137.4	2	V	A	0.5795628190040587	 0.4631329075815453	 NM_001005484.1	benign	0.6442021803766105	 OR4F5
+chr1	69095	T	G	ENST00000335137.4	2	V	G	0.7922330142557621	 0.7834049546930125	 NM_001005484.1	pathogenic	 0.900396432111001	OR4F5
 ```
 
-From the CSV file, all columns are parsed:
+From the file, all columns are parsed:
 * `chr`
 * `pos`
 * `non_flipped_ref`
@@ -51,6 +51,8 @@ From the CSV file, all columns are parsed:
 * `percentile_PAI3D`
 * `refseq`
 * `prediction`
+* `per_gene_percentile_PAI3D`
+* `hgnc`
 
 The fields `gene_name` and `refseq` define the Ensembl and RefSeq transcript IDs respectively.
 These transcripts are passed as-is and some of them might be unrecognized/deprecated by RefSeq/Ensembl.
@@ -65,7 +67,7 @@ Also note that certain RefSeq transcripts appear not to have been mapped during 
 Sorting
 
 ```shell
-gzcat PrimateAI-3D.hg19.txt.gz | sort -t $'\t'  -k1,1 -k2,2n | gzip > PrimateAI-3D.hg19_sorted.tsv.gz
+gzcat PrimateAI-3D.hg19.txt.gz | sort -t $'\t'	-k1,1 -k2,2n | gzip > PrimateAI-3D.hg19_sorted.tsv.gz
 ```
 
 ### SA Generation
