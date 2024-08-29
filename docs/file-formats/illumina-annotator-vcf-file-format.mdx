@@ -29,7 +29,7 @@ The output VCF file should have headers similar as below, which indicates the Il
 ##INFO=<ID=IMPRECISE,Number=0,Type=Flag,Description="Imprecise structural variation">
 ...
 ##INFO=<ID=CTB,Number=1,Type=String,Description="Cytoband of the position">
-##INFO=<ID=CSQ,Number=.,Type=String,Description="Consequence annotations from Illumina Connected Annotations. Format: Allele|Consequence|GeneSymbol|FeatureType|Feature|Canonical|HGVSg|HGVSc|HGVSp|Impact|GeneBcbiId|BioType|ISCN|VariantId">
+##INFO=<ID=CSQ,Number=.,Type=String,Description="Consequence annotations from Illumina Connected Annotations. Format: Allele|Consequence|GeneSymbol|FeatureType|Feature|Canonical|HGVSg|HGVSc|HGVSp|Impact|GeneNcbiId|BioType|ISCN|VariantId">
 ...
 ##FORMAT=<ID=ISCN,Number=1,Type=String,Description="ISCN of the sample">
 ...
@@ -42,7 +42,7 @@ The output VCF file should have headers similar as below, which indicates the Il
 Core annotation for overlapping transcripts is enabled and no supplementary annotation is added in VCF mode. CSQ and CTB fields under INFO column and ISCN Sample field are added with following format:
 ```
 ##INFO=<ID=CTB,Number=1,Type=String,Description="Cytoband of the position">
-##INFO=<ID=CSQ,Number=.,Type=String,Description="Consequence annotations from Illumina Connected Annotations. Format: Allele|Consequence|GeneSymbol|FeatureType|Feature|Canonical|HGVSg|HGVSc|HGVSp|Impact|GeneBcbiId|BioType|ISCN|VariantId">
+##INFO=<ID=CSQ,Number=.,Type=String,Description="Consequence annotations from Illumina Connected Annotations. Format: Allele|Consequence|GeneSymbol|FeatureType|Feature|Canonical|HGVSg|HGVSc|HGVSp|Impact|GeneNcbiId|BioType|ISCN|VariantId">
 ...
 ##FORMAT=<ID=ISCN,Number=1,Type=String,Description="ISCN of the sample">
 ```
