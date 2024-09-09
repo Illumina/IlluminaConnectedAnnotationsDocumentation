@@ -31,7 +31,7 @@ Despite that, we use GRCh38.p12 version [109](https://ftp.ncbi.nlm.nih.gov/genom
 This resulted in mismatch between some alt contigs name and its FASTA sequence. This mismatch can cause some minor issue on the variant ID and HGVS g. notation if the variant is on the alt contigs that were affected.
 This issue is not present for variant that occurs on main chromosome (chromosome 1-22, X, and Y).
 
-With release GRCh38.p14, we have fix this issue and the GRCh38.p14 release will also backward compatible with previous release.
+With release GRCh38.p14, we have fix this issue and the GRCh38.p14 release will also backward compatible with previous release. Old transcript and gene model files and all of supplementary annotation data will not have any issue with the new genome reference version.
 It is advisable to update to the current genome reference version.
 :::
 
@@ -77,6 +77,8 @@ The basic tier can be accessed free of charge. The professional tier requires a 
 | REVEL                | Basic        | 20200205                 |
 | TOPMed               | Basic        | freeze 5                 |
 
+### Download manager
+To effectively download all of data, we have provided download manager. Please go to [download manager](./utilities/download-manager) page to read more.
 
 ## Download
 Please visit [Illumina Connected Annotations](https://developer.illumina.com/illumina-connected-annotations).
