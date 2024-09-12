@@ -22,13 +22,46 @@ We use Sequence Ontology consequences to describe how each variant impacts a giv
 
 ![](TranscriptConsequences.svg)
 
+### Reference genome
+
+For GRCh37,
+For GRCh38, our reference genome is using version GRCh38.p14. The list of chromosome and contigs in this version can be checked from this [file](https://ftp.ncbi.nlm.nih.gov/genomes/all/annotation_releases/9606/GCF_000001405.40-RS_2023_10/GCF_000001405.40_GRCh38.p14_assembly_report.txt)
+:::caution
+There was a bug in our previous genome reference. Previously, we generate genome reference based on GRCh38.p13 version [109.20190607](https://ftp.ncbi.nlm.nih.gov/genomes/all/annotation_releases/9606/109.20190607/GCF_000001405.39_GRCh38.p13/GCF_000001405.39_GRCh38.p13_assembly_report.txt) for chromosomes and contigs name.
+Despite that, we use GRCh38.p12 version [109](https://ftp.ncbi.nlm.nih.gov/genomes/all/annotation_releases/9606/109/GCF_000001405.38_GRCh38.p12/) for the FASTA sequence.
+This resulted in mismatch between some alt contigs name and its FASTA sequence. This mismatch can cause some minor issue on the variant ID and HGVS g. notation if the variant is on the alt contigs that were affected.
+This issue is not present for variant that occurs on main chromosome (chromosome 1-22, X, and Y).
+
+With release GRCh38.p14, we have fix this issue and the GRCh38.p14 release will also backward compatible with previous release. Old transcript and gene model files and all of supplementary annotation data will not have any issue with the new genome reference version.
+It is advisable to update to the current genome reference version.
+:::
+
+### Transcript and Gene Models
+
 The transcript and gene models are obtained from [RefSeq](https://ftp.ncbi.nlm.nih.gov/genomes/all/annotation_releases/9606/) and [Ensembl](https://ftp.ensembl.org/pub/).
-The current officially supported versions are:
+The current officially supported versions for GRCh38 are:
 
 | Data Source | Version                     | Release Date |
 |-------------|-----------------------------|--------------|
-| RefSeq      | GCF_000001405.40-RS_2023_03 | 2023-03-21   |
-| Ensembl     | 110                         | 2023-04-27   |
+| RefSeq      | GCF_000001405.40-RS_2023_10 | 2023-10-07   |
+| Ensembl     | 112                         | 2024-05-14   |
+
+For GRCh37:
+
+| Data Source | Version                     | Release Date |
+|-------------|-----------------------------|--------------|
+| RefSeq      | 105.20220307                | 2022-03-10   |
+| Ensembl     | 110                         | 2023-02-08   |
+
+:::note
+For GRCh37 Ensembl release, despite the version is 110 (and they also have newer release version 111 and 112), the annotation data is effectively the same as version 87 which was release back in 2017.
+
+For GRCh37 Refseq release, NCBI has stopped releasing new gene annotation for and version 105.20220307 is the last release version for GRCh37.
+:::
+
+For gene symbols that we supported for the transcript model above, we download the data from [HGNC](https://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json) website as of 2024-06-03.
+
+### Supplementary Annotation
 
 In addition, it uses external data sources to provide additional context for each variant. 
 Illumina Connected Annotations provides annotations from the following sources divided into 2 tiers: Professional and basic. 
@@ -37,25 +70,29 @@ The basic tier can be accessed free of charge. The professional tier requires a 
 | Data Source          | Availability | Latest Supported Version |
 |----------------------|--------------|--------------------------|
 | COSMIC               | Professional | 99                       |
-| OMIM                 | Professional | 20240110                 |
+| OMIM                 | Professional | 20240807                 |
 | Primate AI-3D        | Professional | 1.0                      |
+| Promoter AI          | Professional | 1.0                      |
 | Splice AI            | Professional | 1.3                      |
 | 1000 Genomes Project | Basic        | Phase 3 v3plus           |
 | Cancer Hotspots      | Basic        | 2017                     |
-| ClinGen              | Basic        | 20240110                 |
-| ClinVar              | Basic        | 20231230                 |
+| ClinGen              | Basic        | 20240807                 |
+| ClinVar              | Basic        | 20240730                 |
 | DANN                 | Basic        | 20200205                 |
 | dbSNP                | Basic        | 156                      |
 | DECIPHER             | Basic        | 201509                   |
 | FusionCatcher        | Basic        | 1.33                     |
 | GERP                 | Basic        | 20110522                 |
 | GME Variome          | Basic        | 20160618                 |
-| gnomAD               | Basic        | 3.1.2                    |
+| gnomAD (GRCh37)      | Basic        | 2.1                      |
+| gnomAD (GRCh38)      | Basic        | 4.1                      |
 | MITOMAP              | Basic        | 20200819                 |
 | MultiZ 100 way       | Basic        | 20171006                 |
 | REVEL                | Basic        | 20200205                 |
 | TOPMed               | Basic        | freeze 5                 |
 
+### Download manager
+To effectively download all of data, we have provided download manager. Please go to [download manager](./utilities/download-manager) page to read more.
 
 ## Download
 Please visit [Illumina Connected Annotations](https://developer.illumina.com/illumina-connected-annotations).
