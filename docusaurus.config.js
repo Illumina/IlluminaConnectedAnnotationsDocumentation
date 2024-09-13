@@ -74,7 +74,7 @@ module.exports = {
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl:
             'https://github.com/Illumina/IlluminaConnectedAnnotationsDocumentation/edit/master/',
-          lastVersion: '3.24',
+          lastVersion: '3.23',
           versions: {
             current: {
               label: `${getNextVersionName()} (unreleased)`,
