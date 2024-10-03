@@ -19,7 +19,7 @@ function getNextVersionName() {
 
 module.exports = {
   title: 'IlluminaConnectedAnnotations',
-  tagline: 'Translational researcy-grade variant annotation',
+  tagline: 'Translational research-grade variant annotation',
   url: 'https://illumina.github.io',
   baseUrl: '/IlluminaConnectedAnnotationsDocumentation/',
   onBrokenLinks: 'throw',
@@ -74,10 +74,15 @@ module.exports = {
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl:
             'https://github.com/Illumina/IlluminaConnectedAnnotationsDocumentation/edit/master/',
-          lastVersion: '3.23',
+          lastVersion: 'current',
           versions: {
             current: {
               label: `${getNextVersionName()} (unreleased)`,
+              path: '/'
+            },
+            '3.23': {
+              path: '3.23',
+              banner: 'none'
             },
           },
         },
