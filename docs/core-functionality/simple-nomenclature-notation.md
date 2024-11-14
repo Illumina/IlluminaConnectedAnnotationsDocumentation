@@ -130,15 +130,15 @@ An example input VCF line:
 
 | #CHROM | POS       | ID                                 | REF | ALT    | QUAL | FILTER | INFO                             | FORMAT             | FEMALE_SAMPLE             |
 |--------|-----------|------------------------------------|-----|--------|------|--------|----------------------------------|--------------------|---------------------------|
-| 3      | 47880199  | DRAGEN:CNLOH:3:47880200:53573886   | N   | \<LOH> | 100  | PASS   | END=53573886;REFLEN=5693687      | GT:SM:CN:BC:PE     | 1/1:1.0:2:5694:15,15      |
-| 6      | 57801513  | DRAGEN:GAINLOH:6:57801514-57827028 | N   | \<LOH> | 100  | PASS   | END=57827028;REFLEN=25515        | GT:SM:CN:BC:PE     | 1/1:1.5:3:532812:15,15    |
-| X      | 133042524 | DRAGEN:GAIN:X:133042525:136149357  | N   | \<DUP> | 100  | PASS   | END=136149357;REFLEN=3106833;HET | GT:SM:CN:CNF:BC:PE | 0/1:1.25:3:2.5:3106:15,15 |
+| 3      | 47880199  | DRAGEN:CNLOH:3:47880200:53573886   | N   | <LOH\> | 100  | PASS   | END=53573886;REFLEN=5693687      | GT:SM:CN:BC:PE     | 1/1:1.0:2:5694:15,15      |
+| 6      | 57801513  | DRAGEN:GAINLOH:6:57801514-57827028 | N   | <LOH\> | 100  | PASS   | END=57827028;REFLEN=25515        | GT:SM:CN:BC:PE     | 1/1:1.5:3:532812:15,15    |
+| X      | 133042524 | DRAGEN:GAIN:X:133042525:136149357  | N   | <DUP\> | 100  | PASS   | END=136149357;REFLEN=3106833;HET | GT:SM:CN:CNF:BC:PE | 0/1:1.25:3:2.5:3106:15,15 |
 
 
 The annotated VCF would look like:
 
-| #CHROM | POS       | ID                                 | ... | INFO                                     | FORMAT                  | FEMALE_SAMPLE                                                  |
-|--------|-----------|------------------------------------|-----|------------------------------------------|-------------------------|----------------------------------------------------------------|
+| #CHROM | POS       | ID                                 | ... | INFO                                     | FORMAT                      | FEMALE_SAMPLE                                                      |
+|--------|-----------|------------------------------------|-----|------------------------------------------|-----------------------------|--------------------------------------------------------------------|
 | 3      | 47880199  | DRAGEN:CNLOH:3:47880200:53573886   | ... | END=53573886;REFLEN=5693687;CSQ=...      | GT:SM:CN:BC:PE:**SNOM**     | 1/1:1.0:2:5694:15,15:**3p21.31p21.1(47880200_53573886)x2 hmz**     |
 | 6      | 57801513  | DRAGEN:GAINLOH:6:57801514-57827028 | ... | END=57827028;REFLEN=25515;CTB=6p11.2     | GT:SM:CN:BC:PE:**SNOM**     | 1/1:1.5:3:532812:15,15:**6p11.2(57801514_57827028)x3 hmz**         |
 | X      | 133042524 | DRAGEN:GAIN:X:133042525:136149357  | ... | END=136149357;REFLEN=3106833;HET;CSQ=... | GT:SM:CN:CNF:BC:PE:**SNOM** | 0/1:1.25:3:2.5:3106:15,15:**Xq26.2q26.3(133042525_136149357)x2-3** |
@@ -154,7 +154,7 @@ For a Ploidy VCF, the key components of the simple nomenclature are:
 Detailed processing logic is described below:
 1. Read the **referenceSexKaryotype** from header "##referenceSexKaryotype=XY" which gives the reference_ploidy_number=2, reference_x_ploidy_number=1, reference_y_ploidy_number=1. 
 Full sex ploidy reference number table as specified here: [reference sex karyotype of ploidy caller](https://help.dragen.illumina.com/product-guides/dragen-v4.3/dragen-dna-pipeline/ploidy-calling/ploidy-caller#reference-sex-karyotype)
-2. For any whole chromosome \<DEL>/\<DUP> variant, calculate *ploidy_diff_count = NDC \* reference_ploidy_number* (use *reference_x_or_y_ploidy_number* if it is sex chromosome) 
+2. For any whole chromosome <DEL\>/<DUP\> variant, calculate *ploidy_diff_count = NDC \* reference_ploidy_number* (use *reference_x_or_y_ploidy_number* if it is sex chromosome) 
 for 
 each sample, and produce *ploidy_diff_count* times of -/+CHR into SNOM field.
 
@@ -197,14 +197,14 @@ chrY	1	.	N	<DUP>	150	PASS	END=57227415	DC:NDC	88.8375:2.050044
 
 The resulted VCF:
 
-| #CHROM | POS | ID | REF | ALT   | QUAL    | FILTER | INFO                              | FORMAT          | SM-LGH3Z                     |
-|--------|-----|----|-----|-------|---------|--------|-----------------------------------|-----------------|------------------------------|
-| chr10  | 1   | .  | N   | <DEL> | 31.3434 | PASS   | END=133797422;CTB=10p15.3-q26.3   | DC:NDC:**SNOM** | 62.0741:0.00249:**-10,-10**  |
-| chr11  | 1   | .  | N   | <DEL> | 31.4584 | PASS   | END=135086622;CTB=11p15.5-q25     | DC:NDC:**SNOM** | 61.9018:0.49708:**-11**      |
-| chr12  | 1   | .  | N   | <DUP> | 31.1682 | PASS   | END=133275309;CTB=12p13.33-q24.33 | DC:NDC:**SNOM** | 62.1638:1.50394:**+12**      |
-| chr13  | 1   | .  | N   | <DUP> | 20.9025 | PASS   | END=114364328;CTB=13p13-q34       | DC:NDC:**SNOM** | 60.4509:1.976276:**+13,+13** |
-| chrX   | 1   | .  | N   | <DUP> | 150     | PASS   | END=156040895;CTB=Xp22.33-q28     | DC:NDC:**SNOM** | 88.8375:2.050044:**+X**      |
-| chrY   | 1   | .  | N   | <DUP> | 150     | PASS   | END=57227415;CTB=Yp11.32-q12      | DC:NDC:**SNOM** | 88.8375:2.050044:**+Y**      |
+| #CHROM | POS | ID | REF | ALT    | QUAL    | FILTER | INFO                              | FORMAT          | SM-LGH3Z                     |
+|--------|-----|----|-----|--------|---------|--------|-----------------------------------|-----------------|------------------------------|
+| chr10  | 1   | .  | N   | <DEL\> | 31.3434 | PASS   | END=133797422;CTB=10p15.3-q26.3   | DC:NDC:**SNOM** | 62.0741:0.00249:**-10,-10**  |
+| chr11  | 1   | .  | N   | <DEL\> | 31.4584 | PASS   | END=135086622;CTB=11p15.5-q25     | DC:NDC:**SNOM** | 61.9018:0.49708:**-11**      |
+| chr12  | 1   | .  | N   | <DUP\> | 31.1682 | PASS   | END=133275309;CTB=12p13.33-q24.33 | DC:NDC:**SNOM** | 62.1638:1.50394:**+12**      |
+| chr13  | 1   | .  | N   | <DUP\> | 20.9025 | PASS   | END=114364328;CTB=13p13-q34       | DC:NDC:**SNOM** | 60.4509:1.976276:**+13,+13** |
+| chrX   | 1   | .  | N   | <DUP\> | 150     | PASS   | END=156040895;CTB=Xp22.33-q28     | DC:NDC:**SNOM** | 88.8375:2.050044:**+X**      |
+| chrY   | 1   | .  | N   | <DUP\> | 150     | PASS   | END=57227415;CTB=Yp11.32-q12      | DC:NDC:**SNOM** | 88.8375:2.050044:**+Y**      |
 
 
 
