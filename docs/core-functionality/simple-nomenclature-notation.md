@@ -122,8 +122,7 @@ For CNV VCFs, the key components of the simple nomenclatures for each sample are
 1. **Chromosome**
 2. **Genetic Band** of the CNV
 3. **Start/End Position**
-4. **Sample's Copy Number**: In the case of Mosaic Copy Number Gain Variant, we calculate the possible copy number range as *floor(ploidy \* segment mean)-ceiling(ploidy \* 
-segment mean*). We get *ploidy* based on length of GT field, and *segment mean* from SM field.
+4. **Sample's Copy Number**: In the case of Mosaic Copy Number Gain Variant, we calculate the possible copy number range from the *ploidy* and *segment mean* field.
 5. (Optional) **Loss of Heterozygosity**
 
 An example input VCF line:
@@ -152,11 +151,10 @@ For a Ploidy VCF, the key components of the simple nomenclature are:
 3. **Chromosome's Ploidy Number** indicated by `-` or `+`
 
 Detailed processing logic is described below:
-1. Read the **referenceSexKaryotype** from header "##referenceSexKaryotype=XY" which gives the reference_ploidy_number=2, reference_x_ploidy_number=1, reference_y_ploidy_number=1. 
-Full sex ploidy reference number table as specified here: [reference sex karyotype of ploidy caller](https://help.dragen.illumina.com/product-guides/dragen-v4.3/dragen-dna-pipeline/ploidy-calling/ploidy-caller#reference-sex-karyotype)
-2. For any whole chromosome <DEL\>/<DUP\> variant, calculate *ploidy_diff_count = NDC \* reference_ploidy_number* (use *reference_x_or_y_ploidy_number* if it is sex chromosome) 
-for 
-each sample, and produce *ploidy_diff_count* times of -/+CHR into SNOM field.
+1.Read the referenceSexKaryotype from the header (e.g., "##referenceSexKaryotype=XY"), which determines the reference ploidy numbers for autosomes and sex chromosomes. Refer to 
+the full sex ploidy reference table here: [reference sex karyotype of ploidy caller](https://help.dragen.illumina.com/product-guides/dragen-v4.3/dragen-dna-pipeline/ploidy-calling/ploidy-caller#reference-sex-karyotype).
+2.For any whole chromosome \<DEL\>/\<DUP\> variant, calculate the ploidy difference for each sample based on the reference ploidy numbers and update the SNOM field accordingly. 
+Use the sex chromosome ploidy reference for sex chromosomes.
 
 An example ploidy VCF:
 ```tsv
