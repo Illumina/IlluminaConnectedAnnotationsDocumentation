@@ -54,7 +54,7 @@ module.exports = {
       items: [
         'core-functionality/canonical-transcripts',
         'core-functionality/gene-fusions',
-        'core-functionality/iscn-notation',
+        'core-functionality/simple-nomenclature-notation',
         'core-functionality/junction-preserving',
         'core-functionality/transcript-consequence-impacts',
         'core-functionality/variant-ids'
