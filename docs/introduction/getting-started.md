@@ -124,6 +124,47 @@ Here's [a toy VCF file](https://illumina.github.io/IlluminaConnectedAnnotationsD
 curl -O https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/files/HiSeq.10000.vcf.gz
 ```
 
+## Prerequisite
+
+### Creating Illumina API key
+To use Data Manager, users have to create an Illumina API key. To generate the API key, users are required to create Illumina public account which can be created freely from [this page](https://accounts.login.illumina.com).
+
+![](account-login.png)
+
+Click "Don't have an account" link to go to the user creation form. If you already have an account, enter your credentials.
+Once you login, you will go to Product Dashboard page. Click on the user icon on the top right to open menu and choose Manage API Keys.
+
+![](product-dashboard.png)
+
+In the Manage API Keys, click Generate Button and enter the API key name. Once you have done that, the generated API key will be displayed.
+
+![](api-key-page.png)
+
+### Storing Illumina API key in your system
+Copy the API key and store it into a file with json format like below:
+
+```json
+{
+  "IlmnApiKey": "<your api key>"
+}
+```
+
+By default, Data Manager will look for file `~/.ilmnAnnotations/credentials.json` but this file may be saved at any location and passed in as commandline argument.
+```json
+{
+  "MyIlluminaApiKey": "<your Illumina account api key>"
+}
+```
+
+If you have API key and API secret for Illumina Connected Annotation professional tier data source, you should put those credentials in this file also.
+```json
+{
+  "MyIlluminaApiKey": "<your Illumina account api key>",
+  "ApiKey": "<your professional data source API key>",
+  "ApiSecret": "<your professional data source API secret>"
+}
+```
+
 ## Running Illumina Connected Annotations
 
 Once you have downloaded the data sets, use the following command to annotate your VCF:
