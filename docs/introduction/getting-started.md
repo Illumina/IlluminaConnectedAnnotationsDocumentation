@@ -145,7 +145,7 @@ Copy the API key and store it into a file with json format like below:
 
 ```json
 {
-  "IlmnApiKey": "<your api key>"
+  "MyIlluminaApiKey": "<your Illumina account api key>"
 }
 ```
 
