@@ -77,13 +77,14 @@ alias IlluminaConnectedAnnotations="docker run --rm -it -v local/data/folder:/sc
 To download the latest data sources (or update the ones that you already have), use the following command to automate the download from S3:
 
 ```bash
-dotnet bin/Release/net6.0/DataManager.dll \
-     --ga GRCh37 \
-     -o Data
+dotnet DownloadManager.dll make-config -r GRCh37
+
+dotnet DownloadManager.dll download \
+-r GRCh37 \
+--dir Data 
 ```
 
-* the `--ga` argument specifies the genome assembly which can be `GRCh37`, `GRCh38`, or `both`.
-* the `-o` argument specifies the output directory
+Check [Data Manager](../utilities/data-manager.mdx) for more details on controlling data sources and their versions.
 
 :::info Glitches in the Matrix
 Every once in a while, the download process does not go smoothly. Perhaps the internet connection cut out or you ran out of disk space. The DataManager attempts to detect these 
@@ -93,33 +94,6 @@ situations by checking the file sizes at the very end. If you see that a file wa
 :::tip
 From time to time, you can re-run the DataManager to get the latest annotation files. It will only download the files that changed.
 :::
-### Preserving old data file
-By default, while rerunning, the DataManager will replace old files with the latest versions. For example, if at some point, your `SupplementaryAnnotation` folder contained 
-`ClinVar_20231101.nsa` and the latest available version is `ClinVar_20231203.nsa`, next time the DataManager is run, `ClinVar_20231101.nsa` will be replaced with 
-`ClinVar_20231203.nsa`. 
-
-Currently, there is no way to override this behavior. If you do not want to replace/update any particular file, we recommend saving those files to a different location, rerun 
-the DataManager to update the other data files and then manually replace the files you did not want updated. Please make sure to remove the latest version of the files you did 
-not want. Note that the Annotator will throw an error if multiple versions of the same data source is present in the `SupplementaryAnnotation` folder. In other words, the `SupplementaryAnnotation` folder cannot contain both `ClinVar_20231101.nsa` and `ClinVar_20231203.nsa`.
-
-Here is an example of how to proceed if a user doesn't want the latest version of ClinVar.
-
-```bash
-ls Data/SupplementaryAnnotation/GRCh38
-...
-ClinGen_disease_validity_curations_20231011.nga
-ClinVar_20230930.nsa
-ClinVar_20230930.nsa.idx
-...
-mv Data/SupplementaryAnnotation/GRCh38/ClinVar* <tmp_dir>/GRCh38/
-
-dotnet bin/Release/net6.0/DataManager.dll \
-     --ga GRCh38 \
-     -o Data
-
-rm Data/SupplementaryAnnotation/GRCh38/ClinVar*
-mv <tmp_dir>/GRCh38/ClinVar* Data/SupplementaryAnnotation/GRCh38/
-```
 
 ## Download a test VCF file
 
