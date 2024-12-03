@@ -239,6 +239,10 @@ OPTIONS:
                                 desired in the output
       --sa-cutoff <VALUE>    Any SV larger than or equal to this value will
                                not have any supplementary annotations
+      --simple-nomenclature-cutoff-length <VALUE>
+                             Any SV larger than or equal to this value will
+                               not have any simple nomenclature annotation.
+                             Default is 1000.
       --output-format <VALUE>
                              output file format, available options: json, vcf.
       --help, -h             displays the help menu
