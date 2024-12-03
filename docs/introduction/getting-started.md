@@ -8,6 +8,10 @@ Illumina Connected Annotations is written in C# using [.NET Core](https://www.mi
 Illumina Connected Annotations currently uses .NET6.0. Please make sure that you have the most current runtime from the [.NET Core downloads](https://www.microsoft.com/net/download/core) page.
 :::
 
+:::info
+Please read [Prerequisite](../introduction/prerequisite) section to generate necessary credential file to run Illumina Connector Annotations.
+:::
+
 ## Getting Illumina Connected Annotations
 
 ### Latest Release
