@@ -7,6 +7,7 @@ module.exports = {
         'introduction/introduction',
         'introduction/licensedContent',
         'introduction/dependencies',
+        'introduction/prerequisite',
         'introduction/getting-started',
         'introduction/parsing-json'
       ],

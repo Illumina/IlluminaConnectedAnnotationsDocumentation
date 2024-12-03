@@ -4,8 +4,13 @@ title: Data Manager
 
 ## Overview
 
-`Data Manager` is a utility software from Illumina Connected Annotation software suite for user to easily pick and choose prebuilt annotation databases compatible with Illumina Connected Annotation.
-Previously, we provided the `Downloader` software that the user can run to download the latest annotation database automatically. With the new Data Manager, users can choose the exact version of an annotation database they want.
+`DataManager` is a utility software from Illumina Connected Annotation software suite for user to easily pick and choose prebuilt annotation databases compatible with Illumina Connected Annotation.
+Previously, we provided the `Downloader` software that the user can run to download the latest annotation database automatically.
+With the new `DataManager` utility, users can choose the exact version of an annotation database they want.
+
+:::info
+DataManager utility requires credential file. Please follow the guide to generate this file from [Prerequisite](../introduction/prerequisite).
+:::
 
 :::caution
 Downloader.dll utility will no longer be provided and instead DataManager.dll should be used.
@@ -13,16 +18,17 @@ Downloader.dll utility will no longer be provided and instead DataManager.dll sh
 
 ## Commands
 
+`Datamanager` utility has several commands. Below are those commands:
+
 ### List
 
 The first command is `list`. This command is to list all available data annotation and version.
 
 ```bash
-dotnet DownloadManager.dll list
-
+dotnet DataManager.dll list
 ---------------------------------------------------------------------------
 DataManager                                         (c) 2024 Illumina, Inc.
-                                                                     3.24.0
+                                                                     3.25.0
 ---------------------------------------------------------------------------
 
 USAGE: dotnet DataManager.dll list [options]
@@ -30,7 +36,8 @@ List available data
 
 OPTIONS:
       --credentials-file, -l <VALUE>
-                             Path to credential file. The default file location is ~/.ilmnAnnotations/credentials.json
+                             Path to credential file. The default file
+                               location is ~/.ilmnAnnotations/credentials.json
       --ref, -r <VALUE>      Assembly reference (GRCh38/GRCh37)
       --dir, -d <VALUE>      Local directory
       --sources, -s <VALUE>  data source to show
@@ -49,169 +56,144 @@ Professional content licensing, feedback and technical support: annotation_suppo
 There are several parameters that you can pass.
 
 - Param `--ref` or `-r` is a required parameter. This is to filter data based on genome assembly reference. The value is either GRCh37 or GRCh38
-- Param `--dir` or `-d` is an optional parameter. This param is the path to your local data directory. If you provide this param, the list will mark file that you have already downloaded.
+- Param `--dir` or `-d` is an optional parameter. This param is the path to your local data directory. If you provide this param, the list will mark data source version that you already have in the directory.
 - Param `--credentials-file` or `-l` is an optional parameter. This param is the path to your credential file.
-- Param `--sources` or `-s` is a filter based on data source. Without this param, the list will display all data source but only display the latest version available. If you filter using this param, you will see all available version.
+- Param `--sources` or `-s` is a filter based on data source. Without this param, the list will display all data source but only display the latest version available. If you use this param, you will see all available version for that particular data source.
 
 Below are some example of the output:
-
+- List all latest data source version and providing local directory
 ```bash
-dotnet DownloadManager.dll list -r GRCh38 -d /path/to/folder
+dotnet DataManager.dll list -r GRCh38 -d /path/to/folder
 
 ---------------------------------------------------------------------------
 DataManager                                         (c) 2024 Illumina, Inc.
-                                                                     3.24.0
+                                                                     3.25.0
 ---------------------------------------------------------------------------
 
-Using default credentials file: ~/.ilmnAnnotations/credentials.json
+Using default credentials file: /Users/bkalbuaji/.ilmnAnnotations/credentials.json
 ======================================================================================================================================================
 Data Source                    | Annotation Type                | Description                              | Version
 ======================================================================================================================================================
-DANN                           | Score                          | DANN                                     | 20200205
+DANN                           | Score                          | DANN                                     | 20200205 (*)
 ------------------------------------------------------------------------------------------------------------------------------------------------------
-DECIPHER                       | StructuralVariant              | DECIPHER                                 | 201509
+DECIPHER                       | StructuralVariant              | DECIPHER                                 | 201509 (*)
 ------------------------------------------------------------------------------------------------------------------------------------------------------
-Ensembl                        | GeneModels                     | Ensembl                                  | 110
+Ensembl                        | GeneModels                     | Ensembl                                  | 112 (*)
 ------------------------------------------------------------------------------------------------------------------------------------------------------
-FusionCatcher                  | GeneFusion                     | FusionCatcher                            | 1.33
+FusionCatcher                  | GeneFusion                     | FusionCatcher                            | 1.33 (*)
 ------------------------------------------------------------------------------------------------------------------------------------------------------
-GME                            | SmallVariant                   | GME                                      | 20160618
+GME                            | SmallVariant                   | GME                                      | 20160618 (*)
 ------------------------------------------------------------------------------------------------------------------------------------------------------
-GenomeAssembly                 | GenomeAssembly                 | GenomeAssembly                           | GRCh37.p13
+GenomeAssembly                 | GenomeAssembly                 | GenomeAssembly                           | GRCh38.p14 (*)
 ------------------------------------------------------------------------------------------------------------------------------------------------------
-Gerp                           | Score                          | Gerp                                     | 20110522
+Gerp                           | Score                          | Gerp                                     | 20110522 (*)
 ------------------------------------------------------------------------------------------------------------------------------------------------------
-HGNC                           | GeneModels                     | HGNC                                     | 20240603
+HGNC                           | GeneModels                     | HGNC                                     | 20240603 (*)
 ------------------------------------------------------------------------------------------------------------------------------------------------------
-MultiZ100Way                   | Protein                        | MultiZ100Way                             | 20150427
+MultiZ100Way                   | Protein                        | MultiZ100Way                             | 20171006 (*)
 ------------------------------------------------------------------------------------------------------------------------------------------------------
-PrimateAI                      | SmallVariant                   | PrimateAI                                | 0.2
+PrimateAI                      | SmallVariant                   | PrimateAI                                | 0.2 (*)
 ------------------------------------------------------------------------------------------------------------------------------------------------------
-REVEL                          | SmallVariant                   | REVEL                                    | 20200205
+PromoterAI                     | SmallVariant                   | PromoterAI                               | 1.0 (*)
 ------------------------------------------------------------------------------------------------------------------------------------------------------
-RefSeq                         | GeneModels                     | RefSeq                                   | 105.20220307
+REVEL                          | SmallVariant                   | REVEL                                    | 20200205 (*)
 ------------------------------------------------------------------------------------------------------------------------------------------------------
-TOPMed                         | SmallVariant                   | TOPMed                                   | freeze_5
+RefSeq                         | GeneModels                     | RefSeq                                   | GCF_000001405.40-RS_2023_10 (*)
 ------------------------------------------------------------------------------------------------------------------------------------------------------
-clingen                        | Gene                           | ClinGen disease validity curations       | 20240910
-                               |                                | ClinGen Dosage Sensitivity Map           | 20240910
-                               | StructuralVariant              | ClinGen Dosage Sensitivity Map           | 20240910
+TOPMed                         | SmallVariant                   | TOPMed                                   | freeze_5 (*)
 ------------------------------------------------------------------------------------------------------------------------------------------------------
-clingen (legacy)               | StructuralVariant              | ClinGen                                  | 20160414
+clingen                        | Gene                           | ClinGen disease validity curations       | 20241007 (*)
+                               |                                | ClinGen Dosage Sensitivity Map           | 20241007 (*)
+                               | StructuralVariant              | ClinGen Dosage Sensitivity Map           | 20241007 (*)
 ------------------------------------------------------------------------------------------------------------------------------------------------------
-clinvar                        | SmallVariant                   | ClinVar                                  | 20240902
-                               | StructuralVariant              | ClinVar                                  | 20240902
+clingen (legacy)               | StructuralVariant              | ClinGen                                  | 20160414 (*)
 ------------------------------------------------------------------------------------------------------------------------------------------------------
-clinvar-preview                | SmallVariant                   | ClinVarPreview                           | 20240902 (*)
-                               | StructuralVariant              | ClinVarPreview                           | 20240902 (*)
+clinvar                        | SmallVariant                   | ClinVar                                  | 20241001 (*)
+                               | StructuralVariant              | ClinVar                                  | 20241001 (*)
 ------------------------------------------------------------------------------------------------------------------------------------------------------
-cosmic                         | Gene                           | Cosmic Cancer Gene Census                | 99
-                               | GeneFusion                     | COSMIC gene fusions                      | 99
-                               | SmallVariant                   | COSMIC                                   | 99
+clinvar-preview                | SmallVariant                   | ClinVarPreview                           | 20240930 (*)
+                               | StructuralVariant              | ClinVarPreview                           | 20240930 (*)
 ------------------------------------------------------------------------------------------------------------------------------------------------------
-dbSNP                          | SmallVariant                   | dbSNP                                    | 156
+cosmic                         | Gene                           | Cosmic Cancer Gene Census                | 99 (*)
+                               | GeneFusion                     | COSMIC gene fusions                      | 99 (*)
+                               | SmallVariant                   | COSMIC                                   | 99 (*)
 ------------------------------------------------------------------------------------------------------------------------------------------------------
-globalAllele                   | SmallVariant                   | dbSNP                                    | 151
+dbSNP                          | SmallVariant                   | dbSNP                                    | 156 (*)
 ------------------------------------------------------------------------------------------------------------------------------------------------------
-gnomad                         | Gene                           | gnomAD_gene_scores                       | 4.1
-                               | LowComplexityRegions           | gnomAD_LCR                               | 2.1
-                               | SmallVariant                   | gnomAD                                   | 2.1
-                               | StructuralVariant              | gnomAD_SV                                | 2.1
+globalAllele                   | SmallVariant                   | dbSNP                                    | 151 (*)
 ------------------------------------------------------------------------------------------------------------------------------------------------------
-gnomad-exome                   | SmallVariant                   | gnomAD_exome                             | 2.1
+gnomad                         | Gene                           | gnomAD_gene_scores                       | 4.1 (*)
+                               | LowComplexityRegions           | gnomAD_LCR                               | 2.1 (*)
+                               | SmallVariant                   | gnomAD                                   | 4.1 (*)
+                               | StructuralVariant              | gnomAD_SV                                | 4.1 (*)
+                               |                                | gnomAD-cnv                               | 4.1 (*)
 ------------------------------------------------------------------------------------------------------------------------------------------------------
-mitomap                        | SmallVariant                   | MITOMAP                                  | 20200819
-                               | StructuralVariant              | MITOMAP_SV                               | 20200819
+gnomad-exome                   | SmallVariant                   | gnomAD_exome                             | 4.1 (*)
 ------------------------------------------------------------------------------------------------------------------------------------------------------
-omim                           | Gene                           | OMIM                                     | 20240910
+mitomap                        | SmallVariant                   | MITOMAP                                  | 20200819 (*)
+                               | StructuralVariant              | MITOMAP_SV                               | 20200819 (*)
 ------------------------------------------------------------------------------------------------------------------------------------------------------
-oneKg                          | RefMinor                       | 1000 Genomes Project                     | Phase 3 v5a
-                               | SmallVariant                   | 1000 Genomes Project                     | Phase 3 v5a
-                               | StructuralVariant              | 1000 Genomes Project (SV)                | Phase 3 v5a
+omim                           | Gene                           | OMIM                                     | 20241007 (*)
 ------------------------------------------------------------------------------------------------------------------------------------------------------
-phylopScore                    | ConservationScore              | phyloP                                   | hg19
+oneKg                          | RefMinor                       | 1000 Genomes Project                     | Phase 3 v3plus (*)
+                               | SmallVariant                   | 1000 Genomes Project                     | Phase 3 v3plus (*)
+                               | StructuralVariant              | 1000 Genomes Project (SV)                | Phase 3 v5a (*)
 ------------------------------------------------------------------------------------------------------------------------------------------------------
-primateAI-3D                   | SmallVariant                   | PrimateAI-3D                             | 1.0
+phylopScore                    | ConservationScore              | phyloP                                   | hg38 (*)
+                               | Score                          | PhyloPPrimate                            | 1.0 (*)
 ------------------------------------------------------------------------------------------------------------------------------------------------------
-spliceAI                       | SmallVariant                   | SpliceAI                                 | 1.3
+primateAI-3D                   | SmallVariant                   | PrimateAI-3D                             | 1.0 (*)
+------------------------------------------------------------------------------------------------------------------------------------------------------
+spliceAI                       | SmallVariant                   | SpliceAI                                 | 1.3 (*)
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 (*) : available in local directory
-
 ```
 
+- Display all available GnomAD GRCh38 version
+
 ```bash
-dotnet DownloadManager.dll list -r GRCh38 -d /path/to/folder -s clinvar
+dotnet DataManager.dll list -r GRCh38 -d /path/to/folder -s gnomad
 
 ---------------------------------------------------------------------------
 DataManager                                         (c) 2024 Illumina, Inc.
-                                                                     3.24.0
+                                                                     3.25.0
 ---------------------------------------------------------------------------
 
-Using default credentials file: ~/.ilmnAnnotations/credentials.json
+Using default credentials file: /Users/bkalbuaji/.ilmnAnnotations/credentials.json
 ======================================================================================================================================================
 Data Source                    | Annotation Type                | Description                              | Version
 ======================================================================================================================================================
-clinvar                        | SmallVariant                   | ClinVar                                  | 20240902 (*)
-                               |                                | ClinVar                                  | 20240902_trimmed
-                               |                                | ClinVar                                  | 20240730
-                               |                                | ClinVar                                  | 20240630
-                               |                                | ClinVar                                  | 20240603
-                               |                                | ClinVar                                  | 20240502
-                               |                                | ClinVar                                  | 20231230
-                               |                                | ClinVar                                  | 20231203
-                               |                                | ClinVar                                  | 20231028
-                               |                                | ClinVar                                  | 20230930
-                               |                                | ClinVar                                  | 20230903
-                               |                                | ClinVar                                  | 20230822
-                               |                                | ClinVar                                  | 20230608
-                               |                                | ClinVar                                  | 20230509
-                               |                                | ClinVar                                  | 20230301
-                               |                                | ClinVar                                  | 20230210
-                               |                                | ClinVar                                  | 20220901
-                               |                                | ClinVar                                  | 20220505
-                               |                                | ClinVar                                  | 20211202
-                               |                                | ClinVar                                  | 20210805
-                               |                                | ClinVar                                  | 20210603
-                               |                                | ClinVar                                  | 20210401
-                               |                                | ClinVar                                  | 20200903
-                               |                                | ClinVar                                  | 20200302
-                               |                                | ClinVar                                  | 20200102
-                               |                                | ClinVar                                  | 20191001
-                               |                                | ClinVar                                  | 20190808
-                               |                                | ClinVar                                  | 20190204
-                               |                                | ClinVar                                  | 20180129
-                               | StructuralVariant              | ClinVar                                  | 20240902 (*)
-                               |                                | ClinVar                                  | 20240730
-                               |                                | ClinVar                                  | 20240630
-                               |                                | ClinVar                                  | 20240603
-                               |                                | ClinVar                                  | 20240502
-                               |                                | ClinVar                                  | 20231230
-                               |                                | ClinVar                                  | 20231203
-                               |                                | ClinVar                                  | 20231028
-                               |                                | ClinVar                                  | 20230930
-                               |                                | ClinVar                                  | 20230903
-                               |                                | ClinVar                                  | 20230822
-                               |                                | ClinVar                                  | 20230608
-                               |                                | ClinVar                                  | 20230509
-                               |                                | ClinVar                                  | 20230301
-                               |                                | ClinVar                                  | 20230210
-                               |                                | ClinVar                                  | 20220901
-                               |                                | ClinVar                                  | 20220505
+gnomad                         | Gene                           | gnomAD_gene_scores                       | 4.1 (*)
+                               |                                | gnomAD_gene_scores                       | 4.0
+                               |                                | gnomAD_gene_scores                       | 2.1
+                               | LowComplexityRegions           | gnomAD_LCR                               | 2.1 (*)
+                               | SmallVariant                   | gnomAD                                   | 4.1 (*)
+                               |                                | gnomAD                                   | 4.1_trimmed
+                               |                                | gnomAD                                   | 4.0
+                               |                                | gnomAD                                   | 3.1.2
+                               |                                | gnomAD                                   | 3.1
+                               |                                | gnomAD                                   | 3.0
+                               |                                | gnomAD                                   | 2.1
+                               |                                | gnomAD                                   | 2.0.1
+                               | StructuralVariant              | gnomAD_SV                                | 4.1 (*)
+                               |                                | gnomAD-cnv                               | 4.1 (*)
+                               |                                | gnomAD_SV                                | 4.0
+                               |                                | gnomAD_SV                                | 2.1
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 (*) : available in local directory
 ```
 
 ### Create config
 
-The second command is `make-config`. This command will generate a config file that will be used to define which annotation data and which version to download.
-The generated config file is basically a template which you can edit manually. It will contain latest version of all data source. In case you want to exclude some data source or require a different version, you can edit it manually.
+The second command is `make-config`. This command will generate a default config file that will be used to define which annotation data and which version to download and to use during annotation.
+The generated config file is basically a template which you can edit manually in case you want to download it with some specific data source and version.
 
 ```bash
-dotnet DownloadManager.dll make-config
+dotnet DataManager.dll make-config
 
 ---------------------------------------------------------------------------
 DataManager                                         (c) 2024 Illumina, Inc.
-                                                                     3.24.0
+                                                                     3.25.0
 ---------------------------------------------------------------------------
 
 USAGE: dotnet DataManager.dll make-config [options]
@@ -241,8 +223,9 @@ Professional content licensing, feedback and technical support: annotation_suppo
 
 There are several parameters for `make-config` command.
 - Param `--credentials-file` or `-l` is an optional parameter. This param is the path to your credential file.
-- Param `--ref` or `-r` is a required parameter. This is to filter data based on genome assembly reference. The value is either GRCh37 or GRCh38
-- Param `--out` or `-o` is an optional parameter. This param is the path where the config file will be written to. If not specified, it will write to ~/.ilmnAnnotation/{assembly}_annotation_config.json.
+- Param `--ref` or `-r` is a required parameter. This is to filter data based on genome assembly reference. The value is either GRCh37 or GRCh38 or all to generate config for both assembly.
+- Param `--dir` or `-d` is an optional parameter. This is to generate a config file from your existing directory. It will read the content of your directory and generate config file. It is useful to generate config file from existing directory when you previously use old Downloader to download.
+- Param `--outDir` or `-o` is an optional parameter. This param is the path where the config file will be written to. If not specified, it will write to ~/.ilmnAnnotation. The file name would be {assembly}_annotation_config.json.
 
 Below is example of the generated config file.
 
@@ -266,14 +249,14 @@ Below is example of the generated config file.
 ```
 
 ### Download file
-The third command available is `download`. This command will download the database files. Files that already exist in the output folder will be skipped (if the md5checksum match). You may think of this more like a `sync` command than a download or copy.
-It will also auto update if you have older version of the data by deleting the old version and downloading the new version.
+The third command available is `download`. This command will download the database files.
+Files that already exist in the output folder will be skipped (if the file size match).
 
 ```bash
-dotnet DownloadManager.dll download
+dotnet DataManager.dll download
 ---------------------------------------------------------------------------
 DataManager                                         (c) 2024 Illumina, Inc.
-                                                                     3.24.0
+                                                                     3.25.0
 ---------------------------------------------------------------------------
 
 USAGE: dotnet DataManager.dll download [options]
@@ -281,10 +264,13 @@ Download file
 
 OPTIONS:
       --credentials-file, -l <VALUE>
-                             Path to credential file. The default file location is ~/.ilmnAnnotations/credentials.json
+                             Path to credential file. The default file
+                               location is ~/.ilmnAnnotations/credentials.json
       --ref, -r <VALUE>      Assembly reference (GRCh38/GRCh37)
       --versions-config <VALUE>
-                             Download file config. By default, it will use file ~/.ilmnAnnotation/[assembly]_annotation_config.json
+                             Download file config. By default, it will use
+                               file ~/.ilmnAnnotation/[assembly]_annotation_
+                               config.json
       --dir, -d <VALUE>      Download file directory
       --thread, -t <VALUE>   Number of concurrent download
       --help, -h             displays the help menu
@@ -297,7 +283,6 @@ Professional Tier: PrimateAI(GRCh37), PrimateAI-3D(GRCh38), SpliceAI, COSMIC, OM
 
 ##### Contact #####
 Professional content licensing, feedback and technical support: annotation_support@illumina.com.
-
 ```
 
 There are several parameters for the `download` command.
@@ -308,10 +293,10 @@ json
 - Param `--dir` or `-d` is a required pqrameter. It specified the directory that will be used to store all downloaded files.
 - Param `--thread` or `-t` is an optional parameter. It is the number of thread that will be used to download file simultaneously. By default, the value is 4.
 
-Below is an example where you download new release of reference file and Ensembl and RefSeq cache. Tge downloader will first detect that you have an existing reference and cache files with different version.
+Below is an example where you download new release of reference file and Ensembl and RefSeq cache. The downloader will first detect that you have an existing reference and cache files with different version.
 The downloader then will delete those files and download the new files.
-```shell
-dotnet DownloadManager.dll download \
+```bash
+dotnet DataManager.dll download \
 -r GRCh37 \
 --credentials-file ~/.ilmnAnnotations/credentials.json \
 --dir /target/directory \
@@ -319,7 +304,7 @@ dotnet DownloadManager.dll download \
 
 ---------------------------------------------------------------------------
 DataManager                                         (c) 2024 Illumina, Inc.
-                                                                     3.24.0
+                                                                     3.25.0
 ---------------------------------------------------------------------------
 
 Listing annotation files in local directory...
@@ -354,11 +339,12 @@ Downloaded files:
 Data license saved: ~/.ilmnAnnotations/premium.lic
 ```
 
-Note that adding additional sources so `versions_config.json` will only download those additional files.
+Note that adding additional sources so versions config file will only download those additional files.
+
 ```shell
 ---------------------------------------------------------------------------
 DataManager                                         (c) 2024 Illumina, Inc.
-                                                                     3.24.0
+                                                                     3.25.0
 ---------------------------------------------------------------------------
 
 Listing annotation files in local directory...
@@ -386,3 +372,53 @@ Downloaded files:
 - ClinVar_preview_20240301.nsa
 Data license saved: ~/.ilmnAnnotations/premium.lic
 ```
+
+### Version validate
+
+The fourth command is `version-validate`. This command is used to check whether the directory provided has all data source file and version that is defined in the version config.
+
+```shell
+---------------------------------------------------------------------------
+DataManager                                         (c) 2024 Illumina, Inc.
+                                                                     3.25.0
+---------------------------------------------------------------------------
+
+USAGE: dotnet DataManager.dll version-validate --ref <reference sequence file path> --cache <cache directory> --sd <supplementary data directory path> --data-config <config json file path>
+version-validate
+
+OPTIONS:
+--cache, -c <directory>
+input cache directory
+--ref, -r <path>       input compressed reference sequence path
+--sd <VALUE>           Supplementary Annotation Data directory path
+--versions-config <VALUE>
+Data versions config json file path
+--help, -h             displays the help menu
+--version, -v          displays the version
+
+##### Supported Annotation Sources #####
+Basic Tier: DECIPHER, GME, GERP, DANN, REVEL, ClinGen, gnomAD, phyloP, TOPMed, DGV, 1000 Genomes, CliinVar, dbSNP, FusionCatcher, MITOMAP, MultiZ100Way
+
+Professional Tier: PrimateAI(GRCh37), PrimateAI-3D(GRCh38), SpliceAI, COSMIC, OMIM.
+
+##### Contact #####
+Professional content licensing, feedback and technical support: annotation_support@illumina.com.
+```
+
+There are several parameters that you can pass:
+- Param `--versions-config` is a required param to the version config file path that you want to check against your file.
+- Param `--cache` or `-c` is an optional param to the cache directory path that you want to use. This will be the same path that you pass when running Illumina Connected Annotation to annotate.
+- Param `--ref` or `-r` is a required param to the genome assembly reference file path that you want to use. This will be the same path that you pass when running Illumina Connected Annotation to annotate.
+- Param `--sd` is an optional param to the supplementary annotation directory path that you want to use. This will be the same path that you pass when running Illumina Connected Annotation to annotate.
+
+This command will return successfully all data sources and matching versions that are defined in the version config exist.
+
+:::info
+The default path for credential file and version config is located in ~/.ilmnAnnotation which is the home folder of the user that run the command.
+In case you are using docker to run DataManager utility, make sure the credential file is mounted in the docker container.
+By default, docker container is run as root, so the default directory path the DataManager will use would be `/root/.ilmnAnnotation`.
+You can mount your local .ilmnAnnotation to this folder by adding parameter:
+
+`-v /local/path/.ilmnAnnotation:/root/.ilmnAnnotation`
+
+:::
