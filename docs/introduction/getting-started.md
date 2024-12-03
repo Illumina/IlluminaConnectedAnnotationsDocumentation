@@ -27,6 +27,8 @@ bash ./TestIlluminaConnectedAnnotations.sh IlluminaConnectedAnnotationsBuild.zip
 ```
 We have verified that this script works on Windows (using Git Bash or WSL), Linux, and Mac OS X.
 
+Before you run the script, please make sure [Prerequisite](#prerequisite) is configured correctly.
+
 ### Docker
 
 Obtain the docker image in a zip file (e.g. IlluminaConnectedAnnotations-3.24.0-0-gc13dcb61-net6.0-docker.tar.gz), and load it as follows
@@ -77,9 +79,9 @@ alias IlluminaConnectedAnnotations="docker run --rm -it -v local/data/folder:/sc
 To download the latest data sources (or update the ones that you already have), use the following command to automate the download from S3:
 
 ```bash
-dotnet DownloadManager.dll make-config -r GRCh37
+dotnet DataManager.dll make-config -r GRCh37
 
-dotnet DownloadManager.dll download \
+dotnet DataManager.dll download \
 -r GRCh37 \
 --dir Data 
 ```
