@@ -97,7 +97,7 @@ then
 fi
 
 # analyze it with IlluminaConnectedAnnotations
-dotnet $ILLUMINA_ANNOTATOR_BIN -c $CACHE_DIR --sd $SA_DIR -r $REF_TEST -i $VCF_PATH -o HiSeq.10000 --ignore-license-error
+dotnet $ILLUMINA_ANNOTATOR_BIN -c $CACHE_DIR --sd $SA_DIR -r $REF_TEST -i $VCF_PATH -o HiSeq.10000
 
 popd
 popd
