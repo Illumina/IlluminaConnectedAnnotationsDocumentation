@@ -13,6 +13,10 @@ Illumina Connected Annotations provides translational research-grade annotation 
 
 The input to Illumina Connected Annotations are VCFs and the output is a structured JSON representation of all annotation and sample information (as extracted from the VCF). Illumina Connected Annotations handles multiple alternate alleles and multiple samples with ease.
 
+:::tip
+we have also added supporting VCF output with limited annotation sources. See [Illumina Connected Annotations VCF File Format](./../file-formats/illumina-annotator-vcf-file-format.mdx)
+:::
+
 The software is being developed under a rigorous SDLC and testing process to ensure accuracy of the results and enable embedding in other software. Illumina Connected Annotations uses a continuous integration pipeline where millions of variant annotations are monitored against baseline values daily.
 
 
@@ -24,15 +28,17 @@ We use Sequence Ontology consequences to describe how each variant impacts a giv
 
 ### Reference genome
 
-For GRCh37,
-For GRCh38, our reference genome is using version GRCh38.p14. The list of chromosome and contigs in this version can be checked from this [file](https://ftp.ncbi.nlm.nih.gov/genomes/all/annotation_releases/9606/GCF_000001405.40-RS_2023_10/GCF_000001405.40_GRCh38.p14_assembly_report.txt)
+For GRCh37, our latest reference genome is using version GRCh37.p13. The list of chromosome and contigs in this version can be checked from this [file](https://ftp.ncbi.nlm.nih.gov/genomes/all/annotation_releases/9606/105.20220307/GCF_000001405.25_GRCh37.p13/GCF_000001405.25_GRCh37.p13_assembly_report.txt)
+For GRCh38, our latest reference genome is using version GRCh38.p14. The list of chromosome and contigs in this version can be checked from this [file](https://ftp.ncbi.nlm.nih.
+gov/genomes/all/annotation_releases/9606/GCF_000001405.40-RS_2023_10/GCF_000001405.40_GRCh38.p14_assembly_report.txt)
 :::caution
 There was a bug in our previous genome reference. Previously, we generate genome reference based on GRCh38.p13 version [109.20190607](https://ftp.ncbi.nlm.nih.gov/genomes/all/annotation_releases/9606/109.20190607/GCF_000001405.39_GRCh38.p13/GCF_000001405.39_GRCh38.p13_assembly_report.txt) for chromosomes and contigs name.
 Despite that, we use GRCh38.p12 version [109](https://ftp.ncbi.nlm.nih.gov/genomes/all/annotation_releases/9606/109/GCF_000001405.38_GRCh38.p12/) for the FASTA sequence.
 This resulted in mismatch between some alt contigs name and its FASTA sequence. This mismatch can cause some minor issue on the variant ID and HGVS g. notation if the variant is on the alt contigs that were affected.
 This issue is not present for variant that occurs on main chromosome (chromosome 1-22, X, and Y).
 
-With release GRCh38.p14, we have fix this issue and the GRCh38.p14 release will also backward compatible with previous release. Old transcript and gene model files and all of supplementary annotation data will not have any issue with the new genome reference version.
+With release GRCh38.p14, we have fixed this issue and the GRCh38.p14 release will also backward compatible with previous release. Old transcript and gene model files and all of 
+supplementary annotation data will not have any issue with the new genome reference version.
 It is advisable to update to the current genome reference version.
 :::
 
@@ -44,7 +50,10 @@ The current officially supported versions for GRCh38 are:
 | Data Source | Version                     | Release Date |
 |-------------|-----------------------------|--------------|
 | RefSeq      | GCF_000001405.40-RS_2023_10 | 2023-10-07   |
+| RefSeq      | GCF_000001405.40-RS_2023_03 | 2023-03-21   |
 | Ensembl     | 112                         | 2024-05-14   |
+| Ensembl     | 110                         | 2023-04-27   |
+| Ensembl     | 108                         | 2022-10-20   |
 
 For GRCh37:
 
@@ -52,14 +61,19 @@ For GRCh37:
 |-------------|-----------------------------|--------------|
 | RefSeq      | 105.20220307                | 2022-03-10   |
 | Ensembl     | 110                         | 2023-02-08   |
+| Ensembl     | 108                         | 2022-10-20   |
 
 :::note
-For GRCh37 Ensembl release, despite the version is 110 (and they also have newer release version 111 and 112), the annotation data is effectively the same as version 87 which was release back in 2017.
+For GRCh37 Ensembl release, despite the latest version is 110 (and they also have newer release version 111 and 112), the annotation data is effectively the same as version 87 
+which was release back in 2017.
 
 For GRCh37 Refseq release, NCBI has stopped releasing new gene annotation for and version 105.20220307 is the last release version for GRCh37.
 :::
 
-For gene symbols that we supported for the transcript model above, we download the data from [HGNC](https://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json) website as of 2024-06-03.
+For gene symbols that we supported for the transcript model above, the latest data is from [HGNC](https://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json) 
+website as of 2024-06-03. 
+
+More supporting versions can be listed and downloaded using our [Downloader Manager](../utilities/data-manager.mdx).
 
 ### Supplementary Annotation
 

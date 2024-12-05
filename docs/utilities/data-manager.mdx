@@ -18,7 +18,7 @@ Downloader.dll utility will no longer be provided and instead DataManager.dll sh
 The first command is `list`. This command is to list all available data annotation and version.
 
 ```bash
-dotnet DownloadManager.dll list
+dotnet DataManager.dll list
 
 ---------------------------------------------------------------------------
 DataManager                                         (c) 2024 Illumina, Inc.
@@ -56,7 +56,7 @@ There are several parameters that you can pass.
 Below are some example of the output:
 
 ```bash
-dotnet DownloadManager.dll list -r GRCh38 -d /path/to/folder
+dotnet DataManager.dll list -r GRCh38 -d /path/to/folder
 
 ---------------------------------------------------------------------------
 DataManager                                         (c) 2024 Illumina, Inc.
@@ -140,7 +140,7 @@ spliceAI                       | SmallVariant                   | SpliceAI      
 ```
 
 ```bash
-dotnet DownloadManager.dll list -r GRCh38 -d /path/to/folder -s clinvar
+dotnet DataManager.dll list -r GRCh38 -d /path/to/folder -s clinvar
 
 ---------------------------------------------------------------------------
 DataManager                                         (c) 2024 Illumina, Inc.
@@ -207,7 +207,7 @@ The second command is `make-config`. This command will generate a config file th
 The generated config file is basically a template which you can edit manually. It will contain latest version of all data source. In case you want to exclude some data source or require a different version, you can edit it manually.
 
 ```bash
-dotnet DownloadManager.dll make-config
+dotnet DataManager.dll make-config
 
 ---------------------------------------------------------------------------
 DataManager                                         (c) 2024 Illumina, Inc.
@@ -270,7 +270,7 @@ The third command available is `download`. This command will download the databa
 It will also auto update if you have older version of the data by deleting the old version and downloading the new version.
 
 ```bash
-dotnet DownloadManager.dll download
+dotnet DataManager.dll download
 ---------------------------------------------------------------------------
 DataManager                                         (c) 2024 Illumina, Inc.
                                                                      3.24.0
@@ -311,7 +311,7 @@ json
 Below is an example where you download new release of reference file and Ensembl and RefSeq cache. Tge downloader will first detect that you have an existing reference and cache files with different version.
 The downloader then will delete those files and download the new files.
 ```shell
-dotnet DownloadManager.dll download \
+dotnet DataManager.dll download \
 -r GRCh37 \
 --credentials-file ~/.ilmnAnnotations/credentials.json \
 --dir /target/directory \

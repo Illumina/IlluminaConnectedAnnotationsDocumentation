@@ -66,7 +66,8 @@ module.exports = {
       items: [
         'utilities/jasix',
         'utilities/sautils',
-        "utilities/data-manager"
+        "utilities/data-manager",
+        "utilities/jist",
       ],
     },
     {

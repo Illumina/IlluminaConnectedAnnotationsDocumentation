@@ -15,7 +15,7 @@ ILLUMINA_ANNOTATOR_BUILD_ZIP=$(realpath "$1")
 ILLUMINA_ANNOTATOR_ROOT=$CWD/IlluminaConnectedAnnotationsTest
 ILLUMINA_ANNOTATOR_BUILD_DIR=$ILLUMINA_ANNOTATOR_ROOT/build
 ILLUMINA_ANNOTATOR_BIN=$ILLUMINA_ANNOTATOR_BUILD_DIR/Annotator.dll
-DOWNLOADER_BIN=$ILLUMINA_ANNOTATOR_BUILD_DIR/Downloader.dll
+DOWNLOADER_BIN=$ILLUMINA_ANNOTATOR_BUILD_DIR/DataManager.dll
 DATA_DIR=$ILLUMINA_ANNOTATOR_ROOT/Data
 
 VCF_PATH=HiSeq.10000.vcf.gz
@@ -84,7 +84,8 @@ unzip $ILLUMINA_ANNOTATOR_BUILD_ZIP
 # ==============================
 echo "Download all data files"
 create_dir $DATA_DIR
-dotnet $DOWNLOADER_BIN --ga $GENOME_ASSEMBLY --out $DATA_DIR
+dotnet $DOWNLOADER_BIN make-config -r $GENOME_ASSEMBLY
+dotnet $DOWNLOADER_BIN download -r $GENOME_ASSEMBLY --dir $DATA_DIR
 
 # ==============================
 # run Illumina Connected Annotations on a test VCF file
