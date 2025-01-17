@@ -20,7 +20,7 @@ Please visit [Illumina Connected Annotations](https://developer.illumina.com/ill
 ```bash
 mkdir -p IlluminaConnectedAnnotations/Data
 cd IlluminaConnectedAnnotations
-unzip IlluminaConnectedAnnotations-3.24.0-0-gc13dcb61-net6.0.zip
+unzip IlluminaConnectedAnnotations-3.25.0-0-gc13dcb61-net6.0.zip
 ```
 
 ### Quick Start
@@ -33,10 +33,10 @@ We have verified that this script works on Windows (using Git Bash or WSL), Linu
 
 ### Docker
 
-Obtain the docker image in a zip file (e.g. IlluminaConnectedAnnotations-3.24.0-0-gc13dcb61-net6.0-docker.tar.gz), and load it as follows
+Obtain the docker image in a zip file (e.g. IlluminaConnectedAnnotations-3.25.0-0-gc13dcb61-net6.0-docker.tar.gz), and load it as follows
 
 ```bash
-docker load < IlluminaConnectedAnnotations-3.24.0-0-gc13dcb61-net6.0-docker.tar.gz
+docker load < IlluminaConnectedAnnotations-3.25.0-0-gc13dcb61-net6.0-docker.tar.gz
 ```
 
 If you want to build your own docker image, it is really easy to do. You just need to have Illumina Connected Annotations zip file and then download the [Dockerfile](https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/files/Dockerfile) and [this script](https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/files/create_docker_image.sh).
@@ -85,13 +85,13 @@ dotnet DataManager.dll make-config -r GRCh37
 
 dotnet DataManager.dll download \
 -r GRCh37 \
---dir Data 
+--dir Data
 ```
 
 Check [Data Manager](../utilities/data-manager.mdx) for more details on controlling data sources and their versions.
 
 :::info Glitches in the Matrix
-Every once in a while, the download process does not go smoothly. Perhaps the internet connection cut out or you ran out of disk space. The DataManager attempts to detect these 
+Every once in a while, the download process does not go smoothly. Perhaps the internet connection cut out or you ran out of disk space. The DataManager attempts to detect these
 situations by checking the file sizes at the very end. If you see that a file was marked `truncated`, try fixing the root cause and running the downloader again.
 :::
 
@@ -219,8 +219,8 @@ Professional content licensing, feedback and technical support: annotation_suppo
 ```
 
 ### Specifying annotation sources
-By default, Illumina Connected Annotations will use all available data sources. However, the user can customize the set of sources with their versions using the `--versions-config` 
-option. 
+By default, Illumina Connected Annotations will use all available data sources. However, the user can customize the set of sources with their versions using the `--versions-config`
+option.
 
 An Example of versions config json file below:
 ```json
@@ -267,17 +267,17 @@ dotnet Annotator.dll \
  Illumina Connected Annotations                      (c) 2024 Illumina, Inc.
                                                                      3.24.0
  ---------------------------------------------------------------------------
- 
+
  Some requested data sources are not loaded.
- Data Source              Type                     Status    Comments                                                              
+ Data Source              Type                     Status    Comments
  ---------------------------------------------------------------------------
- GenomeAssembly           GenomeAssembly           Loaded    GRCh37.p13                                                            
- RefSeq                   GeneModels               Loaded    105.20220307                                           
- Ensembl                  GeneModels               Loaded    110                                                                   
- HGNC                     GeneModels               Loaded    20240603                                                              
- gnomad                   SmallVariant             Loaded    2.1 
- gnomad                   LowComplexityRegions     Loaded    2.1                                                                    
- clinvar                  SmallVariant             Skipped   Version 99999999 not available 
+ GenomeAssembly           GenomeAssembly           Loaded    GRCh37.p13
+ RefSeq                   GeneModels               Loaded    105.20220307
+ Ensembl                  GeneModels               Loaded    110
+ HGNC                     GeneModels               Loaded    20240603
+ gnomad                   SmallVariant             Loaded    2.1
+ gnomad                   LowComplexityRegions     Loaded    2.1
+ clinvar                  SmallVariant             Skipped   Version 99999999 not available
 
  Initialization                                         Time     Positions/s
  ---------------------------------------------------------------------------
