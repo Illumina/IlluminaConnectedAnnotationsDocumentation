@@ -55,13 +55,13 @@ After you run the script, the docker image will be available in your local machi
 For Docker, we have special instructions for running the DataManager:
 
 ```bash
-docker run --rm -it -v local/data/folder:/scratch illumina-connected-annotations:v3.24.0 DataManager --ga GRCh37 -o /scratch
+docker run --rm -it -v local/data/folder:/scratch illumina-connected-annotations:v3.25.0 DataManager --ga GRCh37 -o /scratch
 ```
 
 Similarly, we have special instructions for running IlluminaConnectedAnnotations (Here's [a toy VCF](https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/files/HiSeq.10000.vcf.gz) in case you need it):
 
 ```bash
-docker run --rm -it -v local/data/folder:/scratch illumina-connected-annotations:v3.24.0 Annotator -c /scratch/Cache/ \
+docker run --rm -it -v local/data/folder:/scratch illumina-connected-annotations:v3.25.0 Annotator -c /scratch/Cache/ \
      -r /scratch/References/Homo_sapiens.GRCh37.Nirvana.dat \
      --sd /scratch/SupplementaryAnnotation/GRCh37 \
      -i /scratch/HiSeq.10000.vcf.gz -o /scratch/HiSeq
@@ -72,7 +72,7 @@ Please note that since our data files are usually accessed through a Docker volu
 :::tip
 For convenience, the user is encouraged to create aliases for the docker commands. For example:
 ```bash
-alias IlluminaConnectedAnnotations="docker run --rm -it -v local/data/folder:/scratch illumina-connected-annotations:v3.24.0 IlluminaConnectedAnnotations"
+alias IlluminaConnectedAnnotations="docker run --rm -it -v local/data/folder:/scratch illumina-connected-annotations:v3.25.0 IlluminaConnectedAnnotations"
 ```
 :::
 
@@ -131,7 +131,7 @@ When running Illumina Connected Annotations, performance metrics are shown as it
 ```bash
 ---------------------------------------------------------------------------
 Illumina Connected Annotations                      (c) 2024 Illumina, Inc.
-                                                                     3.24.0
+                                                                     3.25.0
 ---------------------------------------------------------------------------
 
 Initialization                                         Time     Positions/s
@@ -160,7 +160,7 @@ The full command line options can be viewed by using the `-h` option or no optio
 dotnet Annotator.dll
 ---------------------------------------------------------------------------
 Illumina Connected Annotations                      (c) 2024 Illumina, Inc.
-                                                                     3.24.0
+                                                                     3.25.0
 ---------------------------------------------------------------------------
 
 USAGE: dotnet Annotator.dll -i <vcf path> -c <cache dir> --sd <sa dir> -r <ref path> -o <base output filename>
@@ -265,7 +265,7 @@ dotnet Annotator.dll \
 	 --versions-config /Users/bob/.ilmnAnnotations/customised_GRCh37_annotation_config.json
  ---------------------------------------------------------------------------
  Illumina Connected Annotations                      (c) 2024 Illumina, Inc.
-                                                                     3.24.0
+                                                                     3.25.0
  ---------------------------------------------------------------------------
 
  Some requested data sources are not loaded.
