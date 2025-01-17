@@ -4,7 +4,7 @@ set -e
 ########## Help function #############
 PrintHelp(){
 	echo "USAGE: ./create_docker_image.sh [path to zip file] [image tag]"
-	echo "       ./create_docker_image.sh ~/Download/IlluminaConnectedAnnotations-3.22.0-0-gc13dcb61-net6.0.zip 3.22.0"
+	echo "       ./create_docker_image.sh ~/Download/IlluminaConnectedAnnotations-3.25.0-0-g101034c3-net6.0.zip 3.25.0"
 }
 #######################################
 Clean(){

@@ -7,6 +7,7 @@ module.exports = {
         'introduction/introduction',
         'introduction/licensedContent',
         'introduction/dependencies',
+        'introduction/prerequisite',
         'introduction/getting-started',
         'introduction/parsing-json'
       ],
@@ -66,7 +67,8 @@ module.exports = {
       items: [
         'utilities/jasix',
         'utilities/sautils',
-        "utilities/data-manager"
+        "utilities/data-manager",
+        "utilities/jist",
       ],
     },
     {

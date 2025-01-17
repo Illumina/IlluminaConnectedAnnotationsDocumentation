@@ -80,8 +80,8 @@ module.exports = {
               label: `${getNextVersionName()} (unreleased)`,
               path: '/'
             },
-            '3.23': {
-              path: '3.23',
+            '3.25': {
+              path: '3.25',
               banner: 'none'
             },
           },
