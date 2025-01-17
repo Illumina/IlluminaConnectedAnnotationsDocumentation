@@ -79,6 +79,8 @@ alias IlluminaConnectedAnnotations="docker run --rm -it -v local/data/folder:/sc
 
 ## Downloading the data files
 
+Check [Prerequisite](./prerequisite.mdx) for more details on creating Illumina API key to use Illumina Connected Annotation and its utilities.
+
 To download the latest data sources (or update the ones that you already have), use the following command to automate the download from S3:
 
 ```bash
