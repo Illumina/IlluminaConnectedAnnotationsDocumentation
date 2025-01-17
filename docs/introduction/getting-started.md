@@ -15,7 +15,8 @@ Please read [Prerequisite](../introduction/prerequisite) section to generate nec
 ## Getting Illumina Connected Annotations
 
 ### Latest Release
-Please visit [Illumina Connected Annotations](https://developer.illumina.com/illumina-connected-annotations). to obtain the latest release.
+
+Please visit [Illumina Connected Annotations](https://developer.illumina.com/illumina-connected-annotations) to obtain the latest release. Download and place the zip file in the IlluminaConnectedAnnotations folder.
 
 ```bash
 mkdir -p IlluminaConnectedAnnotations/Data
@@ -92,7 +93,7 @@ Check [Data Manager](../utilities/data-manager.mdx) for more details on controll
 
 :::info Glitches in the Matrix
 Every once in a while, the download process does not go smoothly. Perhaps the internet connection cut out or you ran out of disk space. The DataManager attempts to detect these
-situations by checking the file sizes at the very end. If you see that a file was marked `truncated`, try fixing the root cause and running the downloader again.
+situations by checking the file sizes at the very end. If you see that a file was marked `truncated`, try fixing the root cause and running the DataManager again.
 :::
 
 :::tip
