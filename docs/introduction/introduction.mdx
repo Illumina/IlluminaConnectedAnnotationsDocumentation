@@ -9,12 +9,12 @@ slug: /
 
 ![](ICAnnotations.png)
 
-Illumina Connected Annotations provides translational research-grade annotation of genomic variants (SNVs, MNVs, insertions, deletions, indels, STRs, gene fusions, and SVs (including CNVs). It can be run as a stand-alone package, or integrated into larger software tools that require variant annotation.
+Illumina Connected Annotations provides translational research-grade annotation of genomic variants (SNVs, MNVs, insertions, deletions, indels, STRs, gene fusions, and SVs (including CNVs)). It can be ran as a stand-alone package, or integrated into larger software tools that require variant annotation.
 
 The input to Illumina Connected Annotations are VCFs and the output is a structured JSON representation of all annotation and sample information (as extracted from the VCF). Illumina Connected Annotations handles multiple alternate alleles and multiple samples with ease.
 
 :::tip
-we have also added supporting VCF output with limited annotation sources. See [Illumina Connected Annotations VCF File Format](./../file-formats/illumina-annotator-vcf-file-format.mdx)
+We have also added supporting VCF output with limited annotation sources. See [Illumina Connected Annotations VCF File Format](./../file-formats/illumina-annotator-vcf-file-format.mdx)
 :::
 
 The software is being developed under a rigorous SDLC and testing process to ensure accuracy of the results and enable embedding in other software. Illumina Connected Annotations uses a continuous integration pipeline where millions of variant annotations are monitored against baseline values daily.
@@ -37,7 +37,7 @@ Despite that, we use GRCh38.p12 version [109](https://ftp.ncbi.nlm.nih.gov/genom
 This resulted in mismatch between some alt contigs name and its FASTA sequence. This mismatch can cause some minor issue on the variant ID and HGVS g. notation if the variant is on the alt contigs that were affected.
 This issue is not present for variant that occurs on main chromosome (chromosome 1-22, X, and Y).
 
-With release GRCh38.p14, we have fixed this issue and the GRCh38.p14 release will also backward compatible with previous release. Old transcript and gene model files and all of 
+With release GRCh38.p14, we have fixed this issue and the GRCh38.p14 release will also be backward compatible with previous release. Old transcript and gene model files and all of
 supplementary annotation data will not have any issue with the new genome reference version.
 It is advisable to update to the current genome reference version.
 :::
@@ -64,21 +64,20 @@ For GRCh37:
 | Ensembl     | 108                         | 2022-10-20   |
 
 :::note
-For GRCh37 Ensembl release, despite the latest version is 110 (and they also have newer release version 111 and 112), the annotation data is effectively the same as version 87 
-which was release back in 2017.
+For GRCh37 Ensembl release, despite the latest version being 110 (with existing newer release versions 111 and 112), the annotation data is effectively the same as version 87 which was released back in 2017.
 
-For GRCh37 Refseq release, NCBI has stopped releasing new gene annotation for and version 105.20220307 is the last release version for GRCh37.
+For GRCh37 Refseq release, NCBI has stopped releasing new gene annotation and version 105.20220307 is the last release version for GRCh37.
 :::
 
-For gene symbols that we supported for the transcript model above, the latest data is from [HGNC](https://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json) 
-website as of 2024-06-03. 
+For gene symbols that we support for the transcript model above, the latest data is from [HGNC](https://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json)
+website as of 2024-06-03.
 
-More supporting versions can be listed and downloaded using our [Downloader Manager](../utilities/data-manager.mdx).
+More supported versions can be listed and downloaded using our [Downloader Manager](../utilities/data-manager.mdx).
 
 ### Supplementary Annotation
 
-In addition, it uses external data sources to provide additional context for each variant. 
-Illumina Connected Annotations provides annotations from the following sources divided into 2 tiers: Professional and basic. 
+In addition, it uses external data sources to provide additional context for each variant.
+Illumina Connected Annotations provides annotations from the following sources divided into 2 tiers: Professional and basic.
 The basic tier can be accessed free of charge. The professional tier requires a license. Please see [Licensed Content](./introduction/licensedContent) for details. For access, please contact annotation_support@illumina.com.
 
 | Data Source          | Availability | Latest Supported Version |
