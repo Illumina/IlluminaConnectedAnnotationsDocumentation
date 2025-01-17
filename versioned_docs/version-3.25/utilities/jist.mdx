@@ -1,0 +1,58 @@
+---
+title: Jist
+---
+
+## Overview
+
+The Jist tool provides capability to combine multiple Illumina Connected Annotations JSON outputs into one.
+
+## How to use
+
+To combine the JSON outputs, make sure the Jasix index files (.jsi) are presented along with the json files. If the Jasix index file is not there, use [Jasix](./jasix.mdx) to
+generate before runing Jist.
+
+### Example
+
+```scss
+dotnet Jist.dll -h
+---------------------------------------------------------------------------
+Jist                                                (c) 2024 Illumina, Inc.
+                                                                     3.25.0
+---------------------------------------------------------------------------
+
+USAGE: dotnet Jist.dll -i /path/to/nirvana/output/prefix -o /path/to/combined/json
+Combines multiple Illumina Connected Annotations JSON files into one
+
+OPTIONS:
+      --in, -i <VALUE>       input file prefix
+      --out, -o <VALUE>      compressed output file name (default:console)
+      --help, -h             displays the help menu
+      --version, -v          displays the version
+
+##### Supported Annotation Sources #####
+Basic Tier: DECIPHER, GME, GERP, DANN, REVEL, ClinGen, gnomAD, phyloP, TOPMed, DGV, 1000 Genomes, CliinVar, dbSNP, FusionCatcher, MITOMAP, MultiZ100Way
+
+Professional Tier: PrimateAI(GRCh37), PrimateAI-3D(GRCh38), SpliceAI, COSMIC, OMIM.
+
+##### Contact #####
+Professional content licensing, feedback and technical support: annotation_support@illumina.com.
+```
+
+```scss
+dotnet Jist.dll -i input/Dragen-VC-wg_somatic_tumor_normal -o output/Dragen-VC-wg_somatic_tumor_normal_combined.json.gz
+---------------------------------------------------------------------------
+Jist                                                (c) 2024 Illumina, Inc.
+                                                                     3.25.0
+---------------------------------------------------------------------------
+
+Files to stitch
+input/Dragen-VC-wg_somatic_tumor_normal-chr1-hg38.json.gz
+input/Dragen-VC-wg_somatic_tumor_normal-chr2-hg38.json.gz
+input/Dragen-VC-wg_somatic_tumor_normal-chr3-hg38.json.gz
+Total position blocks written: 231
+Gene lines read: 1368
+Unique gene lines: 588
+
+Time: 00:00:00.1
+
+```

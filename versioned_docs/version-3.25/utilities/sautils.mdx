@@ -1,0 +1,341 @@
+---
+title: SAUtils
+---
+
+## Overview
+
+SAUtils is a utility tool that creates binary supplementary annotation files (*.nsa, *.gsa, *.npd, *.nsi, etc.) from original data files (e.g. VCFs, TSVs, XML, HTML, etc.) for various data sources (e.g. ClinVar, dbSNP, gnomAD, etc.). These binary files can be fed into the Illumina Connected Annotations Annotation engine to provide supplementary annotations in the output.
+
+## The SAUtils Menu
+
+SAUtils supports building binary files for many data sources. The help menu lists them out in the form of sub-commands.
+```scss
+dotnet SAUtils.dll
+---------------------------------------------------------------------------
+SAUtils                                             (c) 2024 Illumina, Inc.
+                                                                     3.25.0
+---------------------------------------------------------------------------
+
+Utilities focused on supplementary annotation
+
+USAGE: dotnet SAUtils.dll <command> [options]
+
+COMMAND: AutoDownloadGenerate   auto download and generate Omim, Clinvar, Clingen, dbSNP
+         EncryptNsa             Encrypts a given nsa file
+         AaCon                  create AA conservation database
+         ancestralAllele        create Ancestral allele database from 1000Genomes data
+         ClinGen                create ClinGen database
+         Downloader             download ClinGen database
+         clinvar                create ClinVar database
+         clinvarPreview         create ClinVar database
+         concat                 merge multiple NSA files for the same data source having non-overlapping regions
+         Cosmic                 create COSMIC database
+         CosmicSv               create COSMIC SV database
+         CosmicFusion           create COSMIC gene fusion database
+         CosmicCGC              create COSMIC cancer gene census database
+         CustomGene             create custom gene annotation database
+         CustomVar              create custom variant annotation database
+         Dann                   create DANN database
+         Dbsnp                  create dbSNP database
+         Dgv                    create DGV database
+         DiseaseValidity        create disease validity database
+         DosageMapRegions       create dosage map regions
+         DosageSensitivity      create dosage sensitivity database
+         DownloadOmim           download OMIM database
+         ExtractMiniSA          extracts mini SA
+         ExtractMiniXml         extracts mini XML (ClinVar)
+         FilterSpliceNetTsv     filter SpliceNet predictions
+         FusionCatcher          create FusionCatcher database
+         Gerp                   create GERP conservation database
+         GlobalMinor            create global minor allele database
+         Gnomad                 create gnomAD database
+         Gnomad-lcr             create gnomAD low complexity region database
+         GnomadGeneScores       create gnomAD gene scores database
+         GnomadSV               create gnomAD structural variant database
+         Index                  edit an index file
+         MitoHet                create mitochondrial Heteroplasmy database
+         MitomapSvDb            create MITOMAP structural variants database
+         MitomapVarDb           create MITOMAP small variants database
+         Omim                   create OMIM database
+         OneKGen                create 1000 Genome small variants database
+         OneKGenSv              create 1000 Genomes structural variants database
+         OneKGenSvVcfToBed      convert 1000 Genomes structural variants VCF file into a BED-like file
+         PhyloP                 create PhyloP database
+         PhyloPPrimate          create PhyloP Primate database
+         PrimateAi              create PrimateAI database
+         PromoterAi             create PromoterAI database
+         RefMinor               create Reference Minor database from 1000 Genome
+         RemapWithDbsnp         remap a VCF file given source and destination rsID mappings
+         Revel                  create REVEL database
+         SpliceAi               create SpliceAI database
+         TopMed                 create TOPMed database
+         Gme                    create GME Variome database
+         Decipher               create Decipher database
+         CosmicDownloader       Cosmic downloader
+         NsaTrimmer             trim Nsa file
+```
+You can get further detailed help for each sub-command by typing in the subcommand. For example:
+```scss
+dotnet SAUtils.dll clinvar
+---------------------------------------------------------------------------
+SAUtils                                             (c) 2024 Illumina, Inc.
+                                                                     3.25.0
+---------------------------------------------------------------------------
+
+USAGE: dotnet SAUtils.dll clinvar [options]
+Creates a supplementary database with ClinVar annotations
+
+OPTIONS:
+      --ref, -r <VALUE>      compressed reference sequence file
+      --rcv, -i <VALUE>      ClinVar Full release XML file
+      --vcv, -c <VALUE>      ClinVar Variation release XML file
+      --out, -o <VALUE>      output directory
+      --help, -h             displays the help menu
+      --version, -v          displays the version
+
+##### Supported Annotation Sources #####
+Basic Tier: DECIPHER, GME, GERP, DANN, REVEL, ClinGen, gnomAD, phyloP, TOPMed, DGV, 1000 Genomes, CliinVar, dbSNP, FusionCatcher, MITOMAP, MultiZ100Way
+
+Professional Tier: PrimateAI(GRCh37), PrimateAI-3D(GRCh38), SpliceAI, COSMIC, OMIM.
+
+##### Contact #####
+Professional content licensing, feedback and technical support: annotation_support@illumina.com.
+```
+More detailed instructions about each sub-command can be found in documentation of respective data sources.
+## Output File Formats
+The format of the binary file SAUtils produce depend on the type of annotation data represented in that file (e.g. small variant vs. structural variants vs. genes).
+
+| File Extension  | Description                                               |
+|-----------------|-----------------------------------------------------------|
+| .nsa            | Small variant annotations (e.g. SNV, insertions, deletions, etc.)|
+| .gsa            | Compact variant annotations (e.g. SNV, insertions, deletions, etc.)|
+| .idx            | Index file|
+| .nsi            | Interval annotations (e.g. SV, CNVs, intervals)|
+| .nga            | Gene annotations |
+| .npd            | Conservation scores|
+| .rma            | Reference Minor allele|
+| .gfs            | Gene fusions source|
+| .gfj            | Gene fusions JSON|
+| .schema         | JSON schema|
+
+## SAUtils AutoDownloadGenerate
+To make generating supplementary annotation files easier, we have provided an easier command that can be use instead of more granular subcommands.
+This subcommands basically integrate both download and generate subcommand. Currently, this subcommand support several data sources:
+- ClinVar
+- ClinGen
+- dbSNP
+- OMIM
+- COSMIC
+
+```
+dotnet SAUtils.dll AutoDownloadGenerate
+---------------------------------------------------------------------------
+SAUtils                                             (c) 2024 Illumina, Inc.
+                                                                     3.25.0
+---------------------------------------------------------------------------
+
+USAGE: dotnet SAUtils.dll autodownloadgenerate [options]
+Downloads and generates the Supplementary Database for Omim, ClinGen, and ClinVar
+
+OPTIONS:
+      --sources, -s <VALUE>  comma separated list of external data sources
+      --inputJson, -j <path> input JSON path
+      --downloadBaseFolder, -b <directory>
+                             base directory path external datasources
+                               downloaded to
+      --downloadDate, -d <directory>
+                             date directory name that external datasources
+                               downloaded to. Default is today's date in yyyy-
+                               MM-dd format (e.g. 2023-01-30).
+      --cache, -c <directory>
+                             input cache directory
+      --ref, -r <filename>   input reference filename
+      --out, -o <VALUE>      output SA directory
+      --actions, -a <VALUE>  comma separated list of action(s) to perform.
+                               action options: download, generate.
+      --help, -h             displays the help menu
+      --version, -v          displays the version
+
+##### Supported Annotation Sources #####
+Basic Tier: DECIPHER, GME, GERP, DANN, REVEL, ClinGen, gnomAD, phyloP, TOPMed, DGV, 1000 Genomes, CliinVar, dbSNP, FusionCatcher, MITOMAP, MultiZ100Way
+
+Professional Tier: PrimateAI(GRCh37), PrimateAI-3D(GRCh38), SpliceAI, COSMIC, OMIM.
+
+##### Contact #####
+Professional content licensing, feedback and technical support: annotation_support@illumina.com.
+```
+You can download only, generate only, or both download and generate supplementary files.
+To use this subcommands, you have to prepare a json file that will be used as data sources information.
+Below is tutorial to use this subcommand to generate each data source.
+### AutoDownloadGenerate ClinVar
+Below is the command to use AutoDownloadGenerate for ClinVar to download and generate supplementary files.
+```
+dotnet SAUtils.dll AutoDownloadGenerate -s ClinVar -a download,generate -j [path to json] -c [path to cache folder] -r [path to reference folder] -b [path to folder to store downloaded files] -o [path to output folder]
+```
+The json file for ClinVar should be formatted like below:
+```
+{
+"clinvar": {
+    "baseDirectory": "ClinVar",
+    "sourceFiles": [
+      {
+        "name": "ClinVar",
+        "description": "A freely accessible, public archive of reports of the relationships among human variations and phenotypes, with supporting evidence",
+        "files": [
+          {
+            "localFileName": "ClinVarFullRelease_00-latest.xml.gz",
+            "downloadUrl": "https://ftp.ncbi.nlm.nih.gov/pub/clinvar/xml/RCV_xml_old_format/ClinVarFullRelease_00-latest.xml.gz",
+            "md5Url": "https://ftp.ncbi.nlm.nih.gov/pub/clinvar/xml/RCV_xml_old_format/ClinVarFullRelease_00-latest.xml.gz.md5"
+          },
+          {
+            "localFileName": "ClinVarVariationRelease_00-latest.xml.gz",
+            "downloadUrl": "https://ftp.ncbi.nlm.nih.gov/pub/clinvar/xml/VCV_xml_old_format/ClinVarVariationRelease_00-latest.xml.gz",
+            "md5Url": "https://ftp.ncbi.nlm.nih.gov/pub/clinvar/xml/VCV_xml_old_format/ClinVarVariationRelease_00-latest.xml.gz.md5"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+There is no need to modify the json entry for ClinVar and you can use as it is.
+### AutoDownloadGenerate ClinGen
+```
+dotnet SAUtils.dll AutoDownloadGenerate -s ClinGen -a download,generate -j [path to json] -c [path to cache folder] -r [path to reference folder] -b [path to folder to store downloaded files] -o [path to output folder]
+```
+The json file for ClinGen should be formatted like below:
+```
+{
+"clingen": {
+    "baseDirectory": "ClinGen",
+    "sourceFiles": [
+      {
+        "name": "ClinGen Dosage Sensitivity Map",
+        "subDirectory": "DosageSensitivity",
+        "description": "Dosage sensitivity map from ClinGen (dbVar)",
+        "files": [
+          {
+            "localFileName": "ClinGen_gene_curation_list_GRCh37.tsv",
+            "downloadUrl": "https://ftp.clinicalgenome.org/ClinGen_gene_curation_list_GRCh37.tsv"
+          },
+          {
+            "localFileName": "ClinGen_gene_curation_list_GRCh38.tsv",
+            "downloadUrl": "https://ftp.clinicalgenome.org/ClinGen_gene_curation_list_GRCh38.tsv"
+          },
+          {
+            "localFileName": "ClinGen_region_curation_list_GRCh37.tsv",
+            "downloadUrl": "https://ftp.clinicalgenome.org/ClinGen_region_curation_list_GRCh37.tsv"
+          },
+          {
+            "localFileName": "ClinGen_region_curation_list_GRCh38.tsv",
+            "downloadUrl": "https://ftp.clinicalgenome.org/ClinGen_region_curation_list_GRCh38.tsv"
+          }
+        ]
+      },
+      {
+        "name": "ClinGen disease validity curations",
+        "subDirectory": "GeneDiseaseValidity",
+        "description": "Disease validity curations from ClinGen (dbVar)",
+        "files": [
+          {
+            "localFileName": "Clingen-Gene-Disease-Summary.csv",
+            "downloadUrl": "https://search.clinicalgenome.org/kb/gene-validity/download"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+There is no need to modify the json entry for ClinGen and you can use as it is.
+### AutoDownloadGenerate dbSNP
+```
+dotnet SAUtils.dll AutoDownloadGenerate -s dbSNP -a download,generate -j [path to json] -c [path to cache folder] -r [path to reference folder] -b [path to folder to store downloaded files] -o [path to output folder]
+```
+The json file for dbSNP should be formatted like below:
+```
+{
+  "dbsnp": {
+    "baseDirectory": "dbSNP",
+    "sourceFiles": [
+      {
+        "name": "dbSNP",
+        "description": "Identifiers for observed variants",
+        "version": "156",
+        "subDirectory": "GRCh37",
+        "files": [
+          {
+            "localFileName": "GCF_000001405.25.gz.tbi",
+            "downloadUrl": "https://ftp.ncbi.nih.gov/snp/latest_release/VCF/GCF_000001405.25.gz.tbi",
+            "md5Url": "https://ftp.ncbi.nih.gov/snp/latest_release/VCF/GCF_000001405.25.gz.tbi.md5"
+          },
+          {
+            "localFileName": "GCF_000001405.25.gz",
+            "downloadUrl": "https://ftp.ncbi.nih.gov/snp/latest_release/VCF/GCF_000001405.25.gz",
+            "md5Url": "https://ftp.ncbi.nih.gov/snp/latest_release/VCF/GCF_000001405.25.gz.md5"
+          }
+        ]
+      },
+      {
+        "name": "dbSNP",
+        "description": "Identifiers for observed variants",
+        "version": "156",
+        "subDirectory": "GRCh38",
+        "files": [
+          {
+            "localFileName": "GCF_000001405.40.gz.tbi",
+            "downloadUrl": "https://ftp.ncbi.nih.gov/snp/latest_release/VCF/GCF_000001405.40.gz.tbi",
+            "md5Url": "https://ftp.ncbi.nih.gov/snp/latest_release/VCF/GCF_000001405.40.gz.tbi.md5"
+          },
+          {
+            "localFileName": "GCF_000001405.40.gz",
+            "downloadUrl": "https://ftp.ncbi.nih.gov/snp/latest_release/VCF/GCF_000001405.40.gz",
+            "md5Url": "https://ftp.ncbi.nih.gov/snp/latest_release/VCF/GCF_000001405.40.gz.md5"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+The json above is examplke for dbSNP version 156. If you want to use it for different version, adjust the version number and all entries in files to use the actual URL.
+If you only want to generate GRCh38, just remove the GRCh37 entries in the sourceFiles.
+### AutoDownloadGenerate OMIM
+```
+dotnet SAUtils.dll AutoDownloadGenerate -s OMIM -a download,generate -j [path to json] -c [path to cache folder] -r [path to reference folder] -b [path to folder to store downloaded files] -o [path to output folder]
+```
+The json file for OMIM should be formatted like below:
+```
+{
+"omim": {
+    "baseDirectory": "omim",
+    "sourceFiles": [
+      {
+        "name": "OMIM",
+        "description": "An Online Catalog of Human Genes and Genetic Disorders"
+      }
+    ]
+  }
+}
+```
+There is no need to modify the json entry for OMIM and you can use as it is. You have to export OMIM API key as environment variable with name ``OmimApiKey``.
+### AutoDownloadGenerate COSMIC
+```
+dotnet SAUtils.dll AutoDownloadGenerate -s COSMIC -a download,generate -j [path to json] -c [path to cache folder] -r [path to reference folder] -b [path to folder to store downloaded files] -o [path to output folder]
+```
+The json file for COSMIC should be formatted like below:
+```
+{
+  "Cosmic": {
+    "baseDirectory": "COSMIC",
+    "sourceFiles": [
+      {
+        "name": "COSMIC",
+        "version": "99",
+        "description": "the Catalogue Of Somatic Mutations In Cancer"
+      }
+    ]
+  }
+}
+```
+You have to adjust the version entry according to which COSMIC version you want. You also need to have COSMIC credentials and export it as environment variable with name ``Cosmic_ClientId``, ``Cosmic_Username``, and ``Cosmic_Password``
