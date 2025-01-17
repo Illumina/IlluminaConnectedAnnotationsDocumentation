@@ -53,13 +53,7 @@ chmod +x create_docker_image.sh
 
 After you run the script, the docker image will be available in your local machine with image name `illumina-connected-annotations:[image tag specified]`.
 
-For Docker, we have special instructions for running the DataManager:
-
-```bash
-docker run --rm -it -v local/data/folder:/scratch illumina-connected-annotations:v3.25.0 DataManager --ga GRCh37 -o /scratch
-```
-
-Similarly, we have special instructions for running IlluminaConnectedAnnotations (Here's [a toy VCF](https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/files/HiSeq.10000.vcf.gz) in case you need it):
+We have special instructions for running IlluminaConnectedAnnotations (Here's [a toy VCF](https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/files/HiSeq.10000.vcf.gz) in case you need it):
 
 ```bash
 docker run --rm -it -v local/data/folder:/scratch illumina-connected-annotations:v3.25.0 Annotator -c /scratch/Cache/ \
