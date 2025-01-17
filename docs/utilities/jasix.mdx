@@ -20,7 +20,7 @@ Indexes a Illumina Connected Annotations annotated JSON file
 OPTIONS:
       --header, -t           print also the header lines
       --only-header, -H      print only the header lines
-      --chromosomes, -l      list chromosome names
+      --list, -l             list chromosome and section names
       --index, -c            create index
       --in, -i <VALUE>       input
       --out, -o <VALUE>      compressed output file name (default:console)
@@ -28,12 +28,20 @@ OPTIONS:
       --section, -s <VALUE>  complete section (positions or genes) to output
       --help, -h             displays the help menu
       --version, -v          displays the version
+
+##### Supported Annotation Sources #####
+Basic Tier: DECIPHER, GME, GERP, DANN, REVEL, ClinGen, gnomAD, phyloP, TOPMed, DGV, 1000 Genomes, CliinVar, dbSNP, FusionCatcher, MITOMAP, MultiZ100Way
+
+Professional Tier: PrimateAI(GRCh37), PrimateAI-3D(GRCh38), SpliceAI, COSMIC, OMIM.
+
+##### Contact #####
+Professional content licensing, feedback and technical support: annotation_support@illumina.com.
 ```
 ```scss
 dotnet Jasix.dll --index -i input.json.gz
 ---------------------------------------------------------------------------
-Jasix                                               (c) 2023 Illumina, Inc.
-                                                                     3.22.0
+Jasix                                               (c) 2024 Illumina, Inc.
+                                                                     3.25.0
 ---------------------------------------------------------------------------
 
 Ref Sequence chrM indexed in 00:00:00.2

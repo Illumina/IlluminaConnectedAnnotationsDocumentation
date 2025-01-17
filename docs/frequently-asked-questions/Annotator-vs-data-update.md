@@ -25,7 +25,7 @@ Let us look at a few update scenarios.
 
 | Requirement                      | What needs to be updated /added     | Suggested action       |
 | -------------------------------- | ----------------------------------- | ---------------------- |
-| New transcripts and gene symbols | Cache files from RefSeq and Ensembl | Run Downloader         |
-| Update ClinVar                   | ClinVar SA files                    | Run Downloader         |
+| New transcripts and gene symbols | Cache files from RefSeq and Ensembl | Run DataManager         |
+| Update ClinVar                   | ClinVar SA files                    | Run DataManager         |
 | New external annotation          | New SA files required               | Submit feature request |
 | New annotation feature           | Annotator                           | Submit feature request |

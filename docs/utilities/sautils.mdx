@@ -12,20 +12,22 @@ SAUtils supports building binary files for many data sources. The help menu list
 ```scss
 dotnet SAUtils.dll
 ---------------------------------------------------------------------------
-SAUtils                                             (c) 2023 Illumina, Inc.
-                                                                     3.22.0
+SAUtils                                             (c) 2024 Illumina, Inc.
+                                                                     3.25.0
 ---------------------------------------------------------------------------
 
 Utilities focused on supplementary annotation
 
 USAGE: dotnet SAUtils.dll <command> [options]
 
-COMMAND: AutoDownloadGenerate   auto download and generate Omim, Clinvar, Clingen
+COMMAND: AutoDownloadGenerate   auto download and generate Omim, Clinvar, Clingen, dbSNP
+         EncryptNsa             Encrypts a given nsa file
          AaCon                  create AA conservation database
          ancestralAllele        create Ancestral allele database from 1000Genomes data
          ClinGen                create ClinGen database
          Downloader             download ClinGen database
          clinvar                create ClinVar database
+         clinvarPreview         create ClinVar database
          concat                 merge multiple NSA files for the same data source having non-overlapping regions
          Cosmic                 create COSMIC database
          CosmicSv               create COSMIC SV database
@@ -59,21 +61,25 @@ COMMAND: AutoDownloadGenerate   auto download and generate Omim, Clinvar, Clinge
          OneKGenSv              create 1000 Genomes structural variants database
          OneKGenSvVcfToBed      convert 1000 Genomes structural variants VCF file into a BED-like file
          PhyloP                 create PhyloP database
+         PhyloPPrimate          create PhyloP Primate database
          PrimateAi              create PrimateAI database
-         RefMinor               create Reference Minor database from 1000 Genome 
+         PromoterAi             create PromoterAI database
+         RefMinor               create Reference Minor database from 1000 Genome
          RemapWithDbsnp         remap a VCF file given source and destination rsID mappings
          Revel                  create REVEL database
          SpliceAi               create SpliceAI database
          TopMed                 create TOPMed database
          Gme                    create GME Variome database
          Decipher               create Decipher database
+         CosmicDownloader       Cosmic downloader
+         NsaTrimmer             trim Nsa file
 ```
 You can get further detailed help for each sub-command by typing in the subcommand. For example:
 ```scss
 dotnet SAUtils.dll clinvar
 ---------------------------------------------------------------------------
-SAUtils                                             (c) 2023 Illumina, Inc.
-                                                                     3.22.0
+SAUtils                                             (c) 2024 Illumina, Inc.
+                                                                     3.25.0
 ---------------------------------------------------------------------------
 
 USAGE: dotnet SAUtils.dll clinvar [options]
@@ -86,6 +92,14 @@ OPTIONS:
       --out, -o <VALUE>      output directory
       --help, -h             displays the help menu
       --version, -v          displays the version
+
+##### Supported Annotation Sources #####
+Basic Tier: DECIPHER, GME, GERP, DANN, REVEL, ClinGen, gnomAD, phyloP, TOPMed, DGV, 1000 Genomes, CliinVar, dbSNP, FusionCatcher, MITOMAP, MultiZ100Way
+
+Professional Tier: PrimateAI(GRCh37), PrimateAI-3D(GRCh38), SpliceAI, COSMIC, OMIM.
+
+##### Contact #####
+Professional content licensing, feedback and technical support: annotation_support@illumina.com.
 ```
 More detailed instructions about each sub-command can be found in documentation of respective data sources.
 ## Output File Formats
@@ -117,11 +131,11 @@ This subcommands basically integrate both download and generate subcommand. Curr
 dotnet SAUtils.dll AutoDownloadGenerate
 ---------------------------------------------------------------------------
 SAUtils                                             (c) 2024 Illumina, Inc.
-                                                                     3.23.0
+                                                                     3.25.0
 ---------------------------------------------------------------------------
 
 USAGE: dotnet SAUtils.dll autodownloadgenerate [options]
-Downloads and generates the Supplementary Database for Omim, ClinGen, ClinVar, dbSNP, and COSMIC
+Downloads and generates the Supplementary Database for Omim, ClinGen, and ClinVar
 
 OPTIONS:
       --sources, -s <VALUE>  comma separated list of external data sources
@@ -141,6 +155,14 @@ OPTIONS:
                                action options: download, generate.
       --help, -h             displays the help menu
       --version, -v          displays the version
+
+##### Supported Annotation Sources #####
+Basic Tier: DECIPHER, GME, GERP, DANN, REVEL, ClinGen, gnomAD, phyloP, TOPMed, DGV, 1000 Genomes, CliinVar, dbSNP, FusionCatcher, MITOMAP, MultiZ100Way
+
+Professional Tier: PrimateAI(GRCh37), PrimateAI-3D(GRCh38), SpliceAI, COSMIC, OMIM.
+
+##### Contact #####
+Professional content licensing, feedback and technical support: annotation_support@illumina.com.
 ```
 You can download only, generate only, or both download and generate supplementary files.
 To use this subcommands, you have to prepare a json file that will be used as data sources information.
