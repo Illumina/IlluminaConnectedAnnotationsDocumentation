@@ -90,6 +90,17 @@ Check [Data Manager](../utilities/data-manager.mdx) for more details on controll
 :::info Glitches in the Matrix
 Every once in a while, the download process may not go smoothly. Perhaps the internet connection was interrupted or you ran out of disk space. The DataManager attempts to detect these
 situations by checking the file sizes at the very end. If you see that a file was marked `truncated`, try addressing the root cause and run the DataManager again.
+
+If you want to verify the completeness and integrity of your downloaded files, we've created [a script](VerifyChecksums.sh) that performs checksumming on all files in the specified Data folder and compares the results against a list of known checksums.
+
+To use the verification script, run the following command in your terminal:
+```bash
+bash ./VerifyChecksums.sh <path_to_data_folder> <path_to_checksum_file>
+```
+Where:
+
+* <path_to_data_folder> is the path to your GRCh37 or GRCh38 data folder
+* <path_to_checksum_file> is the path to the corresponding checksum file (e.g., checksumGRCh37.txt or checksumGRCh38.txt)
 :::
 
 :::tip
