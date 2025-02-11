@@ -377,6 +377,23 @@ Data license saved: ~/.ilmnAnnotations/premium.lic
 
 The fourth command is `version-validate`. This command is used to check whether the directory provided has all data source file and version that is defined in the version config.
 
+### Data verification
+
+If you want to verify the completeness and integrity of your downloaded files, we've created [a script](VerifyChecksums.sh) that performs checksumming on all files in the specified Data folder and compares the results against a list of known checksums.
+
+To use the verification script, run the following command in your terminal:
+```bash
+USAGE:
+bash ./VerifyChecksums.sh <path_to_data_folder> <path_to_checksum_file>
+
+EXAMPLE:
+bash ./VerifyChecksums.sh Data checksumGRCh37.txt
+```
+Where:
+
+* <path_to_data_folder> is the path to the folder containing Cache, Reference and SupplementaryAnnotations directories
+* <path_to_checksum_file> is the path to the corresponding checksum file (e.g., [checksumGRCh37.txt]() or [checksumGRCh38.txt]())
+
 ```shell
 ---------------------------------------------------------------------------
 DataManager                                         (c) 2024 Illumina, Inc.

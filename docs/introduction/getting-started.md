@@ -95,7 +95,10 @@ If you want to verify the completeness and integrity of your downloaded files, w
 
 To use the verification script, run the following command in your terminal:
 ```bash
-bash ./VerifyChecksums.sh <path_to_data_folder> <path_to_checksum_file>
+USAGE: bash ./VerifyChecksums.sh <path_to_data_folder> <path_to_checksum_file>
+
+Example:
+bash ./VerifyChecksums.sh Data checksumGRCh37.txt
 ```
 Where:
 
