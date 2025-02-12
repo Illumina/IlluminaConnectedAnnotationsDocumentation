@@ -372,14 +372,9 @@ Downloaded files:
 - ClinVar_preview_20240301.nsa
 Data license saved: ~/.ilmnAnnotations/premium.lic
 ```
+### Download verification
 
-### Version validate
-
-The fourth command is `version-validate`. This command is used to check whether the directory provided has all data source file and version that is defined in the version config.
-
-### Data verification
-
-If you want to verify the completeness and integrity of your downloaded files, we've created [a script](VerifyChecksums.sh) that performs checksumming on all files in the specified Data folder and compares the results against a list of known checksums.
+To verify the completeness and integrity of your downloaded files, we've created a bash script [VerifyChecksums.sh](resources/VerifyChecksums.sh) that performs md5sum checks on all files in the specified Data folder and compares the results against a list of known checksums.
 
 To use the verification script, run the following command in your terminal:
 ```bash
@@ -391,8 +386,12 @@ bash ./VerifyChecksums.sh Data checksumGRCh37.txt
 ```
 Where:
 
-* <path_to_data_folder> is the path to the folder containing Cache, Reference and SupplementaryAnnotations directories
-* <path_to_checksum_file> is the path to the corresponding checksum file (e.g., [checksumGRCh37.txt](../introduction/checksumGRCh37.txt) or [checksumGRCh38.txt](../introduction/checksumGRCh38.txt))
+* <path_to_data_folder> is the path to the folder containing Cache, Reference and SupplementaryAnnotations directories.
+* <path_to_checksum_file> is the path to the corresponding checksum file (e.g., [checksumGRCh37.txt](resources/checksumGRCh37.txt) or [checksumGRCh38.txt](resources/checksumGRCh38.txt) corresponding to version config files [all_annotations_GRCh37.json](resources/all_annotations_GRCh37.json) and [all_annotations_GRCh38.json](resources/all_annotations_GRCh38.json)). 
+
+### Version validate
+
+The fourth command is `version-validate`. This command is used to check whether the directory provided has all data source file and version that is defined in the version config.
 
 ```shell
 ---------------------------------------------------------------------------

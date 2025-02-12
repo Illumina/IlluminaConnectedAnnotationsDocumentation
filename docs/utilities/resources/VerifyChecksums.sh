@@ -1,6 +1,6 @@
 #!/bin/bash
 if [ $# -ne 2 ]; then
-    echo "Usage: $0 <path to GRCh37/GRCh38 data directory> <path to checksum.txt file>"
+    echo "Usage: $0 <path to data directory containing Cache, Reference and Supplementary Annotations> <path to checksum.txt file>"
     exit 1
 fi
 
