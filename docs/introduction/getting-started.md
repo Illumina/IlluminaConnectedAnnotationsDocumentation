@@ -103,7 +103,7 @@ bash ./VerifyChecksums.sh Data checksumGRCh37.txt
 Where:
 
 * <path_to_data_folder> is the path to the folder containing Cache, Reference and SupplementaryAnnotations directories
-* <path_to_checksum_file> is the path to the corresponding checksum file (e.g., [checksumGRCh37.txt]() or [checksumGRCh38.txt]())
+* <path_to_checksum_file> is the path to the corresponding checksum file (e.g., [checksumGRCh37.txt](checksumGRCh37.txt) or [checksumGRCh38.txt](checksumGRCh38.txt))
 :::
 
 :::tip
