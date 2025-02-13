@@ -88,12 +88,11 @@ dotnet DataManager.dll download \
 Check [Data Manager](../utilities/data-manager.mdx) for more details on controlling data sources and their versions.
 
 :::info Glitches in the Matrix
-Every once in a while, the download process does not go smoothly. Perhaps the internet connection cut out or you ran out of disk space. The DataManager attempts to detect these
-situations by checking the file sizes at the very end. If you see that a file was marked `truncated`, try fixing the root cause and running the DataManager again.
-:::
+Every once in a while, the download process may not go smoothly. Perhaps the internet connection was interrupted or you ran out of disk space. The DataManager attempts to detect these
+situations by checking the file sizes at the very end. If you see that a file was marked `truncated`, try addressing the root cause and run the DataManager again.
 
 :::tip
-From time to time, you can re-run the DataManager to get the latest annotation files. It will only download the files that changed.
+From time to time, you can re-run the DataManager to obtain the latest annotation files. It will only download files that have changed since the last download.
 :::
 
 ## Download a test VCF file
