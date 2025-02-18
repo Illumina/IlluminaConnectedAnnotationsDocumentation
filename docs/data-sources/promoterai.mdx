@@ -1,0 +1,45 @@
+---
+title: Promoter AI
+---
+
+import JSON from './promoterai-json.md'
+
+:::caution Professional data source
+This is a Professional data source and is not available freely. Please contact annotation_support@illumina.com if you would like to obtain it.
+:::
+
+## Overview
+Promoter AI is the latest AI-based annotation data from Illumina. It calculates score of possible variant of nucleotides on the promoter region.
+Promoter region is described as 5000 nt upstream of a transcript transcription starting site (TSS). Each annotation will show score of teh variant and which transcript and which gene is the promoter region correspond to.
+The gene and transcript data is generated using gene annotation data from GENCODE Release 39 (corresponds to Ensembl release 105).
+
+:::note Transcript and Gene ID Promoter-AI version
+Illumina Connected Annotation uses its own transcript and gene cache data when calculating transcript annotation.
+The version that is used for transcript annotation is independent to the one being used for Promoter AI.
+We provide several version of transcript and gene cache data that you can choose and download but Promoter-AI is based on GENCODE Release 39.
+There can be some differences in the transcript ID and gene ID shown in the annotation result due to this version differences.
+:::
+
+## Parsing
+
+### TSV File
+```scss
+gene_id	chrom	pos	ref	alt	strand	gene	transcript_id	tss_pos	strand_adj_dist_tss	score_x	score_y	score
+ENSG00000181404	chr9	73364	G	A	-1	WASHC1	ENST00000642633.1	73864	500	-0.0032	-0.0298	-0.0165
+ENSG00000181404	chr9	73364	G	C	-1	WASHC1	ENST00000642633.1	73864	500	-0.0372	-0.052000000000000005	-0.0446
+ENSG00000181404	chr9	73364	G	T	-1	WASHC1	ENST00000642633.1	73864	500	0.0202	-0.0315	-0.0056500000000000005
+ENSG00000181404	chr9	73365	G	A	-1	WASHC1	ENST00000642633.1	73864	499	-0.015	-0.0643	-0.03965
+ENSG00000181404	chr9	73365	G	C	-1	WASHC1	ENST00000642633.1	73864	499	0.0285	-0.0035	0.0125
+ENSG00000181404	chr9	73365	G	T	-1	WASHC1	ENST00000642633.1	73864	499	-0.0095	-0.0352	-0.022350000000000002
+ENSG00000181404	chr9	73366	G	A	-1	WASHC1	ENST00000642633.1	73864	498	0.0068	-0.0565	-0.02485
+ENSG00000181404	chr9	73366	G	C	-1	WASHC1	ENST00000642633.1	73864	498	0.0596	0.0854	0.07250000000000001
+ENSG00000181404	chr9	73366	G	T	-1	WASHC1	ENST00000642633.1	73864	498	-0.0086	-0.0009	-0.00475
+ENSG00000181404	chr9	73367	C	A	-1	WASHC1	ENST00000642633.1	73864	497	0.0091	-0.0068	0.0011500000000000004
+...
+```
+
+From the file, we extract column `gene_id`, `transcript_id`, `strand`, `strand_adj_dist_tss`, and `score`.
+
+## JSON Output
+
+<JSON/>
