@@ -12,8 +12,8 @@
 
 | Field           |  Type   | Notes                                                                     |
 |:----------------|:-------:|:--------------------------------------------------------------------------|
-| strand          |   int   | strand location of the transcript                                         |
+| strand          |   int   | Strand location of the transcript                                         |
 | distanceFromTss |   int   | Number of nucleotides calculated from TSS of teh corresponding transcript |
 | geneId          | string  | Gene ID                                                                   |
 | transcriptId    | string  | Transcript ID (Ensembl)                                                   |
-| score           | decimal | calculated Promoter AI score                                              |
+| score           | decimal | Calculated Promoter AI score                                              |
