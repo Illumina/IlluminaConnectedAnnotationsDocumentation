@@ -10,7 +10,7 @@ This is a Professional data source and is not available freely. Please contact a
 
 ## Overview
 Promoter AI is the latest AI-based annotation data from Illumina. It calculates score of possible variant of nucleotides on the promoter region.
-Promoter region is described as 500 nt upstream and downstream of a transcript's transcription starting site (TSS). Each annotation will show score of teh variant and which transcript and which gene is the promoter region correspond to.
+Promoter region is described as 500nt upstream and downstream of a transcript's transcription starting site (TSS). Each annotation will show score of the variant and which transcript and which gene is the promoter region correspond to.
 The gene and transcript data is generated using gene annotation data from GENCODE Release 39 (corresponds to Ensembl release 105).
 
 :::note Transcript and Gene ID Promoter-AI version
@@ -43,3 +43,8 @@ From the file, we extract column `gene_id`, `transcript_id`, `strand`, `strand_a
 ## JSON Output
 
 <JSON/>
+
+
+## Interpreting Score
+The score annotation from Promoter AI has range between -1 and 1. Positive score shows that the corresponding variant has over expression effect to the target gene
+while Negative score has under expression effect to the target gene. If the score is between -0.05 and 0.05 it doesn't have any efefct to the target gene.
