@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Generator: Adobe Illustrator 24.2.3, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 viewBox="0 0 2150 2263" style="enable-background:new 0 0 2150 2263;" xml:space="preserve">
+	 viewBox="0 0 2150 2700" style="enable-background:new 0 0 2150 2713;" xml:space="preserve">
 <style type="text/css">
 	.st0{fill:#EDF7ED;}
 	.st1{fill:#FFF4E5;}
@@ -2763,4 +2763,17 @@
 </g>
 <g>
 </g>
+
+	<g id="Samples">
+		<rect x="10" y="2265" class="st0" width="690" height="320" stroke="black" stroke-width="0.5" fill="#ff00ff00"/>
+
+		<text transform="matrix(1 0 0 1 180 2440)" fill="black" font-family="arial, sans-serif" font-size="40" font-weight="100">
+        ISCN Simple Nomenclature
+    </text>
+
+		<text transform="matrix(0 -1 +1 0 100 2550)" font-family="arial" fill="black" font-size="65">
+        Samples
+    </text>
+</g>
+
 </svg>
