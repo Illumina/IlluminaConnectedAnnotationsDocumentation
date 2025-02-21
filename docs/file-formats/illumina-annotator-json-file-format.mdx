@@ -476,7 +476,7 @@ MANE select tags are only available for RefSeq transcripts on GRCh38.
 <TOPMed />
 
 ## Genes
-Illumina Connected Annotations repots gene annotations for all genes that have an overlapping variant with the exception of flanking variants (i.e. variants that only cause upstream_gene_variant or downstream_gene_variant).
+Illumina Connected Annotations reports gene annotations for all genes that have an overlapping variant with the exception of flanking variants (i.e. variants that only cause upstream_gene_variant or downstream_gene_variant).
 ```json
 "genes":[
    {
@@ -505,3 +505,24 @@ Illumina Connected Annotations repots gene annotations for all genes that have a
 
 ### COSMIC Cancer Gene Census
 <COSMICCGC/>
+
+## Samples
+### ISCN
+ISCN-like Simple Nomenclature for CNV and Ploidy VCFs by encoding chromosomal variations using cytogenetic banding
+patterns, are provided at the sample level.
+```json
+"samples":[
+  {
+    "id":"LP0129_C06_ATCC2323_13112017_S1_Proband",
+    "simpleNomenclature":"46,XX"
+  },
+  {
+    "id":"LP0129_F05_ATCC2322T_13112017_S1_Proband",
+    "simpleNomenclature":"46,XX"
+  }
+]
+```
+| Field              |  Type  | Notes                                     |
+|:-------------------|:------:|:------------------------------------------|
+| id                 | string | Unique identifier for the sample          |
+| simpleNomenclature | string | ISCN-like representation of the karyotype |
