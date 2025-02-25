@@ -35,6 +35,7 @@ module.exports = {
         'data-sources/omim',
         'data-sources/phylop',
         'data-sources/primate-ai',
+        'data-sources/promoterai',
         'data-sources/revel',
         'data-sources/splice-ai',
         'data-sources/topmed'
