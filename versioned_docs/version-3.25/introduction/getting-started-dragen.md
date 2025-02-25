@@ -1,9 +1,9 @@
 ---
-title: Getting Started with Dragen
+title: Getting Started with DRAGEN
 ---
 
-Illumina Connected Annotations, comes bundled with Dragen. Users can annotate VCF files by enabling annotation on the
-Dragen command-line or by running the standalone tool.
+Illumina Connected Annotations, comes bundled with DRAGEN. Users can annotate VCF files by enabling annotation on the
+DRAGEN command-line or by running the standalone tool.
 
 By default, the Annotations binaries are located in the `<INSTALL_PATH>/share/nirvana` directory. This directory
 includes two files:
@@ -21,19 +21,19 @@ includes two files:
 
 ## Downloading Annotation Data Files
 
-Variant annotation in Dragen requires additional annotation data files that have to be downloaded prior to running any
-Dragen pipeline that requires variant annotation. `DataManager` tool can be used to download those sources. First, the
+Variant annotation in DRAGEN requires additional annotation data files that have to be downloaded prior to running any
+DRAGEN pipeline that requires variant annotation. `DataManager` tool can be used to download those sources. First, the
 credentials need to be setup to access the data sources.
 
 ### Credentials
 
-Credentials are stored in a credentials JSON file. It will contain an Illumina API key to access the platform and Dragen
+Credentials are stored in a credentials JSON file. It will contain an Illumina API key to access the platform and DRAGEN
 serial number to access the premium data sources.
 
 1. To generate Illumina API key, create an Illumina account via
    [https://accounts.login.illumina.com](https://accounts.login.illumina.com). For details, please
    follow [this guide](./prerequisite) to obtain the `MyIlluminaApiKey`.
-2. To access premium sources, get the Dragen serial number using the command below:
+2. To access premium sources, get the DRAGEN serial number using the command below:
 
 ```shell
 dragen_info -b | grep Serial
@@ -44,7 +44,7 @@ Finally, put it together in a `credentials.json` file:
 ```
 {
   "MyIlluminaApiKey": "<your Illumina account api key>",
-  "DragenSerialNo": "<your Dragen server serial no.>"
+  "DragenSerialNo": "<your DRAGEN server serial no.>"
 }
 ```
 
@@ -56,23 +56,23 @@ Please see the complete [DataManager guide](../utilities/data-manager).
 :::
 
 Once the credential file is created `DataManager` is raedy to be used for downloading data sources. Data sources can be
-explicitly defined in a JSON format. Dragen has a predefined set of version configuration files that can be used to
-download the sources. The configurations are located in Dragen resources directory `<INSTALL_PATH>/resources/annotation`
+explicitly defined in a JSON format. DRAGEN has a predefined set of version configuration files that can be used to
+download the sources. The configurations are located in DRAGEN resources directory `<INSTALL_PATH>/resources/annotation`
 . There are several JSON config files in the directory, each of the describing the version of each data source that will
 be used to annotate:
 
-- `all_annotations_GRCh37.json` : configurations for producing full variant annotation (running Dragen with
+- `all_annotations_GRCh37.json` : configurations for producing full variant annotation (running DRAGEN with
   parameter `--enable-variant-annotation true`) for GRCh37 assembly
-- `all_annotations_GRCh38.json` : configurations for producing full variant annotation (running Dragen with
+- `all_annotations_GRCh38.json` : configurations for producing full variant annotation (running DRAGEN with
   parameter `--enable-variant-annotation true`) for GRCh38 assembly
-- `germline_tagging_annotations_GRCh37.json` : configurations required when running Dragen pipeline that perform
+- `germline_tagging_annotations_GRCh37.json` : configurations required when running DRAGEN pipeline that perform
   germline tagging step for GRCh37 assembly
-- `germline_tagging_annotations_GRCh38.json` : configurations required when running Dragen pipeline that perform
+- `germline_tagging_annotations_GRCh38.json` : configurations required when running DRAGEN pipeline that perform
   germline tagging step for GRCh38 assembly
-- `tmb_annotations_GRCh37.json` : configurations required when running Dragen pipeline that perform TMB step for
-  GRCh37 assembly (this file will also contain all data that are defined in `germline_tagging_annotations_GRCh37.json`)
-- `tmb_annotations_GRCh38.json` : configurations required when running Dragen pipeline that perform TMB step for
-  GRCh38 assembly (this file will also contain all data that are defined in `germline_tagging_annotations_GRCh38.json`)
+- `tmb_annotations_GRCh37.json` : configurations required when running DRAGEN pipeline that perform TMB step for GRCh37
+  assembly (this file will also contain all data that are defined in `germline_tagging_annotations_GRCh37.json`)
+- `tmb_annotations_GRCh38.json` : configurations required when running DRAGEN pipeline that perform TMB step for GRCh38
+  assembly (this file will also contain all data that are defined in `germline_tagging_annotations_GRCh38.json`)
 
 Download the data files, for each JSON above, using the command:
 
@@ -81,18 +81,19 @@ Download the data files, for each JSON above, using the command:
 ```
 
 For the `--dir` argument you can use the same directory for all config file so that it is stored in the same directory.
-This directory path will be used for parameter `--variant-annotation-data` when running Dragen.
+This directory path will be used for parameter `--variant-annotation-data` when running DRAGEN.
 
 :::caution
 
-- If DataManager was run for `tmb_annotations_[assembly].json`, it is not required to run again for `germline_tagging_annotations_[assembly].json`.
+- If DataManager was run for `tmb_annotations_[assembly].json`, it is not required to run again
+  for `germline_tagging_annotations_[assembly].json`.
 
-- Data defined in `tmb_annotations_[assembly].json` are needed if Dragen is run with `--enable-tmb true` parameter.
-  Without data defined in `tmb_annotations_[assembly].json` available, running Dragen will result in error.
+- Data defined in `tmb_annotations_[assembly].json` are needed if DRAGEN is run with `--enable-tmb true` parameter.
+  Without data defined in `tmb_annotations_[assembly].json` available, running DRAGEN will result in error.
 
-- Data defined in `germline_tagging_annotations_[assembly].json` are needed if Dragen is run
+- Data defined in `germline_tagging_annotations_[assembly].json` are needed if DRAGEN is run
   with `--vc-enable-germline-tagging true` parameter. Without data defined in `tmb_annotations_[assembly].json`
-  available, running Dragen will result in error.
+  available, running DRAGEN will result in error.
 
 :::
 
@@ -230,9 +231,9 @@ Peak memory usage: 2.514 GB
 Time: 00:04:08.6
 ```
 
-## Annotate Files (via Dragen command-line)
+## Annotate Files (via DRAGEN command-line)
 
-To automatically annotate output VCFs when running Dragen, please add the following command-line arguments:
+To automatically annotate output VCFs when running DRAGEN, please add the following command-line arguments:
 
 | Argument                      | Example                    | Description                                                                                 |
 |-------------------------------|----------------------------|---------------------------------------------------------------------------------------------|
@@ -240,8 +241,7 @@ To automatically annotate output VCFs when running Dragen, please add the follow
 | --variant-annotation-data     | /path/to/your/NirvanaData  | the location where you downloaded the Nirvana annotation files                              |
 | --variant-annotation-assembly | GRCh38                     | the genome assembly - either GRCh37 or GRCh38. To annotate hg19 variants, please use GRCh37 |
 
-
-Example Dragen parameters for obtaining full annotation data:
+Example DRAGEN parameters for obtaining full annotation data:
 
 ```bash
 --enable-variant-annotation true \
@@ -374,8 +374,8 @@ description of the VCF file.
 Annotations binaries have been included with DRAGEN since v3.5. The table below indicates which version of Annotations
 binaries were included with different DRAGEN releases, and their AI annotation capabilities.
 
-The Annotations binaries distributed with DRAGEN can not be changed.
-Newer versions of Annotations are backward compatible, and can therefore annotate output files from older DRAGEN releases.
+The Annotations binaries distributed with DRAGEN can not be changed. Newer versions of Annotations are backward
+compatible, and can therefore annotate output files from older DRAGEN releases.
 
 | DRAGEN version(s)        | Annotations version | AI annotations        | 
 |:-------------------------|:--------------------|:----------------------|
