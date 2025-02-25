@@ -9,6 +9,7 @@ module.exports = {
         'introduction/dependencies',
         'introduction/prerequisite',
         'introduction/getting-started',
+        'introduction/getting-started-dragen',
         'introduction/parsing-json'
       ],
     },
