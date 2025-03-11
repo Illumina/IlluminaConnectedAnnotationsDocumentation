@@ -251,7 +251,7 @@ Below is example of the generated config file.
 ### Download file
 The third command available is `download`. This command will download the database files.
 Files that already exist in the output folder will be skipped (if the file size match).
-The DataManager will perform a checksum against the downloaded file to ensure file integrity and completeness. If you see that a file was marked `Mismatched checksum` in the Download Summary, try resolving any known root cause and run the DataManager again.
+The DataManager will perform md5sum checks against the downloaded files to ensure file integrity and completeness. If you see that a file was marked `Mismatched checksum` in the Download Summary, try resolving any known root cause and run the DataManager again.
 
 ```bash
 dotnet DataManager.dll download
