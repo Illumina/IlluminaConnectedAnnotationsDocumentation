@@ -70,7 +70,7 @@ DataManager                                         (c) 2024 Illumina, Inc.
                                                                      3.25.0
 ---------------------------------------------------------------------------
 
-Using default credentials file: /Users/bkalbuaji/.ilmnAnnotations/credentials.json
+Using default credentials file: /Users/username/.ilmnAnnotations/credentials.json
 ======================================================================================================================================================
 Data Source                    | Annotation Type                | Description                              | Version
 ======================================================================================================================================================
@@ -159,7 +159,7 @@ DataManager                                         (c) 2024 Illumina, Inc.
                                                                      3.25.0
 ---------------------------------------------------------------------------
 
-Using default credentials file: /Users/bkalbuaji/.ilmnAnnotations/credentials.json
+Using default credentials file: /Users/username/.ilmnAnnotations/credentials.json
 ======================================================================================================================================================
 Data Source                    | Annotation Type                | Description                              | Version
 ======================================================================================================================================================
@@ -251,6 +251,7 @@ Below is example of the generated config file.
 ### Download file
 The third command available is `download`. This command will download the database files.
 Files that already exist in the output folder will be skipped (if the file size match).
+The DataManager will perform a checksum against the downloaded file to ensure file integrity and completeness. If you see that a file was marked `Mismatched checksum` in the Download Summary, try resolving any known root cause and run the DataManager again.
 
 ```bash
 dotnet DataManager.dll download
@@ -336,6 +337,8 @@ Downloaded files:
 - GeneSymbols.ndb
 - OMIM_20240110.ega
 - ClinVar_preview_20240301.nsi
+Download error:
+- Mismatched checsum, DECIPHER_201509.nsi is corrupted, try running the DataManager again.
 Data license saved: ~/.ilmnAnnotations/premium.lic
 ```
 
@@ -374,7 +377,7 @@ Data license saved: ~/.ilmnAnnotations/premium.lic
 ```
 ### Download verification
 
-To verify the completeness and integrity of your downloaded files, we've created a bash script [VerifyChecksums.sh](resources/VerifyChecksums.sh) that performs md5sum checks on all files in the specified Data folder and compares the results against a list of known checksums.
+To manually verify the integrity and completeness of your downloaded files, we've created a bash script [VerifyChecksums.sh](resources/VerifyChecksums.sh) that performs md5sum checks on all files in the specified Data folder and compares the results against a list of known checksums.
 
 To use the verification script, run the following command in your terminal:
 ```bash
