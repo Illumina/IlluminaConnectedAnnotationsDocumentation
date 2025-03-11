@@ -2,21 +2,21 @@
 title: Getting Started
 ---
 
-Illumina Connected Annotations is written in C# using [.NET Core](https://www.microsoft.com/net/download/core) (an amazing runtime environment that currently runs on Windows, Linux, Mac OS X, and in Docker images). Once .NET Core has been downloaded, all you need to do is grab the source, compile it, and grab the data files.
+Illumina Connected Annotations is written in C# using [.NET Core](https://www.microsoft.com/net/download/core) runtime environment, which is compatible with Windows, Linux, Mac OS X, and Docker images. Once .NET Core has been downloaded, all you need to do is obtain the source code, compile it, and download the data files.
 
 :::tip
-Illumina Connected Annotations currently uses .NET6.0. Please make sure that you have the most current runtime from the [.NET Core downloads](https://www.microsoft.com/net/download/core) page.
+Illumina Connected Annotations requires .NET6.0. Ensure that you have the required runtime installed from the [.NET Core downloads](https://www.microsoft.com/net/download/core) page.
 :::
 
 :::info
-Please read [Prerequisite](../introduction/prerequisite) section to generate necessary credential file to run Illumina Connector Annotations.
+Refer to the [Prerequisite](../introduction/prerequisite) section for instructions on generating the credential file required to run Illumina Connected Annotations.
 :::
 
 ## Getting Illumina Connected Annotations
 
 ### Latest Release
 
-Please visit [Illumina Connected Annotations](https://developer.illumina.com/illumina-connected-annotations) to obtain the latest release. Download and place the zip file in the IlluminaConnectedAnnotations folder.
+Please visit [Illumina Connected Annotations](https://developer.illumina.com/illumina-connected-annotations) to obtain the latest release. Place the downloaded ZIP file in the IlluminaConnectedAnnotations folder.
 
 ```bash
 mkdir -p IlluminaConnectedAnnotations/Data
@@ -25,26 +25,26 @@ unzip IlluminaConnectedAnnotations-3.25.0-0-g101034c3-net6.0.zip
 ```
 
 ### Quick Start
-If you want to get started right away, we've created [a script](TestIlluminaConnectedAnnotations.sh) that unzips the Illumina Connected Annotations build, downloads the annotation data, and starts annotating a test file:
+If you want to get started right away, we've created [a script](TestIlluminaConnectedAnnotations.sh) that automatically unzips the Illumina Connected Annotations build, downloads annotation data, and initiates annotation a test file:
 
 ```bash
 bash ./TestIlluminaConnectedAnnotations.sh IlluminaConnectedAnnotationsBuild.zip
 ```
-We have verified that this script works on Windows (using Git Bash or WSL), Linux, and Mac OS X.
+This script has been verified to work on Windows (using Git Bash or WSL), Linux, and Mac OS X.
 
 ### Docker
 
-Obtain the docker image in a zip file (e.g. IlluminaConnectedAnnotations-3.25.0-0-g101034c3-net6.0-docker.tar.gz), and load it as follows
+Obtain the docker image as a ZIP file (e.g. IlluminaConnectedAnnotations-3.25.0-0-g101034c3-net6.0-docker.tar.gz), and load it as follows:
 
 ```bash
 docker load < IlluminaConnectedAnnotations-3.25.0-0-g101034c3-net6.0-docker.tar.gz
 ```
 
-If you want to build your own docker image, it is really easy to do. You just need to have Illumina Connected Annotations zip file and then download the [Dockerfile](https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/files/Dockerfile) and [this script](https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/files/create_docker_image.sh).
+If you want to build your own docker image, it is really easy. You just need the Illumina Connected Annotations ZIP file and then download the [Dockerfile](https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/files/Dockerfile) and [this script](https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/files/create_docker_image.sh).
 
-Put both files (`create_docker_image.sh` and `Dockerfile`) inside the same folder.
+Place both files (`create_docker_image.sh` and `Dockerfile`) in the same directory.
 
-In terminal, execute command below inside the folder where you put those scripts:
+In the terminal, navigate to the directory containing the scripts and execute the following commands:
 
 ```bash
 chmod +x create_docker_image.sh
@@ -62,7 +62,7 @@ docker run --rm -it -v local/data/folder:/scratch illumina-connected-annotations
      -i /scratch/HiSeq.10000.vcf.gz -o /scratch/HiSeq
 ```
 :::caution
-Please note that since our data files are usually accessed through a Docker volume, there is a noticeable performance penalty when running Illumina Connected Annotations in Docker.
+Please note that there is a noticeable performance penalty when running Illumina Connected Annotations in Docker as our data files are accessed through a Docker volume.
 :::
 :::tip
 For convenience, the user is encouraged to create aliases for the docker commands. For example:
@@ -73,9 +73,9 @@ alias IlluminaConnectedAnnotations="docker run --rm -it -v local/data/folder:/sc
 
 ## Downloading the data files
 
-Check [Prerequisite](./prerequisite.mdx) for more details on creating Illumina API key to use Illumina Connected Annotation and its utilities.
+Refer to [Prerequisite](./prerequisite.mdx) for more details on creating Illumina API key to use Illumina Connected Annotation and its utilities.
 
-To download the latest data sources (or update the ones that you already have), use the following command to automate the download from S3:
+To download the latest data sources (or update the ones that you already have), use the following commands to automate the download from S3:
 
 ```bash
 dotnet DataManager.dll make-config -r GRCh37
@@ -85,10 +85,10 @@ dotnet DataManager.dll download \
 --dir Data
 ```
 
-Check [Data Manager](../utilities/data-manager.mdx) for more details on controlling data sources and their versions.
+Refer to [Data Manager](../utilities/data-manager.mdx) for more details on managing data sources and their versions.
 
 :::info Glitches in the Matrix
-Every once in a while, the download process may not go smoothly. Perhaps the internet connection was interrupted or you ran out of disk space. The DataManager will perform md5sum checks against the downloaded files to ensure file integrity and completeness. If you see that a file was marked `Mismatched checksum` in the Download Summary, try resolving any known root cause and run the DataManager again.
+Every once in a while, the download process may encounter issues due to network interruptions or insufficient disk space. The DataManager will perform md5sum checks against the downloaded files to ensure file integrity and completeness. If you see that a file was marked `Mismatched checksum` in the Download Summary, try resolving any potential causes and run the DataManager again.
 
 :::tip
 From time to time, you can re-run the DataManager to obtain the latest annotation files. It will only download files that have changed since the last download.
@@ -214,10 +214,10 @@ Professional content licensing, feedback and technical support: annotation_suppo
 ```
 
 ### Specifying annotation sources
-By default, Illumina Connected Annotations will use all available data sources. However, the user can customize the set of sources with their versions using the `--versions-config`
+By default, Illumina Connected Annotations uses all available data sources. However, you can customize the set of sources and their versions using the `--versions-config`
 option.
 
-An Example of versions config json file below:
+An example of a versions-config json file is shown below:
 ```json
 {
     "Ensembl":
@@ -248,7 +248,7 @@ An Example of versions config json file below:
 }
 ```
 
-If an unknown source is specified, a warning message will be printed.
+If an unknown source is specified, a warning message will be displayed.
 
 ```bash
 dotnet Annotator.dll \
