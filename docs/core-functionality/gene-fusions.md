@@ -57,6 +57,94 @@ The following criteria must be met for Illumina Connected Annotations to identif
 1. Both transcripts must belong to different genes
 1. Both transcripts cannot have a coding region that already overlaps without the variant (i.e. in cases where two genes naturally overlap, we don't want to call a gene fusion)
 
+### Gene fusion in-frame detection
+Illumina Connected Annotations will produce a boolean value field `inFrame` if the fusion is calculated to be in a position that can continue the transcript from one end to other end without frameshift.
+To be an `inFrame` gene fusion, the fusion breakend has to be in a position where reading frame from the start codon of one transcript end is continued with the reading frame from the other transcript up to the stop codon.
+If this happened, we predict the gene fusion can produced a fused transcript without frameshift.
+
+We have several cases for a gene fusion to be detected as `inFrame` based on the breakend position.
+
+- Exon - Exon gene fusion
+
+This gene fusion happens when the breakend for both the first transcript and the second transcript fall in the exon region and the breakend complete the codon triplet.
+Consider this VCF entry:
+
+```scss
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER
+chr2	42491870	.	A	A]chr2:29446392]	.	PASS
+```
+This defines a fusion of forward strand gene EML4 and reverse strand gene ALK. Position chr2 42491870 is in EML4 gene in the exon region and chr2 29446392 is in ALK exon region.
+
+![](EML4_1.png)
+
+![](ALK_1.png)
+
+From the image, the fusion between those two transcript will produce a new exon that has continuous reading frame without frameshift.
+The triplet in EML4 from position 42491868, 42491869, and 42491870 will be continued with triplet from ALK gene in position 29446390, 29446391, and 29446392.
+This fusion will be predicted to produce a fused transcript since the start codon and stop codon is connected without frameshift.
+The fused sequence around the breakend will be: `....AACCAA|TACCGC.....`.
+This fusion will produce `inFrame: true` annotation.
+
+- Exon - Intron gene fusion
+
+This gene fusion happens when the breakend in one end is in exon position and the other end is in intron position.
+Since the fusion is connecting exon and intron, we consider the intron to be transcribed as part of the new exon.
+The fusion will be considered in frame if the merged intron in a number that complete the triplet between to fused exon.
+Consider this VCF entry:
+
+```scss
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER
+chr2	42491870	.	A	A]chr2:29446395]	.	PASS
+```
+
+This define a similar fusion with the previous example between EML4 and ALK gene but in slightly different position.
+Now, the breakend for ALK gene is in intron position. Despite that, the number of intron is 1 which complete the incomplete codon from the next exon.
+![](EML4_1.png)
+
+![](ALK_2.png)
+Originally, the first 2 nucleotide in the exon after breakend in position 29446393 and 29446394 is an incomplete triplet that need 1 nucleotide from another exon to complete it.
+With the fusion adding 1 nucleotide from the intron position, this will complete the triplet and continue the reading frame without frameshift.
+The fused sequence around the breakend will be: `....AACCAA|GTGTAC.....`. The newly formed triplet is `GTG`.
+This fusion will produce `inFrame: true` annotation.
+
+- Intron - Exon gene fusion
+
+This gene fusion is similar with the previous case but teh intron breakend is in teh first gene and the exon breakend is the the second gene.
+Consifder this VCF entry:
+```scss
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER
+chr2	42491872	.	G	G]chr2:29446390]	.	PASS
+```
+
+![](EML4_2.png)
+
+![](ALK_3.png)
+
+This fusion define a similar fusion with the previous example between EML4 and ALK gene.
+The breakend of EML4 gene is in intron and the breakend for ALK is in exon region.
+The breakend connecting an incomplete codon triplet from EML4 gene exon in position 42491871, 1 nucleotide in EML4 intron position 42491872, and 1 nucleotide from ALK gene exon in position 29446390.
+These 3 nucleotides will merge into a complete triplet that continue the transcription of the fused transcript without frameshift.
+The fused sequence around the breakend will be: `....AACCAAGG|CCGC.....`. The newly formed triplet is `GGC`
+This fusion will produce `inFrame: true` annotation.
+
+- Intron - Intron gene fusion
+
+This gene fusion case has breakend in intron for both end of transcript. In this case, we consider incomplete nucleotides from nearby exon and adding the additional nucleotides from joined intron to check wheteher it can continue the transcription without frameshift.
+Consider this VCF entry:
+```scss
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER
+chr2	42491872	.	G	G]chr2:29446396]	.	PASS
+```
+
+![](EML4_2.png)
+
+![](ALK_4.png)
+
+The breakend for EML4 gene is in intron and nearby exon has 1 nucleotides from incomplete codon. The breakend for ALK gene is in intron with 2 nucleotides before the nearby exon. Nearby exon has 2 nucleotides from incomplete codon.
+Joining all of these nucleotides, we will have 6 nucleotides that can form 2 codon triplets and continuing the transcript without frameshift.
+The fused sequence around the breakend will be: `....AACCAAGG|AGTGTAC.....`. The newly formed triplets are `GGA` and `GTG`.
+
+
 ## ETV6/RUNX1 Example
 
 ETV6/RUNX1 is the most common gene fusion in childhood B-cell precursor acute lymphoblastic leukemia (ALL). Samples with this translocation are associated with a good prognosis and excellent response to treatment.
