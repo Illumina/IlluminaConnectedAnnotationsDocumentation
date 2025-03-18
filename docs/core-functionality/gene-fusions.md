@@ -57,14 +57,14 @@ The following criteria must be met for Illumina Connected Annotations to identif
 1. Both transcripts must belong to different genes
 1. Both transcripts cannot have a coding region that already overlaps without the variant (i.e. in cases where two genes naturally overlap, we don't want to call a gene fusion)
 
-### Gene fusion in-frame detection
-Illumina Connected Annotations will produce a boolean value field `inFrame` if the fusion is calculated to be in a position that can continue the transcript from one end to other end without frameshift.
+### In/Out of frame annotation
+Illumina Connected Annotations will produce a boolean field `inFrame` if the fusion is predicted to be in a position that can continue the transcript from one end to the other end without frameshift.
 To be an `inFrame` gene fusion, the fusion breakend has to be in a position where reading frame from the start codon of one transcript end is continued with the reading frame from the other transcript up to the stop codon.
 If this happened, we predict the gene fusion can produced a fused transcript without frameshift.
 
-We have several cases for a gene fusion to be detected as `inFrame` based on the breakend position.
+There are several cases for a gene fusion to be annotated as `inFrame` based on the breakend position.
 
-- Exon - Exon gene fusion
+- Exon-Exon gene fusion
 
 This gene fusion happens when the breakend for both the first transcript and the second transcript fall in the exon region and the breakend complete the codon triplet.
 Consider this VCF entry:
@@ -85,11 +85,12 @@ This fusion will be predicted to produce a fused transcript since the start codo
 The fused sequence around the breakend will be: `....AACCAA|TACCGC.....`.
 This fusion will produce `inFrame: true` annotation.
 
-- Exon - Intron gene fusion
+- Exon-Intron gene fusion
 
-This gene fusion happens when the breakend in one end is in exon position and the other end is in intron position.
-Since the fusion is connecting exon and intron, we consider the intron to be transcribed as part of the new exon.
-The fusion will be considered in frame if the merged intron in a number that complete the triplet between to fused exon.
+In this case, the breakend in one end is in an exon and the other end is in an intron.
+Since the fusion is connecting exon and intron, we expect the intron to be transcribed as part of the new exon.
+The fusion will be considered in frame if the merged intron is a number that complete the triplet between two fused exons. Please note that the annotator doesn't try to detect if the newly transcribed intronic sequence introduces a stop codon.
+
 Consider this VCF entry:
 
 ```scss
@@ -107,9 +108,9 @@ With the fusion adding 1 nucleotide from the intron position, this will complete
 The fused sequence around the breakend will be: `....AACCAA|GTGTAC.....`. The newly formed triplet is `GTG`.
 This fusion will produce `inFrame: true` annotation.
 
-- Intron - Exon gene fusion
+- Intron-Exon gene fusion
 
-This gene fusion is similar with the previous case but teh intron breakend is in teh first gene and the exon breakend is the the second gene.
+This gene fusion is similar with the previous case but the intron breakend is in the first gene and the exon breakend is in the second gene.
 Consifder this VCF entry:
 ```scss
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER
