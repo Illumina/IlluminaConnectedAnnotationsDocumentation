@@ -5,7 +5,9 @@ title: Variant Classification
 ## Introduction
 
 Illumina Connected Annotation follows the [VCF Specification](https://samtools.github.io/hts-specs/VCFv4.5.pdf)
-when parsing the VCF files. VCF files classify the variants based on alleles and certain `INFO` fields.
+when parsing the VCF files. VCF files classify the variants based on alleles and certain `INFO` fields. 
+
+While the VCF variant type does not depend on the size of the variant, (both a `ATG->A` and `A-><DEL>` are `deletion`) for the purpose of annotation, it is useful to classify variants into small and structural (large) variants. This is due to the realization that reporting annotations for a deletion like `1-1000-ATG-A` from `ClinVar` for a 20kbp `<DEL>` at that same location is not helpful and vice versa.
 Following guidelines are used by Illumina Connected Annotations.
 
 :::info
@@ -14,7 +16,7 @@ Structural variants are treated as intervals when providing supplementary annota
 
 ### Classifying Small and Structural Variants
 
-| Variant Type       | Criteria                                                    | Example                                       | 
+| Variant Classification       | Criteria                                                    | Example                                       | 
 |--------------------|-------------------------------------------------------------|-----------------------------------------------|
 | Small Variant      | Single nucleotide changes                                   | `G -> A` SNP or `T -> TAA` insertion          | 
 | Small Variant      | Short insertions/deletions                                  | `T -> TAA` insertion                          | 
