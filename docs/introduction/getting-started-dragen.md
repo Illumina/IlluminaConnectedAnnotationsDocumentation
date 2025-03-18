@@ -70,7 +70,7 @@ Once the credential file is created, `DataManager` can be used for downloading d
 Download the data files, for each JSON above, using the command:
 
 ```bash
-.<INSTALL_PATH>/share/nirvana/DataManager -r [assembly] --credentials-file [path to credential file] --dir [path to directory for the downloaded data] --versions-config [path to the JSON file in the resources folder]
+.<INSTALL_PATH>/share/nirvana/DataManager download -r [assembly] --credentials-file [path to credential file] --dir [path to directory for the downloaded data] --versions-config [path to the JSON file in the resources folder]
 ```
 
 For the `--dir` argument you can use the same directory for all config files so that it is stored in the same directory.
