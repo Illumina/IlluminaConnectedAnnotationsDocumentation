@@ -367,11 +367,13 @@ binaries were included with different DRAGEN releases, and their AI annotation c
 
 The Annotations binaries distributed with DRAGEN can not be changed. Newer versions of Annotations are backward compatible, and can therefore annotate output files from older DRAGEN releases.
 
-| DRAGEN version(s)        | Annotations version | AI annotations        |
-| :----------------------- | :------------------ | :-------------------- |
-| 4.4                      | 3.25                | spliceAI, primateAI3D |
-| 4.3                      | 3.23                | spliceAI, primateAI3D |
-| 3.9, 3.10, 4.0, 4.1, 4.2 | 3.16.1              | spliceAI, primateAI   |
-| 3.8                      | 3.14                | spliceAI, primateAI   |
-| 3.6, 3.7                 | 3.9.0               | spliceAI, primateAI   |
-| 3.5                      | 3.6.0               | spliceAI, primateAI   |
+| DRAGEN version(s)        | Annotations version | AI annotations        | Documentation         |
+| :----------------------- | :------------------ | :-------------------- | :-------------------- |
+| 4.4                      | 3.25.1              | spliceAI, primateAI3D | [3.25](https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/3.25/)|
+| 4.3                      | 3.23                | spliceAI, primateAI3D |[3.23](https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/3.23/)|
+| 3.9, 3.10, 4.0, 4.1, 4.2 | 3.16.1              | spliceAI, primateAI   |[3.16](https://illumina.github.io/NirvanaDocumentation/3.16/)|
+| 3.8                      | 3.14                | spliceAI, primateAI   |[3.14](https://illumina.github.io/NirvanaDocumentation/3.14/)|
+| 3.6, 3.7                 | 3.9.0               | spliceAI, primateAI   | Not Available |
+| 3.5                      | 3.6.0               | spliceAI, primateAI   | Not Available |
+
+

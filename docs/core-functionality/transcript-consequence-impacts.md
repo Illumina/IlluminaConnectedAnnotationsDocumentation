@@ -51,11 +51,17 @@ Following table gives the combined rating for all consequences recognized by Ill
 | regulatory_region_ablation         |               | modifier   | modifier       | VEP                                   |
 | regulatory_region_amplification    |               | modifier   | modifier       | VEP                                   |
 | regulatory_region_variant          | modifier      | modifier   | modifier       | SnpEff + VEP                          |
+| TFBS_ablation         |               | modifier   |        | VEP                                   |
+| TFBS_amplification         |               | modifier   |        | VEP                                   |
+| TF_binding_site_variant         |               | modifier   |        | VEP                                   |
 | short_tandem_repeat_change         |               |            | modifier       |                                       |
 | short_tandem_repeat_contraction    |               |            | modifier       |                                       |
 | short_tandem_repeat_expansion      |               |            | modifier       |                                       |
 | splice_acceptor_variant            | high          | high       | high           | SnpEff + VEP                          |
 | splice_donor_variant               | high          | high       | high           | SnpEff + VEP                          |
+| splice_donor_region_variant           |           | low       |            |                          |
+| splice_donor_5th_base_variant           |           | low       |            |                          |
+| splice_polypyrimidine_tract_variant           |           | low       |            |                          |
 | splice_region_variant              | moderate, low | low        | low            | Based on SPLICE_SITE_REGION in SnpEff |
 | start_lost                         | high          | high       | high           | SnpEff + VEP                          |
 | start_retained_variant             | low           | low        | low            | SnpEff + VEP                          |
