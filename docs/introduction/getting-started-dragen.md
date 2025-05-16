@@ -35,6 +35,15 @@ serial number to access the premium data sources.
 ```shell
 dragen_info -b | grep Serial
 ```
+If you have multiple versions of DRAGEN version installed, you may have to execute:
+```shell
+/opt/dragen/<DRAGEN_VERSION>/bin/dragen_info -b | grep Serial
+```
+DRAGEN version may be discovered using
+```shell
+dragen_versions
+```
+
 
 Finally, put it together in a `credentials.json` file:
 
