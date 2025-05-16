@@ -1,0 +1,101 @@
+{
+    "DANN": {
+      "Score": "20200205"
+    },
+    "DECIPHER": {
+      "StructuralVariant": "201509"
+    },
+    "Ensembl": {
+      "GeneModels": "112"
+    },
+    "FusionCatcher": {
+      "GeneFusion": "1.33"
+    },
+    "GME": {
+      "SmallVariant": "20160618"
+    },
+    "GenomeAssembly": {
+      "GenomeAssembly": "GRCh38.p14"
+    },
+    "Gerp": {
+      "Score": "20110522"
+    },
+    "HGNC": {
+      "GeneModels": "20240603"
+    },
+    "MultiZ100Way": {
+      "Protein": "20171006"
+    },
+    "PrimateAI": {
+      "SmallVariant": "0.2"
+    },
+    "PromoterAI": {
+      "SmallVariant": "1.0"
+    },
+    "REVEL": {
+      "SmallVariant": "20200205"
+    },
+    "RefSeq": {
+      "GeneModels": "GCF_000001405.40-RS_2023_10"
+    },
+    "TOPMed": {
+      "SmallVariant": "freeze_5"
+    },
+    "clingen": {
+      "Gene": "20240910",
+      "StructuralVariant": "20240910"
+    },
+    "clingen (legacy)": {
+      "StructuralVariant": "20160414"
+    },
+    "clinvar": {
+      "SmallVariant": "20240902",
+      "StructuralVariant": "20240902"
+    },
+    "clinvar-preview": {
+      "SmallVariant": "20240902",
+      "StructuralVariant": "20240902"
+    },
+    "cosmic": {
+      "Gene": "99",
+      "GeneFusion": "99",
+      "SmallVariant": "99"
+    },
+    "dbSNP": {
+      "SmallVariant": "156"
+    },
+    "globalAllele": {
+      "SmallVariant": "151"
+    },
+    "gnomad": {
+      "Gene": "4.1",
+      "LowComplexityRegions": "2.1",
+      "SmallVariant": "4.1",
+      "StructuralVariant": "4.1"
+    },
+    "gnomad-exome": {
+      "SmallVariant": "4.1"
+    },
+    "mitomap": {
+      "SmallVariant": "20200819",
+      "StructuralVariant": "20200819"
+    },
+    "omim": {
+      "Gene": "20240910"
+    },
+    "oneKg": {
+      "RefMinor": "Phase 3 v3plus",
+      "SmallVariant": "Phase 3 v3plus",
+      "StructuralVariant": "Phase 3 v5a"
+    },
+    "phylopScore": {
+      "ConservationScore": "hg38",
+      "Score": "1.0"
+    },
+    "primateAI-3D": {
+      "SmallVariant": "1.0"
+    },
+    "spliceAI": {
+      "SmallVariant": "1.3"
+    }
+  }
