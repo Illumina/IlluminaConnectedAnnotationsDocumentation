@@ -2,11 +2,9 @@
 title: Getting Started with DRAGEN
 ---
 
-Illumina Connected Annotations, comes bundled with DRAGEN. Users can annotate VCF files by enabling annotation on the
-DRAGEN command-line or by running the standalone tool.
+Illumina Connected Annotations is bundled with DRAGEN. Users can annotate VCF files by enabling annotation through the DRAGEN command-line or by running the standalone Illumina Connected Annotations tool.
 
-By default, the Annotations binaries are located in the `<INSTALL_PATH>/share/nirvana` directory. This directory
-includes two files:
+By default, the Annotations binaries are located in the `<INSTALL_PATH>/share/nirvana` directory. This directory contains these two files:
 
 1. `Nirvana`: Illumina Connected Annotations
 2. `DataManager`: Manage annotation data sources
@@ -21,23 +19,31 @@ includes two files:
 
 ## Downloading Annotation Data Files
 
-Variant annotation in DRAGEN requires additional annotation data files that have to be downloaded prior to running any
-DRAGEN pipeline that requires variant annotation. `DataManager` tool can be used to download those sources. First, the
-credentials need to be setup to access the data sources.
+Variant annotation in DRAGEN requires additional annotation data files, which must be downloaded prior to running any
+DRAGEN pipeline that requires variant annotation. The `DataManager` tool can be used to download those sources. Prior to that, the
+credentials must be configured to gain access to the data sources.
 
 ### Credentials
 
 Credentials are stored in a credentials JSON file. It will contain an Illumina API key to access the platform and DRAGEN
 serial number to access the premium data sources.
 
-1. To generate Illumina API key, create an Illumina account via
-   [https://accounts.login.illumina.com](https://accounts.login.illumina.com). For details, please
-   follow [this guide](./prerequisite) to obtain the `MyIlluminaApiKey`.
-2. To access premium sources, get the DRAGEN serial number using the command below:
+1. To generate an Illumina API key, create an Illumina account via
+   [https://accounts.login.illumina.com](https://accounts.login.illumina.com). Refer to [this guide](./prerequisite) for instructions on obtaining your `MyIlluminaApiKey`.
+2. To access premium sources, retrieve the DRAGEN serial number using the following command:
 
 ```shell
 dragen_info -b | grep Serial
 ```
+If you have multiple versions of DRAGEN version installed, you may have to execute:
+```shell
+/opt/dragen/<DRAGEN_VERSION>/bin/dragen_info -b | grep Serial
+```
+DRAGEN version may be discovered using
+```shell
+dragen_versions
+```
+
 
 Finally, put it together in a `credentials.json` file:
 
@@ -55,11 +61,7 @@ Finally, put it together in a `credentials.json` file:
 Please see the complete [DataManager guide](../utilities/data-manager).
 :::
 
-Once the credential file is created `DataManager` is raedy to be used for downloading data sources. Data sources can be
-explicitly defined in a JSON format. DRAGEN has a predefined set of version configuration files that can be used to
-download the sources. The configurations are located in DRAGEN resources directory `<INSTALL_PATH>/resources/annotation`
-. There are several JSON config files in the directory, each of the describing the version of each data source that will
-be used to annotate:
+Once the credential file is created, `DataManager` can be used for downloading data sources. Data sources can be explicitly defined in a JSON format. DRAGEN has a predefined set of version configuration files that can be used for download these sources. The configurations are located in DRAGEN resources directory `<INSTALL_PATH>/resources/annotation`. There are several JSON config files in the directory, each describing the version of each data source that will be used to annotate:
 
 - `all_annotations_GRCh37.json` : configurations for producing full variant annotation (running DRAGEN with
   parameter `--enable-variant-annotation true`) for GRCh37 assembly
@@ -77,11 +79,11 @@ be used to annotate:
 Download the data files, for each JSON above, using the command:
 
 ```bash
-.<INSTALL_PATH>/share/nirvana/DataManager -r [assembly] --credentials-file [path to credential file] --dir [path to directory for the downloaded data] --versions-config [path to the JSON file in the resources folder]
+.<INSTALL_PATH>/share/nirvana/DataManager download -r [assembly] --credentials-file [path to credential file] --dir [path to directory for the downloaded data] --versions-config [path to the JSON file in the resources folder]
 ```
 
-For the `--dir` argument you can use the same directory for all config file so that it is stored in the same directory.
-This directory path will be used for parameter `--variant-annotation-data` when running DRAGEN.
+For the `--dir` argument you can use the same directory for all config files so that it is stored in the same directory.
+This directory path will be used for the `--variant-annotation-data` parameter when running DRAGEN.
 
 :::caution
 
@@ -235,11 +237,11 @@ Time: 00:04:08.6
 
 To automatically annotate output VCFs when running DRAGEN, please add the following command-line arguments:
 
-| Argument                      | Example                    | Description                                                                                 |
-|-------------------------------|----------------------------|---------------------------------------------------------------------------------------------|
-| --enable-variant-annotation   | true                       | enables annotation if the pipeline supports it                                              |
-| --variant-annotation-data     | /path/to/your/NirvanaData  | the location where you downloaded the Nirvana annotation files                              |
-| --variant-annotation-assembly | GRCh38                     | the genome assembly - either GRCh37 or GRCh38. To annotate hg19 variants, please use GRCh37 |
+| Argument                      | Example                   | Description                                                                                 |
+| ----------------------------- | ------------------------- | ------------------------------------------------------------------------------------------- |
+| --enable-variant-annotation   | true                      | enables annotation if the pipeline supports it                                              |
+| --variant-annotation-data     | /path/to/your/NirvanaData | the location where you downloaded the Nirvana annotation files                              |
+| --variant-annotation-assembly | GRCh38                    | the genome assembly - either GRCh37 or GRCh38. To annotate hg19 variants, please use GRCh37 |
 
 Example DRAGEN parameters for obtaining full annotation data:
 
@@ -253,26 +255,26 @@ Example DRAGEN parameters for obtaining full annotation data:
 
 :::tip
 
-Please see the complete [Annotation guide](./getting-started#the-illumina-connected-annotations-command-line).
+Refer to the [Annotation guide](./getting-started#the-illumina-connected-annotations-command-line).
 :::
 
 To annotate an uncompressed VCF (or bgzipped VCF) file, enter the following command:
 
 ```shell
 <INSTALL_PATH>/share/nirvana/Nirvana \
- -i <input_VCF> \ 
+ -i <input_VCF> \
  -o <output_prefix> \
  -c [path to data dir]/Cache \
  -r [path to data dir]/References/Homo_sapiens.GRCh38.Nirvana.dat \
  --sd [path to data dir]/SupplementaryAnnotation/GRCh38 \
  -l [path to credential file] \
- --versions-config [path to resource directory]/all_annotations_GRCh38.json 
+ --versions-config [path to resource directory]/all_annotations_GRCh38.json
 ```
 
-The following are the available command line options:
+The following command line options are available:
 
 | Option            | Value     | Example                                           | Description                        |
-|-------------------|-----------|---------------------------------------------------|------------------------------------|
+| ----------------- | --------- | ------------------------------------------------- | ---------------------------------- |
 | -i                | path      | <input_VCF>                                       | Input VCF path                     |
 | -o                | prefix    | <output_prefix>                                   | Output path prefix                 |
 | -c                | directory | ~/Data/Cache/                                     | Cache directory                    |
@@ -361,28 +363,26 @@ Time: 00:00:13.8
 
 ## Output File
 
-Illumina Connected Annotation produces an output file in JSON format by default.  
-Please refer to [Illumina Connected Annotations JSON](../file-formats/illumina-annotator-json-file-format) for detailed
-description of the JSON file.
+Illumina Connected Annotation produces an output file in JSON format by default.
+Refer to [Illumina Connected Annotations JSON](../file-formats/illumina-annotator-json-file-format) for detailed description of the JSON file.
 
-A VCF output format is also possible by `--output-format vcf` command line parameter. VCF annotations are limited.
-Please refer to [Illumina Connected Annotations VCF](../file-formats/illumina-annotator-vcf-file-format) for detailed
-description of the VCF file.
+A VCF output format is also possible by `--output-format vcf` command line parameter, though VCF annotations are limited.
+Refer to [Illumina Connected Annotations VCF](../file-formats/illumina-annotator-vcf-file-format) for detailed description of the VCF file.
 
 ## Version History
 
 Annotations binaries have been included with DRAGEN since v3.5. The table below indicates which version of Annotations
 binaries were included with different DRAGEN releases, and their AI annotation capabilities.
 
-The Annotations binaries distributed with DRAGEN can not be changed. Newer versions of Annotations are backward
-compatible, and can therefore annotate output files from older DRAGEN releases.
+The Annotations binaries distributed with DRAGEN can not be changed. Newer versions of Annotations are backward compatible, and can therefore annotate output files from older DRAGEN releases.
 
-| DRAGEN version(s)        | Annotations version | AI annotations        | 
-|:-------------------------|:--------------------|:----------------------|
-| 4.4                      | 3.25                | spliceAI, primateAI3D | 
-| 4.3                      | 3.23                | spliceAI, primateAI3D | 
-| 3.9, 3.10, 4.0, 4.1, 4.2 | 3.16.1              | spliceAI, primateAI   |
-| 3.8                      | 3.14                | spliceAI, primateAI   |
-| 3.6, 3.7                 | 3.9.0               | spliceAI, primateAI   |
-| 3.5                      | 3.6.0               | spliceAI, primateAI   |
- 
+| DRAGEN version(s)        | Annotations version | AI annotations        | Documentation         | Data Utility         |
+| :----------------------- | :------------------ | :-------------------- | :-------------------- | :-------------------- |
+| 4.4                      | 3.25.1              | spliceAI, primateAI3D | [3.25](https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/3.25/)|[Data Manager](https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/3.25/utilities/data-manager)|
+| 4.3                      | 3.23                | spliceAI, primateAI3D |[3.23](https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/3.23/)|[Downloader](https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/3.23/introduction/getting-started#downloading-the-data-files)|
+| 3.9, 3.10, 4.0, 4.1, 4.2 | 3.16.1              | spliceAI, primateAI   |[3.16](https://illumina.github.io/NirvanaDocumentation/3.16/)|[Downloader](https://illumina.github.io/NirvanaDocumentation/3.16/introduction/getting-started#downloading-the-data-files)|
+| 3.8                      | 3.14                | spliceAI, primateAI   |[3.14](https://illumina.github.io/NirvanaDocumentation/3.14/)|[Downloader](https://illumina.github.io/NirvanaDocumentation/3.14/introduction/getting-started#downloading-the-data-files)|
+| 3.6, 3.7                 | 3.9.0               | spliceAI, primateAI   | Not Available | Not Available |
+| 3.5                      | 3.6.0               | spliceAI, primateAI   | Not Available | Not Available |
+
+

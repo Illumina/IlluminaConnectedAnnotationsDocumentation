@@ -60,7 +60,8 @@ module.exports = {
         'core-functionality/simple-nomenclature-notation',
         'core-functionality/junction-preserving',
         'core-functionality/transcript-consequence-impacts',
-        'core-functionality/variant-ids'
+        'core-functionality/variant-ids',
+        'core-functionality/variant-classification'
       ],
     },
 	 {
