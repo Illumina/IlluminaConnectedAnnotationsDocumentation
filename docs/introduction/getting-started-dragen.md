@@ -25,32 +25,50 @@ credentials must be configured to gain access to the data sources.
 
 ### Credentials
 
-Credentials are stored in a credentials JSON file. It will contain an Illumina API key to access the platform and DRAGEN
-serial number to access the premium data sources.
+Credentials are stored in a credentials JSON file. It will contain an Illumina API key to access the platform.
+To access premium data sources, there are two options
+1. DRAGEN users will use DRAGEN box serial number
+2. DRAGEN cloud users will use their username and password
 
-1. To generate an Illumina API key, create an Illumina account via
-   [https://accounts.login.illumina.com](https://accounts.login.illumina.com). Refer to [this guide](./prerequisite) for instructions on obtaining your `MyIlluminaApiKey`.
-2. To access premium sources, retrieve the DRAGEN serial number using the following command:
+#### Illumina API Key
+To generate an Illumina API key, create an Illumina account via [https://accounts.login.illumina.com](https://accounts.login.illumina.com). 
+Refer to [this guide](./prerequisite) for instructions on obtaining your `MyIlluminaApiKey`.
+
+#### Premium Sources
+##### DRAGEN Users
+To access premium sources, retrieve the DRAGEN serial number using the following command:
 
 ```shell
 dragen_info -b | grep Serial
 ```
 If you have multiple versions of DRAGEN version installed, you may have to execute:
-```shell
-/opt/dragen/<DRAGEN_VERSION>/bin/dragen_info -b | grep Serial
-```
-DRAGEN version may be discovered using
+First, find out the DRAGEN version using the following command
 ```shell
 dragen_versions
 ```
 
-
-Finally, put it together in a `credentials.json` file:
-
+And then using the selected `DRAGEN_VERSION` execute the following to find the serial number
+```shell
+/opt/dragen/<DRAGEN_VERSION>/bin/dragen_info -b | grep Serial
 ```
+
+Finally, copy the serial number and create a `credentials.json` file as follows:
+```json
 {
   "MyIlluminaApiKey": "<your Illumina account api key>",
   "DragenSerialNo": "<your DRAGEN server serial no.>"
+}
+```
+
+##### DRAGEN Cloud users 
+The serial number will not work for DRAGEN cloud users.
+Instead, the AMI username and password needs to be used. 
+Following template can be used to create the `credentials.json`.
+```json
+{
+  "MyIlluminaApiKey": "<your Illumina account api key>",
+  "ApiKey": "<AMI Username>",
+  "ApiSecret": "<AMI Password>"
 }
 ```
 
