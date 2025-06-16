@@ -25,9 +25,9 @@ credentials must be configured to gain access to the data sources.
 
 ### Credentials
 
-Credentials are stored in a credentials JSON file. It will contain an Illumina API key to access the platform.
+Credentials are stored in a credentials JSON file. It will contain an Illumina API key to access Illumina platform.
 To access premium data sources, there are two options
-1. DRAGEN users will use DRAGEN box serial number
+1. DRAGEN server users will use DRAGEN serial number
 2. DRAGEN cloud users will use their username and password
 
 #### Illumina API Key
@@ -41,8 +41,8 @@ To access premium sources, retrieve the DRAGEN serial number using the following
 ```shell
 dragen_info -b | grep Serial
 ```
-If you have multiple versions of DRAGEN version installed, you may have to execute:
-First, find out the DRAGEN version using the following command
+If you have multiple versions of DRAGEN installed, you have to execute the following command
+to get the versions
 ```shell
 dragen_versions
 ```
