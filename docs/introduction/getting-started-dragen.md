@@ -35,7 +35,7 @@ To generate an Illumina API key, create an Illumina account via [https://account
 Refer to [this guide](./prerequisite) for instructions on obtaining your `MyIlluminaApiKey`.
 
 #### Premium Sources
-##### DRAGEN Users
+##### DRAGEN Server Users
 To access premium sources, retrieve the DRAGEN serial number using the following command:
 
 ```shell
@@ -62,13 +62,13 @@ Finally, copy the serial number and create a `credentials.json` file as follows:
 
 ##### DRAGEN Cloud users 
 The serial number will not work for DRAGEN cloud users.
-Instead, the AMI username and password needs to be used. 
+Instead, the BYOL username and password needs to be used. 
 Following template can be used to create the `credentials.json`.
 ```json
 {
   "MyIlluminaApiKey": "<your Illumina account api key>",
-  "ApiKey": "<AMI Username>",
-  "ApiSecret": "<AMI Password>"
+  "ApiKey": "<BYOL username>",
+  "ApiSecret": "<BYOL password>"
 }
 ```
 
