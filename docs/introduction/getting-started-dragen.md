@@ -62,13 +62,13 @@ Finally, copy the serial number and create a `credentials.json` file as follows:
 
 ##### DRAGEN Cloud users 
 The serial number will not work for DRAGEN cloud users.
-Instead, the AMI username and password needs to be used. 
+Instead, the BYOL username and password needs to be used. 
 Following template can be used to create the `credentials.json`.
 ```json
 {
   "MyIlluminaApiKey": "<your Illumina account api key>",
-  "ApiKey": "<AMI Username>",
-  "ApiSecret": "<AMI Password>"
+  "ApiKey": "<BYOL Username>",
+  "ApiSecret": "<BYOL Password>"
 }
 ```
 
