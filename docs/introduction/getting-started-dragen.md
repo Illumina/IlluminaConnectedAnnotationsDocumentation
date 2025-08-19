@@ -8,6 +8,7 @@ By default, the Annotations binaries are located in the `<INSTALL_PATH>/share/ni
 
 1. `Nirvana`: Illumina Connected Annotations
 2. `DataManager`: Manage annotation data sources
+3. `dragen_provisioning.sh`: Script to automate the data download
 
 :::caution
 
@@ -17,22 +18,42 @@ By default, the Annotations binaries are located in the `<INSTALL_PATH>/share/ni
 
 :::
 
-## Downloading Annotation Data Files
-
+:::info
+## Quick Start for DRAGEN Server Users
 Variant annotation in DRAGEN requires additional annotation data files, which must be downloaded prior to running any
-DRAGEN pipeline that requires variant annotation. The `DataManager` tool can be used to download those sources. Prior to that, the
+DRAGEN pipeline that requires variant annotation.
+
+To facilitate this, a script `dragen_provisioning.sh` is provided in the `<INSTALL_PATH>/share/nirvana` directory.
+This script automates the entire setup process by:
+
+1. **Validating your DRAGEN installation** and retrieving the serial number
+2. **Creating the credentials file** with your DRAGEN serial number
+3. **Downloading annotation data** for specified assemblies and annotation types
+
+Basic usage:
+```bash
+./dragen_provisioning.sh --dragen-path /opt/dragen --data-dir /path/to/nirvana_data
+```
+
+The script supports multiple assemblies (GRCh37, GRCh38) and annotation types (full, germline_tagging, tmb).
+For detailed options, run the script with `--help`.
+
+:::
+
+## Downloading Annotation Data Files
+The `DataManager` tool can be used to download those sources. Prior to that, the
 credentials must be configured to gain access to the data sources.
 
-### Credentials
+The Download process consists of two steps:
+1. Obtain DRAGEN serial number and create a credentials file
+2. Run the actual download process
 
-Credentials are stored in a credentials JSON file. It will contain an Illumina API key to access Illumina platform.
+
+### 1. Credentials
+
 To access premium data sources, there are two options
 1. DRAGEN server users will use DRAGEN serial number
 2. DRAGEN cloud users will use their username and password
-
-#### Illumina API Key
-To generate an Illumina API key, create an Illumina account via [https://accounts.login.illumina.com](https://accounts.login.illumina.com). 
-Refer to [this guide](./prerequisite) for instructions on obtaining your `MyIlluminaApiKey`.
 
 #### Premium Sources
 ##### DRAGEN Server Users
@@ -55,7 +76,6 @@ And then using the selected `DRAGEN_VERSION` execute the following to find the s
 Finally, copy the serial number and create a `credentials.json` file as follows:
 ```json
 {
-  "MyIlluminaApiKey": "<your Illumina account api key>",
   "DragenSerialNo": "<your DRAGEN server serial no.>"
 }
 ```
@@ -66,13 +86,12 @@ Instead, the BYOL username and password needs to be used.
 Following template can be used to create the `credentials.json`.
 ```json
 {
-  "MyIlluminaApiKey": "<your Illumina account api key>",
   "ApiKey": "<BYOL username>",
   "ApiSecret": "<BYOL password>"
 }
 ```
 
-### Download Sources
+### 2. Download Sources
 
 :::tip
 
