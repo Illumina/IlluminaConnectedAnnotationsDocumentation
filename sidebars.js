@@ -18,6 +18,7 @@ module.exports = {
       label: 'Data Sources',
       items: [
         'data-sources/1000Genomes',
+        'data-sources/alpha-missense',
         'data-sources/amino-acid-conservation',
         'data-sources/cancer-hotspots',
         'data-sources/clingen',
@@ -62,6 +63,13 @@ module.exports = {
         'core-functionality/transcript-consequence-impacts',
         'core-functionality/variant-ids',
         'core-functionality/variant-classification'
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Software Functionality',
+      items: [
+        'software-functionality/command-line-parameters',
       ],
     },
 	 {
