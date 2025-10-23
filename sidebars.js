@@ -65,6 +65,13 @@ module.exports = {
         'core-functionality/variant-classification'
       ],
     },
+    {
+      type: 'category',
+      label: 'Software Functionality',
+      items: [
+        'software-functionality/command-line-parameters',
+      ],
+    },
 	 {
       type: 'category',
       label: 'Utilities',

@@ -5,7 +5,7 @@ title: Getting Started
 Illumina Connected Annotations is written in C# using [.NET Core](https://www.microsoft.com/net/download/core) runtime environment, which is compatible with Windows, Linux, Mac OS X, and Docker images. Once .NET Core has been downloaded, all you need to do is obtain the source code, compile it, and download the data files.
 
 :::tip
-Illumina Connected Annotations requires .NET6.0. Ensure that you have the required runtime installed from the [.NET Core downloads](https://www.microsoft.com/net/download/core) page.
+Illumina Connected Annotations requires .NET8.0. Ensure that you have the required runtime installed from the [.NET Core downloads](https://www.microsoft.com/net/download/core) page.
 :::
 
 :::info
