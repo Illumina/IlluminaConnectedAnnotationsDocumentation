@@ -90,6 +90,11 @@ Following template can be used to create the `credentials.json`.
   "ApiSecret": "<BYOL password>"
 }
 ```
+The `username` and `password` can be found in a file called `credentials.txt`. 
+This is the file used with `--lic-credentials <path to file>` for DRAGEN.
+Alternatively, if you are using `--lic-server <license server URL with credentials>`, they can be found in the  license server URL which should be formatted as follows:
+
+`https://<username>:<password>@license.dragen.illumina.com`
 
 ### 2. Download Sources
 
