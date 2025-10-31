@@ -519,23 +519,71 @@ EOF
 create_cloud_credentials_to_path() {
     local target_path="$1"
     
+    # If lic-credentials file is already specified via CLI, use it
     if [[ -n "$LIC_CREDENTIALS_FILE" ]]; then
         parse_lic_credentials_file "$LIC_CREDENTIALS_FILE"
-    elif [[ -z "$API_KEY" || -z "$API_SECRET" ]]; then
+    # If API key/secret are already provided via CLI, use them
+    elif [[ -n "$API_KEY" && -n "$API_SECRET" ]]; then
+        : # credentials already set, continue to file creation
+    # Interactive mode: prompt user for their preferred method
+    else
         echo ""
         echo "Cloud DRAGEN requires API credentials."
         echo "These can be found in your DRAGEN license configuration:"
         echo "  - From --lic-server: https://<user_id>:<password>@license.dragen.illumina.com"
         echo "  - From --lic-credentials file: credentials-1 and credentials-2 values"
         echo ""
+        echo "Choose credential input method:"
+        echo "  1. Provide path to lic-credentials file"
+        echo "  2. Enter user_id and password manually"
+        echo ""
         
-        if [[ -z "$API_KEY" ]]; then
-            API_KEY=$(prompt_input "Enter API Key (user_id)")
-        fi
-        
-        if [[ -z "$API_SECRET" ]]; then
-            API_SECRET=$(prompt_input "Enter API Secret (password)")
-        fi
+        local choice
+        while true; do
+            read -r -p "Enter your choice (1 or 2): " choice
+            case "$choice" in
+                1)
+                    # Option 1: Parse from lic-credentials file
+                    local lic_file
+                    lic_file=$(prompt_input "Enter path to lic-credentials file")
+                    
+                    if [[ -z "$lic_file" ]]; then
+                        print_error "Path cannot be empty"
+                        continue
+                    fi
+                    
+                    if [[ ! -f "$lic_file" ]]; then
+                        print_error "File not found: $lic_file"
+                        if prompt_yes_no "Try again?"; then
+                            continue
+                        else
+                            error_exit "Valid lic-credentials file required"
+                        fi
+                    fi
+                    
+                    parse_lic_credentials_file "$lic_file"
+                    break
+                    ;;
+                2)
+                    # Option 2: Manual entry
+                    API_KEY=$(prompt_input "Enter user_id (API Key)")
+                    API_SECRET=$(prompt_input "Enter password (API Secret)")
+                    
+                    if [[ -z "$API_KEY" || -z "$API_SECRET" ]]; then
+                        print_error "Both user_id (API Key) and password (API Secret) are required"
+                        if prompt_yes_no "Try again?"; then
+                            continue
+                        else
+                            error_exit "API credentials are required for cloud DRAGEN"
+                        fi
+                    fi
+                    break
+                    ;;
+                *)
+                    echo "Invalid choice. Please enter 1 or 2."
+                    ;;
+            esac
+        done
     fi
     
     if [[ -z "$API_KEY" || -z "$API_SECRET" ]]; then
