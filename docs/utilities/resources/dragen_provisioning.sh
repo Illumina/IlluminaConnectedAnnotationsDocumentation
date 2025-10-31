@@ -568,7 +568,7 @@ setup_credentials() {
     CREDENTIAL_TYPE=$(detect_credential_type)
 
     # Double-check detected credential type with user
-    echo "Detected credential type: $CREDENTIAL_TYPE"
+    echo "Detected DRAGEN installation type: $CREDENTIAL_TYPE"
     if prompt_yes_no "Is this correct?"; then
         : # continue with detected type
     else
@@ -745,6 +745,37 @@ extract_annotation_types_from_configs() {
     printf '%s\n' "${types[@]}" | sort -u
 }
 
+remove_redundant_annotation_types() {
+    # TMB includes germline tagging data, so remove germline_tagging if TMB is selected
+    local has_tmb=false
+    local has_germline_tagging=false
+    
+    for type in "${ANNOTATION_TYPES[@]}"; do
+        if [[ "$type" == "tmb" ]]; then
+            has_tmb=true
+        fi
+        if [[ "$type" == "germline_tagging" ]]; then
+            has_germline_tagging=true
+        fi
+    done
+    
+    if [[ "$has_tmb" == true ]] && [[ "$has_germline_tagging" == true ]]; then
+        print_warning "Ignoring germline tagging because TMB annotations include it"
+        
+        # Remove germline_tagging from array
+        local filtered_types=()
+        for type in "${ANNOTATION_TYPES[@]}"; do
+            if [[ "$type" != "germline_tagging" ]]; then
+                filtered_types+=("$type")
+            fi
+        done
+        ANNOTATION_TYPES=("${filtered_types[@]}")
+        
+        echo "Updated annotation types: ${ANNOTATION_TYPES[*]}"
+        echo ""
+    fi
+}
+
 prompt_assemblies() {
     if [[ ${#ASSEMBLIES[@]} -gt 0 ]]; then
         print_info "Using assemblies: ${ASSEMBLIES[*]}"
@@ -846,6 +877,9 @@ prompt_annotation_types() {
             fi
         fi
     done
+    
+    # Remove redundant annotation types if TMB is selected
+    remove_redundant_annotation_types
 }
 
 prompt_data_directory() {
@@ -911,7 +945,7 @@ display_configuration() {
     echo ""
     
     echo "Download Jobs:"
-    echo "Directory: ${DRAGEN_INSTALL_PATH/$RESOURCES_DIR/}"
+    echo "Directory: ${DRAGEN_INSTALL_PATH}/${RESOURCES_DIR}/"
     echo "Files:"
     local job_count=0
     for assembly in "${ASSEMBLIES[@]}"; do
@@ -1200,6 +1234,11 @@ main() {
     
     # Parse command line arguments
     parse_arguments "$@"
+    
+    # Remove redundant annotation types if provided via CLI
+    if [[ ${#ANNOTATION_TYPES[@]} -gt 0 ]]; then
+        remove_redundant_annotation_types
+    fi
     
     # Show overview if in interactive mode
     if [[ "$NON_INTERACTIVE" == false ]] && [[ -z "$DRAGEN_INSTALL_PATH" ]]; then
