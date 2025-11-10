@@ -33,39 +33,20 @@ The annotation binaries location depends on your DRAGEN environment:
 :::
 
 ## Quick Start Reference
-### Step 1: Credentials File
-Depending on the environment, obtaining credentials will differ. Choose one from the two options below.
 
-#### On-Premise Credentials
-```bash
-cat > credentials.json << EOF
-{
-  "DragenSerialNo": "$(dragen_info -b | grep Serial | awk '{print $3}')"
-}
-EOF
-```
-
-#### Cloud Credentials
+### On-Premise DRAGEN
 
 ```bash
-cat > credentials.json << EOF
-{
-  "ApiKey": "$(awk -F' = ' '/^credentials-1/ {print $2}' /path/to/lic_credentials_file)",
-  "ApiSecret": "$(awk -F' = ' '/^credentials-2/ {print $2}' /path/to/lic_credentials_file)"
-}
-EOF
-```
-### Step 2: Download Annotation Data
+# Set DRAGEN serial number as environment variable
+export DRAGEN_SERIAL_NUMBER="$(dragen_info -qs)"
 
-```bash
+# Download annotation data (credentials auto-detected from environment)
 /<NIRVANA PATH>/DataManager download \
   -r GRCh38 \
-  --credentials-file credentials.json \
   --dir /data/nirvana_data \
-  --versions-config /opt/edico/resources/annotation/all_annotations_GRCh38.json
-```
-### Step 3: Annotate Variants via DRAGEN
-```bash
+  --versions-config /opt/dragen/<DRAGEN_VERSION>/resources/annotation/all_annotations_GRCh38.json
+
+# Annotate variants via DRAGEN
 dragen \
   --enable-variant-annotation true \
   --variant-annotation-data /data/nirvana_data \
@@ -73,20 +54,187 @@ dragen \
   [... other parameters ...]
 ```
 
+### Cloud DRAGEN
+
+```bash
+# Download annotation data using DRAGEN API key file
+/<NIRVANA PATH>/DataManager download \
+  -r GRCh38 \
+  --api-key-file /path/to/dragen_api_key.txt \
+  --dir /data/nirvana_data \
+  --versions-config /opt/edico/resources/annotation/all_annotations_GRCh38.json
+
+# Annotate variants via DRAGEN
+dragen \
+  --enable-variant-annotation true \
+  --variant-annotation-data /data/nirvana_data \
+  --variant-annotation-assembly GRCh38 \
+  [... other parameters ...]
+```
+
+:::tip Alternative Cloud Option
+If you already have a DRAGEN `--lic-credentials` file, you can use it directly:
+```bash
+/<NIRVANA PATH>/DataManager download \
+  -r GRCh38 \
+  --lic-credentials /path/to/lic_credentials_file \
+  --dir /data/nirvana_data \
+  --versions-config /opt/edico/resources/annotation/all_annotations_GRCh38.json
+```
+:::
+
 ## Detailed Instructions
 
 ### Step 1: Configure Credentials
 
-To access premium annotation data sources, create a `credentials.json` file with the appropriate credentials for your environment.
+To access premium annotation data sources, you need to provide credentials. The system supports multiple authentication methods and will automatically search for credentials in several locations.
 
-#### On-Premise DRAGEN
+#### Supported Authentication Methods
 
-**Required credentials format:**
+The annotation tools support the following authentication methods:
+
+| Authentication Method        | Use Case                          | Environment Variables                                      | Command-Line Options                |
+|------------------------------|-----------------------------------|------------------------------------------------------------|-------------------------------------|
+| **DRAGEN Serial Number**     | On-premise DRAGEN servers         | `DRAGEN_SERIAL_NUMBER`                                     | `--credentials-file` (JSON)         |
+| **DRAGEN API Key**           | DRAGEN cloud/platform deployments | `DRAGEN_API_KEY_VALUE`<br/>`DRAGEN_API_KEY_FILE` (path)   | `--api-key-file`                    |
+| **BYOL Credentials**         | Cloud DRAGEN users (legacy)       | `NIRVANA_API_KEY` + `NIRVANA_API_SECRET`<br/>`DRAGEN_LICENSE_CREDENTIALS_FILE` (path) | `--lic-credentials`<br/>`--credentials-file` (JSON) |
+
+:::tip Credential Priority
+If multiple authentication methods are configured, the system will use them in this priority order:
+1. DRAGEN Serial Number
+2. BYOL Credentials (ApiKey/ApiSecret)
+3. DRAGEN API Key
+
+You only need to provide **one** authentication method.
+:::
+
+#### Credential Configuration Options
+
+You can configure credentials using any of these methods:
+
+**Option 1: Default credentials directory**
+**Option 2: Explicit file paths**
+**Option 3: Environment variables**
+
+#### Option 1: Default Credentials Directory
+
+Automatically look for credentials in `~/.ilmnAnnotations/` directory:
+
+| File Name                  | Purpose                                | Format          |
+|----------------------------|----------------------------------------|-----------------|
+| `credentials.json`         | Main credentials file (all auth types) | JSON            |
+| `dragen_api_key.txt`       | DRAGEN API key only                    | Plain text      |
+| `dragen_credentials.txt`   | BYOL credentials (ApiKey/ApiSecret)    | Key-value pairs |
+
+
+#### Option 2: Explicit File Paths
+
+You can specify credential file locations using command-line arguments:
+
+| Tool        | Argument                                   | Description                                         |
+|-------------|--------------------------------------------|-----------------------------------------------------|
+| DataManager | `--credentials-file <path>` or `-l <path>` | Path to credentials.json                            |
+| DataManager | `--api-key-file <path>`                    | Path to raw API key file                            |
+| DataManager | `--lic-credentials <path>`                 | Path to license credentials file (key-value format) |
+| Nirvana     | `-l <path>` or `--license <path>`          | Path to credentials.json                            |
+
+#### Option 3: Environment Variables
+
+Set environment variables for automatic credential detection:
+
+| Environment Variable                | Description                          | Example                              |
+|-------------------------------------|--------------------------------------|--------------------------------------|
+| `MY_ILLUMINA_API_KEY`               | MyIllumina API key                   | `your-api-key`                       |
+| `DRAGEN_SERIAL_NUMBER`              | DRAGEN serial number                 | `ABCD1234`                           |
+| `DRAGEN_API_KEY_VALUE`              | DRAGEN API key value                 | `your-dragen-api-key`                |
+| `DRAGEN_API_KEY_FILE`               | Path to DRAGEN API key file          | `/path/to/api_key.txt`               |
+| `NIRVANA_API_KEY`                   | BYOL API key (user_id)               | `your-user-id`                       |
+| `NIRVANA_API_SECRET`                | BYOL API secret (password)           | `your-password`                      |
+| `DRAGEN_LICENSE_CREDENTIALS_FILE`   | Path to DRAGEN license credentials   | `/path/to/dragen_credentials.txt`    |
+
+**Examples:**
+
+```bash
+**Setting environment variables:**
+# DRAGEN Serial Number (on-premise)
+export DRAGEN_SERIAL_NUMBER="ABCD1234"
+
+# DRAGEN API Key (cloud/platform)
+export DRAGEN_API_KEY_VALUE="your-dragen-api-key"
+# or point to a file
+export DRAGEN_API_KEY_FILE="/path/to/api_key.txt"
+
+# BYOL Credentials (legacy cloud)
+export NIRVANA_API_KEY="your-user-id"
+export NIRVANA_API_SECRET="your-password"
+# or point to a file
+export DRAGEN_LICENSE_CREDENTIALS_FILE="/path/to/dragen_credentials.txt"
+```
+
+---
+
+#### Credentials File Formats
+
+##### Format 1: credentials.json (Recommended)
+
+The `credentials.json` file supports all authentication methods in a single file:
+
+**On-Premise DRAGEN:**
 ```json
 {
-  "DragenSerialNo": "<your DRAGEN server serial no.>"
+  "DragenSerialNo": "<your-serial-number>"
 }
 ```
+
+**Cloud DRAGEN (legacy BYOL):**
+```json
+{
+  "ApiKey": "<user-id>",
+  "ApiSecret": "<password>"
+}
+```
+
+**MyIllumina Platform:**
+```json
+{
+  "MyIlluminaApiKey": "<your-api-key>"
+}
+```
+
+**All supported fields:**
+```json
+{
+  "MyIlluminaApiKey": "<optional-myillumina-key>",
+  "DragenSerialNo": "<optional-serial-number>",
+  "ApiKey": "<optional-byol-user-id>",
+  "ApiSecret": "<optional-byol-password>"
+}
+```
+
+##### Format 2: dragen_api_key.txt
+
+A plain text file containing only the DRAGEN API key:
+
+```
+your-dragen-api-key-value
+```
+
+##### Format 3: dragen_credentials.txt
+
+A key-value pair file for BYOL credentials:
+
+```
+credentials-1 = <user-id>
+credentials-2 = <password>
+```
+
+---
+
+#### Setting Up Credentials by Environment
+
+##### On-Premise DRAGEN
+
+**Required credential:** DRAGEN Serial Number
 
 **Obtaining your DRAGEN serial number:**
 
@@ -101,41 +249,83 @@ If you have multiple DRAGEN versions:
 dragen_versions
 
 # Get serial number for specific version
-/opt/dragen/<DRAGEN_VERSION>/bin/dragen_info -b | grep Serial
+/opt/dragen/<DRAGEN_VERSION>/bin/dragen_info -s
 ```
 
-#### Cloud DRAGEN
+**Creating credentials.json:**
+
+```bash
+# Manual method
+cat > ~/.ilmnAnnotations/credentials.json << EOF
+{
+  "DragenSerialNo": "$(dragen_info -qs)"
+}
+EOF
+```
+
+Or using environment variable:
+```bash
+export DRAGEN_SERIAL_NUMBER="$(dragen_info -qs)"
+```
+
+##### Cloud DRAGEN
 
 :::info
-**Cloud users do not have a DRAGEN serial number.** All active DRAGEN cloud users are automatically eligible for premium resources.
+**Cloud users do not have a DRAGEN serial number.** Active DRAGEN cloud users are automatically eligible for premium resources using BYOL credentials or DRAGEN API keys.
 :::
 
-**Required credentials format:**
-```json
-{
-  "ApiKey": "<user_id>",
-  "ApiSecret": "<password>"
-}
+**Required credentials:** BYOL ApiKey/ApiSecret **or** DRAGEN API Key
+
+**Method 1: Using DRAGEN API Key**
+
+If you have a DRAGEN API key, you can use it directly:
+
+```bash
+# Save to default location
+cat > ~/.ilmnAnnotations/dragen_api_key.txt << EOF
+your-dragen-api-key-value
+EOF
 ```
 
-**Obtaining your cloud credentials:**
-
-Your `user_id` and `password` are found in your DRAGEN license configuration:
-
-**Method 1: From `--lic-server` parameter**
-
-If you run DRAGEN with `--lic-server`, extract credentials from the URL format:
-```
---lic-server https://<user_id>:<password>@license.dragen.illumina.com
+Or set as an environment variable:
+```bash
+export DRAGEN_API_KEY_VALUE="your-dragen-api-key-value"
 ```
 
-**Method 2: From `--lic-credentials` file**
+**Method 2: Use existing `--lic-credentials` file directly**
 
-If you run DRAGEN with `--lic-credentials <file>`, the file contains:
+If you run DRAGEN with `--lic-credentials <file>`, you can use the same file directly with DataManager and Nirvana:
+
 ```
-credentials-1 = <user_id>
+credentials-1 = <user-id>
 credentials-2 = <password>
 ```
+
+**Using the license credentials file:**
+```bash
+# With DataManager
+/<NIRVANA PATH>/DataManager download --lic-credentials /path/to/lic_credentials_file 
+```
+
+**Optional: Convert to credentials.json** (if you prefer the JSON format):
+```bash
+cat > ~/.ilmnAnnotations/credentials.json << EOF
+{
+  "ApiKey": "$(awk -F' = ' '/^credentials-1/ {print $2}' /path/to/lic_credentials_file)",
+  "ApiSecret": "$(awk -F' = ' '/^credentials-2/ {print $2}' /path/to/lic_credentials_file)"
+}
+EOF
+```
+
+---
+
+:::tip Troubleshooting
+If you encounter authentication errors:
+1. Verify credentials are in the correct format
+2. Check file permissions (credentials files should be readable)
+3. Ensure at least one authentication method is configured
+4. Try specifying the credentials file path explicitly with `--credentials-file`
+:::
 
 ### Step 2: Download Annotation Data
 

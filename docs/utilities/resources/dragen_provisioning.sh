@@ -12,8 +12,9 @@ set -e
 YEAR=$(date +"%Y")
 VERSION="1.0.0"
 CONFIG_DIR="$HOME/.ilmnAnnotations"
-SAVED_CONFIG_FILE="$CONFIG_DIR/last_config.json"
 DEFAULT_CREDENTIALS_FILE="$CONFIG_DIR/credentials.json"
+DEFAULT_API_KEY_FILE="$CONFIG_DIR/dragen_api_key.txt"
+DEFAULT_LIC_CREDENTIALS_FILE="$CONFIG_DIR/dragen_credentials.txt"
 
 # DRAGEN paths
 RESOURCES_DIR="resources/annotation"
@@ -27,9 +28,11 @@ ASSEMBLIES=()
 ANNOTATION_TYPES=()
 CREDENTIAL_TYPE=""
 CREDENTIALS_FILE=""
+API_KEY_FILE=""
 API_KEY=""
 API_SECRET=""
 LIC_CREDENTIALS_FILE=""
+USE_ENV_VARS=false
 DRY_RUN=false
 NON_INTERACTIVE=false
 
@@ -95,6 +98,7 @@ OPTIONS:
   --assemblies <list>           Comma-separated: GRCh37,GRCh38 (default: both)
   --annotation-types <list>     Comma-separated: all,germline_tagging,tmb
   --credentials-file <path>     Path to credentials.json
+  --api-key-file <path>         Path to API key file
   --lic-credentials <path>      Path to DRAGEN license credentials (cloud)
   --api-key <key>               Cloud API key (user_id)
   --api-secret <secret>         Cloud API secret (password)
@@ -391,12 +395,69 @@ validate_dragen_path() {
 # Credential Management
 # ============================================================================
 
+check_environment_credentials() {
+    # Check for credentials in environment variables
+    local found_creds=false
+    
+    if [[ -n "${DRAGEN_SERIAL_NUMBER:-}" ]]; then
+        print_info "Found DRAGEN_SERIAL_NUMBER in environment"
+        CREDENTIAL_TYPE="on-premise"
+        USE_ENV_VARS=true
+        found_creds=true
+    elif [[ -n "${DRAGEN_API_KEY_VALUE:-}" ]]; then
+        print_info "Found DRAGEN_API_KEY_VALUE in environment"
+        CREDENTIAL_TYPE="cloud"
+        USE_ENV_VARS=true
+        found_creds=true
+    elif [[ -n "${DRAGEN_API_KEY_FILE:-}" ]]; then
+        print_info "Found DRAGEN_API_KEY_FILE in environment: ${DRAGEN_API_KEY_FILE}"
+        API_KEY_FILE="${DRAGEN_API_KEY_FILE}"
+        CREDENTIAL_TYPE="cloud"
+        found_creds=true
+    elif [[ -n "${NIRVANA_API_KEY:-}" ]] && [[ -n "${NIRVANA_API_SECRET:-}" ]]; then
+        print_info "Found NIRVANA_API_KEY and NIRVANA_API_SECRET in environment"
+        CREDENTIAL_TYPE="cloud"
+        USE_ENV_VARS=true
+        found_creds=true
+    elif [[ -n "${DRAGEN_LICENSE_CREDENTIALS_FILE:-}" ]]; then
+        print_info "Found DRAGEN_LICENSE_CREDENTIALS_FILE in environment: ${DRAGEN_LICENSE_CREDENTIALS_FILE}"
+        LIC_CREDENTIALS_FILE="${DRAGEN_LICENSE_CREDENTIALS_FILE}"
+        CREDENTIAL_TYPE="cloud"
+        found_creds=true
+    fi
+    
+    return $([ "$found_creds" = true ] && echo 0 || echo 1)
+}
+
+check_default_credential_files() {
+    # Check for credentials in default locations
+    local found_creds=false
+    
+    if [[ -f "$DEFAULT_CREDENTIALS_FILE" ]]; then
+        print_info "Found credentials.json in default location"
+        CREDENTIALS_FILE="$DEFAULT_CREDENTIALS_FILE"
+        found_creds=true
+    elif [[ -f "$DEFAULT_API_KEY_FILE" ]]; then
+        print_info "Found dragen_api_key.txt in default location"
+        API_KEY_FILE="$DEFAULT_API_KEY_FILE"
+        CREDENTIAL_TYPE="cloud"
+        found_creds=true
+    elif [[ -f "$DEFAULT_LIC_CREDENTIALS_FILE" ]]; then
+        print_info "Found dragen_credentials.txt in default location"
+        LIC_CREDENTIALS_FILE="$DEFAULT_LIC_CREDENTIALS_FILE"
+        CREDENTIAL_TYPE="cloud"
+        found_creds=true
+    fi
+    
+    return $([ "$found_creds" = true ] && echo 0 || echo 1)
+}
+
 detect_credential_type() {
     local dragen_info="$DRAGEN_INSTALL_PATH/$DRAGEN_INFO_PATH"
     
     if [[ -f "$dragen_info" ]]; then
         local serial
-        serial=$("$dragen_info" -b 2>/dev/null | grep -i "Serial" | awk '{print $3}' || echo "")
+        serial=$("$dragen_info" -qs 2>/dev/null || echo "")
         
         if [[ -n "$serial" ]]; then
             echo "on-premise"
@@ -423,7 +484,7 @@ create_onpremise_credentials() {
     local dragen_info="$DRAGEN_INSTALL_PATH/$DRAGEN_INFO_PATH"
     local serial
     
-    serial=$("$dragen_info" -b 2>/dev/null | grep -i "Serial" | awk '{print $3}' || echo "")
+    serial=$("$dragen_info" -qs 2>/dev/null || echo "")
     
     if [[ -z "$serial" ]]; then
         error_exit "Could not retrieve DRAGEN serial number"
@@ -446,7 +507,7 @@ create_onpremise_credentials_to_path() {
     local dragen_info="$DRAGEN_INSTALL_PATH/$DRAGEN_INFO_PATH"
     local serial
     
-    serial=$("$dragen_info" -b 2>/dev/null | grep -i "Serial" | awk '{print $3}' || echo "")
+    serial=$("$dragen_info" -qs 2>/dev/null || echo "")
     
     if [[ -z "$serial" ]]; then
         error_exit "Could not retrieve DRAGEN serial number"
@@ -602,6 +663,7 @@ EOF
 }
 
 setup_credentials() {
+    # First, check if credentials are already specified via CLI arguments
     if [[ -n "$CREDENTIALS_FILE" ]]; then
         if [[ ! -f "$CREDENTIALS_FILE" ]]; then
             error_exit "Specified credentials file not found: $CREDENTIALS_FILE"
@@ -610,108 +672,87 @@ setup_credentials() {
         return 0
     fi
     
+    if [[ -n "$API_KEY_FILE" ]]; then
+        if [[ ! -f "$API_KEY_FILE" ]]; then
+            error_exit "Specified API key file not found: $API_KEY_FILE"
+        fi
+        print_info "Using API key file: $API_KEY_FILE"
+        CREDENTIAL_TYPE="cloud"
+        return 0
+    fi
+    
+    if [[ -n "$LIC_CREDENTIALS_FILE" ]]; then
+        if [[ ! -f "$LIC_CREDENTIALS_FILE" ]]; then
+            error_exit "Specified license credentials file not found: $LIC_CREDENTIALS_FILE"
+        fi
+        print_info "Using license credentials file: $LIC_CREDENTIALS_FILE"
+        CREDENTIAL_TYPE="cloud"
+        return 0
+    fi
+    
+    # Check for credentials in environment variables
+    if check_environment_credentials; then
+        print_info "Using credentials from environment variables (auto-detected)"
+        return 0
+    fi
+    
+    # Check for credentials in default locations
+    if check_default_credential_files; then
+        if [[ "$NON_INTERACTIVE" == false ]]; then
+            if prompt_yes_no "Use discovered credentials?"; then
+                return 0
+            fi
+        else
+            return 0
+        fi
+    fi
+    
+    # If we're in non-interactive mode and no credentials found, error out
+    if [[ "$NON_INTERACTIVE" == true ]]; then
+        error_exit "No credentials found. Use --credentials-file, --api-key-file, --lic-credentials, or set environment variables."
+    fi
+    
     print_section "Step 2: Configure Credentials"
     
     # Detect credential type first
     CREDENTIAL_TYPE=$(detect_credential_type)
 
-    # Double-check detected credential type with user
     echo "Detected DRAGEN installation type: $CREDENTIAL_TYPE"
-    if prompt_yes_no "Is this correct?"; then
-        : # continue with detected type
-    else
-        echo "Please select the credential type:"
-        echo "  1. on-premise"
-        echo "  2. cloud"
-        local choice
-        while true; do
-            read -r -p "> " choice
-            case "$choice" in
-                1)
-                    CREDENTIAL_TYPE="on-premise"
-                    break
-                    ;;
-                2)
-                    CREDENTIAL_TYPE="cloud"
-                    break
-                    ;;
-                *)
-                    echo "Invalid choice. Enter 1 for on-premise or 2 for cloud."
-                    ;;
-            esac
-        done
-    fi
     
-    # Prompt for credentials file path
-    local use_existing=false
-    
-    # Check if default credentials file exists
-    if [[ -f "$DEFAULT_CREDENTIALS_FILE" ]]; then
-        print_info "Found existing credentials file: $DEFAULT_CREDENTIALS_FILE"
-        if prompt_yes_no "Would you like to use the existing credentials file?"; then
-            CREDENTIALS_FILE="$DEFAULT_CREDENTIALS_FILE"
-            return 0
-        fi
-    fi
-    
-    # Ask user for credentials file path
-    echo ""
-    echo "Where should the credentials file be saved?"
-    local user_path
-    user_path=$(prompt_input "Enter credentials file path (or 'exit' to quit)" "$DEFAULT_CREDENTIALS_FILE")
-    
-    # Trim whitespace
-    user_path=$(echo "$user_path" | xargs)
-    
-    # Check for exit command
-    if [[ "$(echo "$user_path" | tr '[:upper:]' '[:lower:]')" == "exit" ]]; then
-        if prompt_yes_no "Are you sure you want to exit?"; then
-            echo "Setup cancelled by user"
-            exit 0
-        else
-            # Recursive call to try again
-            setup_credentials
-            return $?
-        fi
-    fi
-    
-    # Check if user-specified file already exists
-    if [[ -f "$user_path" ]]; then
-        print_warning "File already exists: $user_path"
-        if prompt_yes_no "Would you like to use this existing file?"; then
-            CREDENTIALS_FILE="$user_path"
-            return 0
-        else
-            if prompt_yes_no "Overwrite with new credentials?"; then
-                CREDENTIALS_FILE="$user_path"
-                # Continue to create new credentials
-            else
-                # Ask again for a different path
-                echo ""
-                print_info "Please choose a different path"
-                setup_credentials
-                return $?
-            fi
-        fi
-    else
-        CREDENTIALS_FILE="$user_path"
-    fi
-    
-    # Ensure the directory exists
-    local cred_dir
-    cred_dir=$(dirname "$CREDENTIALS_FILE")
-    if [[ ! -d "$cred_dir" ]]; then
-        print_info "Creating directory: $cred_dir"
-        mkdir -p "$cred_dir" || error_exit "Failed to create directory: $cred_dir"
-    fi
-    
-    # Create the credentials based on type
+    # For on-premise, automatically get serial number and use it
     if [[ "$CREDENTIAL_TYPE" == "on-premise" ]]; then
-        print_info "Setting up on-premise credentials..."
-        create_onpremise_credentials_to_path "$CREDENTIALS_FILE"
-    else
-        print_info "Setting up cloud credentials..."
-        create_cloud_credentials_to_path "$CREDENTIALS_FILE"
+        local dragen_info="$DRAGEN_INSTALL_PATH/$DRAGEN_INFO_PATH"
+        local serial
+        serial=$("$dragen_info" -qs 2>/dev/null || echo "")
+        
+        if [[ -z "$serial" ]]; then
+            error_exit "Could not retrieve DRAGEN serial number"
+        fi
+        
+        echo ""
+        echo "Retrieved DRAGEN serial number: $serial"
+        echo "Setting DRAGEN_SERIAL_NUMBER environment variable for this session"
+        echo ""
+        echo ""
+        
+        # Set it for current session
+        export DRAGEN_SERIAL_NUMBER="$serial"
+        USE_ENV_VARS=true
+        print_info "Credentials configured successfully"
+        return 0
+    fi
+    
+    # For cloud, check if we have any credentials we can use
+    if [[ "$CREDENTIAL_TYPE" == "cloud" ]]; then
+        echo ""
+        echo "Cloud DRAGEN requires API credentials."
+        echo "No credentials found in environment or default locations."
+        echo ""
+        echo "Credentials will be requested in the configuration summary."
+        echo "You can provide them at that time before downloading."
+        echo ""
+        # Mark that we need credentials but don't fail yet
+        return 0
     fi
 }
 
@@ -958,7 +999,17 @@ display_configuration() {
     
     echo "Credentials:"
     echo "  Type: $CREDENTIAL_TYPE"
-    echo "  File: $CREDENTIALS_FILE"
+    if [[ "$USE_ENV_VARS" == true ]]; then
+        echo "  Source: Environment variables (auto-detected)"
+    elif [[ -n "$CREDENTIALS_FILE" ]]; then
+        echo "  Source: $CREDENTIALS_FILE"
+    elif [[ -n "$API_KEY_FILE" ]]; then
+        echo "  Source: API key file - $API_KEY_FILE"
+    elif [[ -n "$LIC_CREDENTIALS_FILE" ]]; then
+        echo "  Source: License credentials file - $LIC_CREDENTIALS_FILE"
+    else
+        echo "  Source: NOT CONFIGURED"
+    fi
     echo ""
     
     echo "Data Directory:"
@@ -998,9 +1049,10 @@ display_configuration() {
     local job_count=0
     for assembly in "${ASSEMBLIES[@]}"; do
         for type in "${ANNOTATION_TYPES[@]}"; do
+            job_count=$((job_count + 1))
             local config_file
             config_file=$(get_config_filename "$type" "$assembly")
-            echo "  $((++job_count)). $config_file"
+            echo "  $job_count. $config_file"
         done
     done
     echo ""
@@ -1031,10 +1083,119 @@ get_config_filename() {
     esac
 }
 
-confirm_configuration() {
-    if [[ "$NON_INTERACTIVE" == true ]]; then
+prompt_credential_modification() {
+    # Check if credentials are already configured
+    local has_credentials=false
+    
+    if [[ "$USE_ENV_VARS" == true ]] || [[ -n "$CREDENTIALS_FILE" ]] || \
+       [[ -n "$API_KEY_FILE" ]] || [[ -n "$LIC_CREDENTIALS_FILE" ]]; then
+        has_credentials=true
+    fi
+    
+    # For cloud without credentials, we must get them now
+    if [[ "$CREDENTIAL_TYPE" == "cloud" ]] && [[ "$has_credentials" == false ]]; then
+        echo ""
+        print_warning "Cloud credentials are required but not configured."
+        echo "Please provide credentials now."
+        prompt_manual_cloud_credentials
         return 0
     fi
+    
+    # If credentials exist, offer to modify them
+    if [[ "$has_credentials" == true ]]; then
+        echo ""
+        if prompt_yes_no "Would you like to modify or manually enter different credentials?"; then
+            if [[ "$CREDENTIAL_TYPE" == "on-premise" ]]; then
+                prompt_manual_onpremise_credentials
+            else
+                prompt_manual_cloud_credentials
+            fi
+        fi
+    fi
+}
+
+prompt_manual_onpremise_credentials() {
+    echo ""
+    echo "Enter on-premise credentials manually."
+    echo ""
+    
+    local serial
+    serial=$(prompt_input "Enter DRAGEN serial number")
+    
+    if [[ -z "$serial" ]]; then
+        print_error "Serial number cannot be empty"
+        return 1
+    fi
+    
+    # Save to credentials.json
+    ensure_config_dir
+    
+    cat > "$DEFAULT_CREDENTIALS_FILE" << EOF
+{
+  "DragenSerialNo": "$serial"
+}
+EOF
+    
+    CREDENTIALS_FILE="$DEFAULT_CREDENTIALS_FILE"
+    USE_ENV_VARS=false
+    print_info "Credentials saved to: $DEFAULT_CREDENTIALS_FILE"
+}
+
+prompt_manual_cloud_credentials() {
+    echo ""
+    echo "Enter cloud credentials manually."
+    echo "These can be found in your DRAGEN license configuration:"
+    echo "  - From --lic-server: https://<user_id>:<password>@license.dragen.illumina.com"
+    echo "  - From --lic-credentials file: credentials-1 and credentials-2 values"
+    echo ""
+    
+    local api_key
+    local api_secret
+    
+    api_key=$(prompt_input "Enter API Key (user_id)")
+    api_secret=$(prompt_input "Enter API Secret (password)")
+    
+    if [[ -z "$api_key" ]] || [[ -z "$api_secret" ]]; then
+        print_error "Both API Key and API Secret are required"
+        return 1
+    fi
+    
+    # Save to credentials.json
+    ensure_config_dir
+    
+    cat > "$DEFAULT_CREDENTIALS_FILE" << EOF
+{
+  "ApiKey": "$api_key",
+  "ApiSecret": "$api_secret"
+}
+EOF
+    
+    CREDENTIALS_FILE="$DEFAULT_CREDENTIALS_FILE"
+    API_KEY_FILE=""
+    LIC_CREDENTIALS_FILE=""
+    USE_ENV_VARS=false
+    print_info "Credentials saved to: $DEFAULT_CREDENTIALS_FILE"
+}
+
+confirm_configuration() {
+    if [[ "$NON_INTERACTIVE" == true ]]; then
+        # Still need to validate credentials exist for cloud
+        if [[ "$CREDENTIAL_TYPE" == "cloud" ]]; then
+            local has_credentials=false
+            if [[ "$USE_ENV_VARS" == true ]] || [[ -n "$CREDENTIALS_FILE" ]] || \
+               [[ -n "$API_KEY_FILE" ]] || [[ -n "$LIC_CREDENTIALS_FILE" ]]; then
+                has_credentials=true
+            fi
+            
+            if [[ "$has_credentials" == false ]]; then
+                error_exit "Cloud credentials are required. Use --credentials-file, --api-key-file, --lic-credentials, or set environment variables."
+            fi
+        fi
+        return 0
+    fi
+    
+    # Offer to modify credentials before proceeding
+    prompt_credential_modification
     
     while true; do
         echo ""
@@ -1043,23 +1204,38 @@ confirm_configuration() {
         else
             echo ""
             echo "What would you like to do?"
-            echo "  1. Start over from the beginning"
-            echo "  2. Exit without downloading"
+            echo "  1. Modify credentials"
+            echo "  2. Start over from the beginning"
+            echo "  3. Exit without downloading"
+            echo ""
             
             read -r -p "> " choice
             
             case "$choice" in
                 1)
+                    # Modify credentials
+                    if [[ "$CREDENTIAL_TYPE" == "on-premise" ]]; then
+                        prompt_manual_onpremise_credentials
+                    else
+                        prompt_manual_cloud_credentials
+                    fi
+                    echo ""
+                    display_configuration
+                    ;;
+                2)
                     print_info "Restarting configuration..."
                     # Restart the script without arguments for fresh interactive setup
                     exec "$0"
                     ;;
-                2)
-                    echo "Exiting without downloading. Configuration was not saved."
+                3)
+                    echo ""
+                    print_info "Exiting without downloading."
+                    echo ""
+                    print_datamanager_commands
                     exit 0
                     ;;
                 *)
-                    echo "Invalid choice. Please enter 1 or 2."
+                    echo "Invalid choice. Please enter 1, 2, or 3."
                     ;;
             esac
         fi
@@ -1069,6 +1245,60 @@ confirm_configuration() {
 # ============================================================================
 # Download Operations
 # ============================================================================
+
+print_datamanager_commands() {
+    print_header "DataManager Commands"
+    
+    echo "You can run the following commands manually to download annotation data:"
+    echo ""
+    
+    local datamanager="$DRAGEN_INSTALL_PATH/$DATAMANAGER_PATH"
+    local job_count=0
+    
+    # Determine credential argument
+    local cred_arg=""
+    if [[ "$USE_ENV_VARS" == true ]]; then
+        echo "Note: Commands will use credentials from environment variables"
+        echo ""
+    elif [[ -n "$CREDENTIALS_FILE" ]]; then
+        cred_arg="--credentials-file $CREDENTIALS_FILE"
+    elif [[ -n "$API_KEY_FILE" ]]; then
+        cred_arg="--api-key-file $API_KEY_FILE"
+    elif [[ -n "$LIC_CREDENTIALS_FILE" ]]; then
+        cred_arg="--lic-credentials $LIC_CREDENTIALS_FILE"
+    else
+        echo "Warning: No credentials configured. Add appropriate credential option to commands below."
+        echo ""
+    fi
+    
+    for assembly in "${ASSEMBLIES[@]}"; do
+        for type in "${ANNOTATION_TYPES[@]}"; do
+            job_count=$((job_count + 1))
+            local config_filename
+            config_filename=$(get_config_filename "$type" "$assembly")
+            local config_path="$DRAGEN_INSTALL_PATH/$RESOURCES_DIR/$config_filename"
+            
+            echo "# Download $job_count: $type annotations for $assembly"
+            echo "$datamanager download \\"
+            echo "  -r $assembly \\"
+            if [[ -n "$cred_arg" ]]; then
+                echo "  $cred_arg \\"
+            fi
+            echo "  --dir $DATA_DIRECTORY \\"
+            echo "  --versions-config $config_path"
+            echo ""
+        done
+    done
+    
+    echo "After downloading, you can annotate variants with DRAGEN:"
+    echo ""
+    echo "dragen \\"
+    echo "  --enable-variant-annotation true \\"
+    echo "  --variant-annotation-data $DATA_DIRECTORY \\"
+    echo "  --variant-annotation-assembly <assembly> \\"
+    echo "  [... other parameters ...]"
+    echo ""
+}
 
 download_annotation_data() {
     local assembly="$1"
@@ -1089,22 +1319,31 @@ download_annotation_data() {
     print_info "Downloading $type annotations for $assembly"
     print_info "Using config: $config_filename"
     
+    # Build DataManager command based on credential type
+    local dm_cmd=("$datamanager" "download" "-r" "$assembly" "--dir" "$DATA_DIRECTORY" "--versions-config" "$config_path")
+    
+    # Add credential arguments based on what's available
+    if [[ "$USE_ENV_VARS" == true ]]; then
+        print_info "Using credentials from environment variables"
+        # DataManager will automatically detect environment variables
+    elif [[ -n "$CREDENTIALS_FILE" ]]; then
+        dm_cmd+=("--credentials-file" "$CREDENTIALS_FILE")
+    elif [[ -n "$API_KEY_FILE" ]]; then
+        dm_cmd+=("--api-key-file" "$API_KEY_FILE")
+    elif [[ -n "$LIC_CREDENTIALS_FILE" ]]; then
+        dm_cmd+=("--lic-credentials" "$LIC_CREDENTIALS_FILE")
+    else
+        print_warning "No explicit credentials specified, relying on default locations or environment variables"
+    fi
+    
     if [[ "$DRY_RUN" == true ]]; then
         print_info "DRY RUN: Would execute:"
-        echo "  $datamanager download \\"
-        echo "    -r $assembly \\"
-        echo "    --credentials-file $CREDENTIALS_FILE \\"
-        echo "    --dir $DATA_DIRECTORY \\"
-        echo "    --versions-config $config_path"
+        echo "  ${dm_cmd[*]}"
         return 0
     fi
     
     echo ""
-    if "$datamanager" download \
-        -r "$assembly" \
-        --credentials-file "$CREDENTIALS_FILE" \
-        --dir "$DATA_DIRECTORY" \
-        --versions-config "$config_path"; then
+    if "${dm_cmd[@]}"; then
         print_info "Successfully downloaded $type annotations for $assembly"
         return 0
     else
@@ -1188,15 +1427,34 @@ show_next_steps() {
     done
     echo ""
     
+    if [[ "$USE_ENV_VARS" == true ]]; then
+        echo "Note: Your credentials are configured via environment variables."
+        echo "Make sure to set them in your shell profile for future sessions."
+        echo ""
+    fi
+    
     echo "For standalone annotation, use:"
     echo ""
+    
+    # Build Nirvana command with appropriate credential option
+    local nirvana_cred_option=""
+    if [[ -n "$CREDENTIALS_FILE" ]]; then
+        nirvana_cred_option="-l $CREDENTIALS_FILE"
+    elif [[ -n "$LIC_CREDENTIALS_FILE" ]]; then
+        nirvana_cred_option="--lic-credentials $LIC_CREDENTIALS_FILE"
+    elif [[ "$USE_ENV_VARS" == true ]]; then
+        nirvana_cred_option="# Credentials will be detected from environment variables"
+    fi
+    
     echo "  $DRAGEN_INSTALL_PATH/share/nirvana/Nirvana \\"
     echo "    -i <input.vcf> \\"
     echo "    -o <output_prefix> \\"
     echo "    -c $DATA_DIRECTORY/Cache \\"
     echo "    -r $DATA_DIRECTORY/References/Homo_sapiens.<assembly>.Nirvana.dat \\"
     echo "    --sd $DATA_DIRECTORY/SupplementaryAnnotation/<assembly> \\"
-    echo "    -l $CREDENTIALS_FILE \\"
+    if [[ -n "$nirvana_cred_option" ]]; then
+        echo "    $nirvana_cred_option \\"
+    fi
     echo "    --versions-config $DRAGEN_INSTALL_PATH/$RESOURCES_DIR/<config.json>"
     echo ""
     
@@ -1233,6 +1491,10 @@ parse_arguments() {
                 ;;
             --credentials-file)
                 CREDENTIALS_FILE="$2"
+                shift 2
+                ;;
+            --api-key-file)
+                API_KEY_FILE="$2"
                 shift 2
                 ;;
             --lic-credentials)
