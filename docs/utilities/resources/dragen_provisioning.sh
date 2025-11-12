@@ -1194,9 +1194,6 @@ confirm_configuration() {
         return 0
     fi
     
-    # Offer to modify credentials before proceeding
-    prompt_credential_modification
-    
     while true; do
         echo ""
         if prompt_yes_no "Proceed with this configuration?"; then

@@ -93,11 +93,11 @@ To access premium annotation data sources, you need to provide credentials. The 
 
 The annotation tools support the following authentication methods:
 
-| Authentication Method        | Use Case                          | Environment Variables                                      | Command-Line Options                |
-|------------------------------|-----------------------------------|------------------------------------------------------------|-------------------------------------|
-| **DRAGEN Serial Number**     | On-premise DRAGEN servers         | `DRAGEN_SERIAL_NUMBER`                                     | `--credentials-file` (JSON)         |
-| **DRAGEN API Key**           | DRAGEN cloud/platform deployments | `DRAGEN_API_KEY_VALUE`<br/>`DRAGEN_API_KEY_FILE` (path)   | `--api-key-file`                    |
-| **BYOL Credentials**         | Cloud DRAGEN users (legacy)       | `NIRVANA_API_KEY` + `NIRVANA_API_SECRET`<br/>`DRAGEN_LICENSE_CREDENTIALS_FILE` (path) | `--lic-credentials`<br/>`--credentials-file` (JSON) |
+| Authentication Method    | Use Case                          | Environment Variables                                                                 | Command-Line Options                         |
+|--------------------------|-----------------------------------|---------------------------------------------------------------------------------------|----------------------------------------------|
+| **DRAGEN Serial Number** | On-premise DRAGEN servers         | `DRAGEN_SERIAL_NUMBER`                                                                | `--credentials-file`                         |
+| **DRAGEN API Key**       | DRAGEN cloud/platform deployments | `DRAGEN_API_KEY_VALUE`<br/>`DRAGEN_API_KEY_FILE` (path)                               | `--api-key-file`<br/>`--credentials-file`    |
+| **BYOL Credentials**     | Cloud DRAGEN users (legacy)       | `NIRVANA_API_KEY` + `NIRVANA_API_SECRET`<br/>`DRAGEN_LICENSE_CREDENTIALS_FILE` (path) | `--lic-credentials`<br/>`--credentials-file` |
 
 :::tip Credential Priority
 If multiple authentication methods are configured, the system will use them in this priority order:
@@ -131,12 +131,11 @@ Automatically look for credentials in `~/.ilmnAnnotations/` directory:
 
 You can specify credential file locations using command-line arguments:
 
-| Tool        | Argument                                   | Description                                         |
-|-------------|--------------------------------------------|-----------------------------------------------------|
-| DataManager | `--credentials-file <path>` or `-l <path>` | Path to credentials.json                            |
-| DataManager | `--api-key-file <path>`                    | Path to raw API key file                            |
-| DataManager | `--lic-credentials <path>`                 | Path to license credentials file (key-value format) |
-| Nirvana     | `-l <path>` or `--license <path>`          | Path to credentials.json                            |
+| Tool        | Argument                                      | Description                                         |
+|-------------|-----------------------------------------------|-----------------------------------------------------|
+| DataManager | `--credentials-file <path>` or `-l <path>`    | Path to credentials.json                            |
+| DataManager | `--api-key-file <path>`                       | Path to raw API key file                            |
+| DataManager | `--lic-credentials <path>`                    | Path to license credentials file (key-value format) |
 
 #### Option 3: Environment Variables
 
@@ -195,6 +194,8 @@ The `credentials.json` file supports all authentication methods in a single file
 ```
 
 **MyIllumina Platform:**
+
+Basic, without access to premium data:
 ```json
 {
   "MyIlluminaApiKey": "<your-api-key>"
@@ -207,7 +208,8 @@ The `credentials.json` file supports all authentication methods in a single file
   "MyIlluminaApiKey": "<optional-myillumina-key>",
   "DragenSerialNo": "<optional-serial-number>",
   "ApiKey": "<optional-byol-user-id>",
-  "ApiSecret": "<optional-byol-password>"
+  "ApiSecret": "<optional-byol-password>",
+  "DragenApiKey": "<optional-dragen-api-key>"
 }
 ```
 
@@ -240,7 +242,7 @@ credentials-2 = <password>
 
 If you have a single DRAGEN version:
 ```shell
-dragen_info -b | grep Serial
+dragen_info -s
 ```
 
 If you have multiple DRAGEN versions:
