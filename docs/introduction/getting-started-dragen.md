@@ -2,131 +2,395 @@
 title: Getting Started with DRAGEN
 ---
 
-Illumina Connected Annotations is bundled with DRAGEN. Users can annotate VCF files by enabling annotation through the DRAGEN command-line or by running the standalone Illumina Connected Annotations tool.
+## Overview
 
-By default, the Annotations binaries are located in the `<INSTALL_PATH>/share/nirvana` directory. This directory contains these two files:
+Illumina Connected Annotations is bundled with DRAGEN and provides comprehensive variant annotation capabilities. You can annotate VCF files either:
+- Automatically through DRAGEN pipeline parameters
+- Manually using the standalone Illumina Connected Annotations tool
 
-1. `Nirvana`: Illumina Connected Annotations
-2. `DataManager`: Manage annotation data sources
-
-:::caution
-
-`Nirvana` and `DataManager` are compatible with the following platforms:
-
-- CentOS 7, Oracle 8 and other modern Linux distributions using x64 processors.
-
+:::info Key Requirements
+Before annotating variants, you must:
+1. Configure credentials for premium data sources
+2. Download annotation data files
+3. Specify the data location when running DRAGEN or the standalone tool
 :::
 
-## Downloading Annotation Data Files
+## Installation Paths
 
-Variant annotation in DRAGEN requires additional annotation data files, which must be downloaded prior to running any
-DRAGEN pipeline that requires variant annotation. The `DataManager` tool can be used to download those sources. Prior to that, the
-credentials must be configured to gain access to the data sources.
+The annotation binaries location depends on your DRAGEN environment:
 
-### Credentials
+| Environment    | Nirvana Path                                  | Resource Path                                        |
+|----------------|-----------------------------------------------|------------------------------------------------------|
+| **On-Premise** | `/opt/dragen/<DRAGEN_VERSION>/share/nirvana/` | `/opt/dragen/<DRAGEN_VERSION>/resources/annotation/` |
+| **Cloud**      | `/opt/edico/share/nirvana/`                   | `/opt/edico/resources/annotation/`                   |
 
-Credentials are stored in a credentials JSON file. It will contain an Illumina API key to access Illumina platform.
-To access premium data sources, there are two options
-1. DRAGEN server users will use DRAGEN serial number
-2. DRAGEN cloud users will use their username and password
+**Available binaries:**
+- `Nirvana`: Illumina Connected Annotations tool
+- `DataManager`: Annotation data download manager
 
-#### Illumina API Key
-To generate an Illumina API key, create an Illumina account via [https://accounts.login.illumina.com](https://accounts.login.illumina.com). 
-Refer to [this guide](./prerequisite) for instructions on obtaining your `MyIlluminaApiKey`.
-
-#### Premium Sources
-##### DRAGEN Server Users
-To access premium sources, retrieve the DRAGEN serial number using the following command:
-
-```shell
-dragen_info -b | grep Serial
-```
-If you have multiple versions of DRAGEN installed, you have to execute the following command
-to get the versions
-```shell
-dragen_versions
-```
-
-And then using the selected `DRAGEN_VERSION` execute the following to find the serial number
-```shell
-/opt/dragen/<DRAGEN_VERSION>/bin/dragen_info -b | grep Serial
-```
-
-Finally, copy the serial number and create a `credentials.json` file as follows:
-```json
-{
-  "MyIlluminaApiKey": "<your Illumina account api key>",
-  "DragenSerialNo": "<your DRAGEN server serial no.>"
-}
-```
-
-##### DRAGEN Cloud users 
-The serial number will not work for DRAGEN cloud users.
-Instead, the BYOL username and password needs to be used. 
-Following template can be used to create the `credentials.json`.
-```json
-{
-  "MyIlluminaApiKey": "<your Illumina account api key>",
-  "ApiKey": "<BYOL username>",
-  "ApiSecret": "<BYOL password>"
-}
-```
-The `username` and `password` can be found in a file called `credentials.txt`. 
-This is the file used with `--lic-credentials <path to file>` for DRAGEN.
-Alternatively, if you are using `--lic-server <license server URL with credentials>`, they can be found in the  license server URL which should be formatted as follows:
-
-`https://<username>:<password>@license.dragen.illumina.com
-`.
-### Download Sources
-
-:::tip
-
-Please see the complete [DataManager guide](../utilities/data-manager).
+:::caution Platform Compatibility
+`Nirvana` and `DataManager` are compatible with CentOS 7, Oracle 8, and other modern Linux distributions using x64 processors.
 :::
 
-Once the credential file is created, `DataManager` can be used for downloading data sources. Data sources can be explicitly defined in a JSON format. DRAGEN has a predefined set of version configuration files that can be used for download these sources. The configurations are located in DRAGEN resources directory `<INSTALL_PATH>/resources/annotation`. There are several JSON config files in the directory, each describing the version of each data source that will be used to annotate:
+## Quick Start Reference
 
-- `all_annotations_GRCh37.json` : configurations for producing full variant annotation (running DRAGEN with
-  parameter `--enable-variant-annotation true`) for GRCh37 assembly
-- `all_annotations_GRCh38.json` : configurations for producing full variant annotation (running DRAGEN with
-  parameter `--enable-variant-annotation true`) for GRCh38 assembly
-- `germline_tagging_annotations_GRCh37.json` : configurations required when running DRAGEN pipeline that perform
-  germline tagging step for GRCh37 assembly
-- `germline_tagging_annotations_GRCh38.json` : configurations required when running DRAGEN pipeline that perform
-  germline tagging step for GRCh38 assembly
-- `tmb_annotations_GRCh37.json` : configurations required when running DRAGEN pipeline that perform TMB step for GRCh37
-  assembly (this file will also contain all data that are defined in `germline_tagging_annotations_GRCh37.json`)
-- `tmb_annotations_GRCh38.json` : configurations required when running DRAGEN pipeline that perform TMB step for GRCh38
-  assembly (this file will also contain all data that are defined in `germline_tagging_annotations_GRCh38.json`)
-
-Download the data files, for each JSON above, using the command:
+### On-Premise DRAGEN
 
 ```bash
-.<INSTALL_PATH>/share/nirvana/DataManager download -r [assembly] --credentials-file [path to credential file] --dir [path to directory for the downloaded data] --versions-config [path to the JSON file in the resources folder]
+# Set DRAGEN serial number as environment variable
+export DRAGEN_SERIAL_NUMBER="$(dragen_info -qs)"
+
+# Download annotation data (credentials auto-detected from environment)
+/<NIRVANA PATH>/DataManager download \
+  -r GRCh38 \
+  --dir /data/nirvana_data \
+  --versions-config /opt/dragen/<DRAGEN_VERSION>/resources/annotation/all_annotations_GRCh38.json
+
+# Annotate variants via DRAGEN
+dragen \
+  --enable-variant-annotation true \
+  --variant-annotation-data /data/nirvana_data \
+  --variant-annotation-assembly GRCh38 \
+  [... other parameters ...]
 ```
 
-For the `--dir` argument you can use the same directory for all config files so that it is stored in the same directory.
-This directory path will be used for the `--variant-annotation-data` parameter when running DRAGEN.
+### Cloud DRAGEN
 
-:::caution
+```bash
+# Download annotation data using DRAGEN API key file
+/<NIRVANA PATH>/DataManager download \
+  -r GRCh38 \
+  --api-key-file /path/to/dragen_api_key.txt \
+  --dir /data/nirvana_data \
+  --versions-config /opt/edico/resources/annotation/all_annotations_GRCh38.json
 
-- If DataManager was run for `tmb_annotations_[assembly].json`, it is not required to run again
-  for `germline_tagging_annotations_[assembly].json`.
+# Annotate variants via DRAGEN
+dragen \
+  --enable-variant-annotation true \
+  --variant-annotation-data /data/nirvana_data \
+  --variant-annotation-assembly GRCh38 \
+  [... other parameters ...]
+```
 
-- Data defined in `tmb_annotations_[assembly].json` are needed if DRAGEN is run with `--enable-tmb true` parameter.
-  Without data defined in `tmb_annotations_[assembly].json` available, running DRAGEN will result in error.
-
-- Data defined in `germline_tagging_annotations_[assembly].json` are needed if DRAGEN is run
-  with `--vc-enable-germline-tagging true` parameter. Without data defined in `tmb_annotations_[assembly].json`
-  available, running DRAGEN will result in error.
-
+:::tip Alternative Cloud Option
+If you already have a DRAGEN `--lic-credentials` file, you can use it directly:
+```bash
+/<NIRVANA PATH>/DataManager download \
+  -r GRCh38 \
+  --lic-credentials /path/to/lic_credentials_file \
+  --dir /data/nirvana_data \
+  --versions-config /opt/edico/resources/annotation/all_annotations_GRCh38.json
+```
 :::
 
-Below is the output example when running the DataManager to download using `all_annotations_GRCh38.json` config file:
+## Detailed Instructions
+
+### Step 1: Configure Credentials
+
+To access premium annotation data sources, you need to provide credentials. The system supports multiple authentication methods and will automatically search for credentials in several locations.
+
+#### Supported Authentication Methods
+
+The annotation tools support the following authentication methods:
+
+| Authentication Method    | Use Case                          | Environment Variables                                                                 | Command-Line Options                         |
+|--------------------------|-----------------------------------|---------------------------------------------------------------------------------------|----------------------------------------------|
+| **DRAGEN Serial Number** | On-premise DRAGEN servers         | `DRAGEN_SERIAL_NUMBER`                                                                | `--credentials-file`                         |
+| **DRAGEN API Key**       | DRAGEN cloud/platform deployments | `DRAGEN_API_KEY_VALUE`<br/>`DRAGEN_API_KEY_FILE` (path)                               | `--api-key-file`<br/>`--credentials-file`    |
+| **BYOL Credentials**     | Cloud DRAGEN users (legacy)       | `NIRVANA_API_KEY` + `NIRVANA_API_SECRET`<br/>`DRAGEN_LICENSE_CREDENTIALS_FILE` (path) | `--lic-credentials`<br/>`--credentials-file` |
+
+:::tip Credential Priority
+If multiple authentication methods are configured, the system will use them in this priority order:
+1. DRAGEN Serial Number
+2. BYOL Credentials (ApiKey/ApiSecret)
+3. DRAGEN API Key
+
+You only need to provide **one** authentication method.
+:::
+
+#### Credential Configuration Options
+
+You can configure credentials using any of these methods:
+
+**Option 1: Default credentials directory**
+**Option 2: Explicit file paths**
+**Option 3: Environment variables**
+
+#### Option 1: Default Credentials Directory
+
+Automatically look for credentials in `~/.ilmnAnnotations/` directory:
+
+| File Name                  | Purpose                                | Format          |
+|----------------------------|----------------------------------------|-----------------|
+| `credentials.json`         | Main credentials file (all auth types) | JSON            |
+| `dragen_api_key.txt`       | DRAGEN API key only                    | Plain text      |
+| `dragen_credentials.txt`   | BYOL credentials (ApiKey/ApiSecret)    | Key-value pairs |
+
+
+#### Option 2: Explicit File Paths
+
+You can specify credential file locations using command-line arguments:
+
+| Tool        | Argument                                      | Description                                         |
+|-------------|-----------------------------------------------|-----------------------------------------------------|
+| DataManager | `--credentials-file <path>` or `-l <path>`    | Path to credentials.json                            |
+| DataManager | `--api-key-file <path>`                       | Path to raw API key file                            |
+| DataManager | `--lic-credentials <path>`                    | Path to license credentials file (key-value format) |
+
+#### Option 3: Environment Variables
+
+Set environment variables for automatic credential detection:
+
+| Environment Variable                | Description                          | Example                              |
+|-------------------------------------|--------------------------------------|--------------------------------------|
+| `MY_ILLUMINA_API_KEY`               | MyIllumina API key                   | `your-api-key`                       |
+| `DRAGEN_SERIAL_NUMBER`              | DRAGEN serial number                 | `ABCD1234`                           |
+| `DRAGEN_API_KEY_VALUE`              | DRAGEN API key value                 | `your-dragen-api-key`                |
+| `DRAGEN_API_KEY_FILE`               | Path to DRAGEN API key file          | `/path/to/api_key.txt`               |
+| `NIRVANA_API_KEY`                   | BYOL API key (user_id)               | `your-user-id`                       |
+| `NIRVANA_API_SECRET`                | BYOL API secret (password)           | `your-password`                      |
+| `DRAGEN_LICENSE_CREDENTIALS_FILE`   | Path to DRAGEN license credentials   | `/path/to/dragen_credentials.txt`    |
+
+**Examples:**
+
+```bash
+**Setting environment variables:**
+# DRAGEN Serial Number (on-premise)
+export DRAGEN_SERIAL_NUMBER="ABCD1234"
+
+# DRAGEN API Key (cloud/platform)
+export DRAGEN_API_KEY_VALUE="your-dragen-api-key"
+# or point to a file
+export DRAGEN_API_KEY_FILE="/path/to/api_key.txt"
+
+# BYOL Credentials (legacy cloud)
+export NIRVANA_API_KEY="your-user-id"
+export NIRVANA_API_SECRET="your-password"
+# or point to a file
+export DRAGEN_LICENSE_CREDENTIALS_FILE="/path/to/dragen_credentials.txt"
+```
+
+---
+
+#### Credentials File Formats
+
+##### Format 1: credentials.json (Recommended)
+
+The `credentials.json` file supports all authentication methods in a single file:
+
+**On-Premise DRAGEN:**
+```json
+{
+  "DragenSerialNo": "<your-serial-number>"
+}
+```
+
+**Cloud DRAGEN (legacy BYOL):**
+```json
+{
+  "ApiKey": "<user-id>",
+  "ApiSecret": "<password>"
+}
+```
+
+**MyIllumina Platform:**
+
+Basic, without access to premium data:
+```json
+{
+  "MyIlluminaApiKey": "<your-api-key>"
+}
+```
+
+**All supported fields:**
+```json
+{
+  "MyIlluminaApiKey": "<optional-myillumina-key>",
+  "DragenSerialNo": "<optional-serial-number>",
+  "ApiKey": "<optional-byol-user-id>",
+  "ApiSecret": "<optional-byol-password>",
+  "DragenApiKey": "<optional-dragen-api-key>"
+}
+```
+
+##### Format 2: dragen_api_key.txt
+
+A plain text file containing only the DRAGEN API key:
+
+```
+your-dragen-api-key-value
+```
+
+##### Format 3: dragen_credentials.txt
+
+A key-value pair file for BYOL credentials:
+
+```
+credentials-1 = <user-id>
+credentials-2 = <password>
+```
+
+---
+
+#### Setting Up Credentials by Environment
+
+##### On-Premise DRAGEN
+
+**Required credential:** DRAGEN Serial Number
+
+**Obtaining your DRAGEN serial number:**
+
+If you have a single DRAGEN version:
+```shell
+dragen_info -s
+```
+
+If you have multiple DRAGEN versions:
+```shell
+# List available versions
+dragen_versions
+
+# Get serial number for specific version
+/opt/dragen/<DRAGEN_VERSION>/bin/dragen_info -s
+```
+
+**Creating credentials.json:**
+
+```bash
+# Manual method
+cat > ~/.ilmnAnnotations/credentials.json << EOF
+{
+  "DragenSerialNo": "$(dragen_info -qs)"
+}
+EOF
+```
+
+Or using environment variable:
+```bash
+export DRAGEN_SERIAL_NUMBER="$(dragen_info -qs)"
+```
+
+##### Cloud DRAGEN
+
+:::info
+**Cloud users do not have a DRAGEN serial number.** Active DRAGEN cloud users are automatically eligible for premium resources using BYOL credentials or DRAGEN API keys.
+:::
+
+**Required credentials:** BYOL ApiKey/ApiSecret **or** DRAGEN API Key
+
+**Method 1: Using DRAGEN API Key**
+
+If you have a DRAGEN API key, you can use it directly:
+
+```bash
+# Save to default location
+cat > ~/.ilmnAnnotations/dragen_api_key.txt << EOF
+your-dragen-api-key-value
+EOF
+```
+
+Or set as an environment variable:
+```bash
+export DRAGEN_API_KEY_VALUE="your-dragen-api-key-value"
+```
+
+**Method 2: Use existing `--lic-credentials` file directly**
+
+If you run DRAGEN with `--lic-credentials <file>`, you can use the same file directly with DataManager and Nirvana:
+
+```
+credentials-1 = <user-id>
+credentials-2 = <password>
+```
+
+**Using the license credentials file:**
+```bash
+# With DataManager
+/<NIRVANA PATH>/DataManager download --lic-credentials /path/to/lic_credentials_file 
+```
+
+**Optional: Convert to credentials.json** (if you prefer the JSON format):
+```bash
+cat > ~/.ilmnAnnotations/credentials.json << EOF
+{
+  "ApiKey": "$(awk -F' = ' '/^credentials-1/ {print $2}' /path/to/lic_credentials_file)",
+  "ApiSecret": "$(awk -F' = ' '/^credentials-2/ {print $2}' /path/to/lic_credentials_file)"
+}
+EOF
+```
+
+---
+
+:::tip Troubleshooting
+If you encounter authentication errors:
+1. Verify credentials are in the correct format
+2. Check file permissions (credentials files should be readable)
+3. Ensure at least one authentication method is configured
+4. Try specifying the credentials file path explicitly with `--credentials-file`
+:::
+
+### Step 2: Download Annotation Data
+
+Use the `DataManager` tool to download required annotation data sources.
+
+:::tip
+For complete DataManager documentation, see the [DataManager guide](../utilities/data-manager).
+:::
+
+#### Available Annotation Configurations
+
+Configuration files are located in the resources directory (see [Installation Paths](#installation-paths) above):
+
+| Configuration File                         | Assembly | Use Case                | DRAGEN Parameter                    |
+|--------------------------------------------|----------|-------------------------|-------------------------------------|
+| `all_annotations_GRCh37.json`              | GRCh37   | Full variant annotation | `--enable-variant-annotation true`  |
+| `all_annotations_GRCh38.json`              | GRCh38   | Full variant annotation | `--enable-variant-annotation true`  |
+| `germline_tagging_annotations_GRCh37.json` | GRCh37   | Germline tagging        | `--vc-enable-germline-tagging true` |
+| `germline_tagging_annotations_GRCh38.json` | GRCh38   | Germline tagging        | `--vc-enable-germline-tagging true` |
+| `tmb_annotations_GRCh37.json`              | GRCh37   | Tumor Mutational Burden | `--enable-tmb true`                 |
+| `tmb_annotations_GRCh38.json`              | GRCh38   | Tumor Mutational Burden | `--enable-tmb true`                 |
+
+:::caution Important Notes
+- TMB annotation files include germline tagging data. If you download TMB annotations, you don't need to separately download germline tagging annotations.
+- Running DRAGEN with `--enable-tmb true` requires TMB annotation data.
+- Running DRAGEN with `--vc-enable-germline-tagging true` requires germline tagging annotation data.
+- Missing required data will cause DRAGEN to fail with an error.
+:::
+
+#### Download Commands
+```bash
+/<NIRVANA PATH>/DataManager download \
+  -r <assembly> \
+  --credentials-file <path/to/credentials.json> \
+  --dir <path/to/data/directory> \
+  --versions-config /opt/dragen/<DRAGEN_VERSION>/resources/annotation/<config_file.json>
+```
+
+**Parameters:**
+- `<assembly>`: `GRCh37` or `GRCh38`
+- `<path/to/credentials.json>`: Path to your credentials file from Step 1
+- `<path/to/data/directory>`: Destination directory for annotation files
+- `<config_file.json>`: One of the configuration files listed above
+
+:::tip Storage Best Practice
+Use the same data directory for all configuration files. 
+This consolidated location will be used with the `--variant-annotation-data` parameter when running DRAGEN.
+:::
+
+#### Download Example
+
+Example command for full GRCh38 annotations:
 
 ```shell
-[INSTALL_PATH]/DataManager download -r GRCh38 --credentials-file [path to credential file] --dir [path to dir] --versions-config [path to resource directory]/all_annotations_GRCh38.json
+/<NIRVANA PATH>/DataManager download \
+  -r GRCh38 \
+  --credentials-file /home/user/credentials.json \
+  --dir /data/nirvana_data \
+  --versions-config /opt/dragen/4.4.3/resources/annotation/all_annotations_GRCh38.json
+```
 
+**Expected output:**
+```shell
 ---------------------------------------------------------------------------
 DataManager                                         (c) 2024 Illumina, Inc.
                                                                      3.25.0
@@ -136,178 +400,86 @@ Listing annotation files in local directory...
 Requesting remote file information to be downloaded...
 Remote file list received!
 Syncing local files with requested files
-Requesting remote file information to be downloaded...
 Start downloading files.
 Downloading file DANN_20200205.gsa...
 Downloading file Homo_sapiens.GRCh38.Nirvana.dat...
 Downloading file Gerp_20110522.gsa...
 Downloading file PrimateAI_0.2.nsa...
-Downloading file PromoterAI_1.0.esa...
-Downloading file REVEL_20200205.nsa...
-Downloading file GRCh38.RefSeq.ndb...
-Downloading file TOPMed_freeze_5.nsa...
-Downloading file ClinGen_disease_validity_curations_20240910.nga...
-Downloading file ClinGen_Dosage_Sensitivity_Map_20240910.nga...
-Downloading file ClinGen_Dosage_Sensitivity_Map_20240910.nsi...
-Downloading file ClinGen_20160414.nsi...
-Downloading file ClinVar_20240902.nsa...
-Downloading file ClinVar_20240902.nsi...
-Downloading file ClinVarPreview_preview_20240902.nsa...
-Downloading file ClinVarPreview_preview_20240902.nsi...
-Downloading file Cosmic_Cancer_Gene_Census_99.ega...
-Downloading file COSMIC_GeneFusions_99.efj...
-Downloading file COSMIC_99.esa...
-Downloading file dbSNP_156.nsa...
-Downloading file dbSNP_151_globalMinor.nsa...
-Downloading file gnomAD_gene_scores_4.1.nga...
-Downloading file gnomAD_LCR_2.1.lcr...
-Downloading file gnomAD_4.1.nsa...
-Downloading file gnomAD_SV_4.1.nsi...
-Downloading file gnomAD-cnv_4.1.nsi...
-Downloading file gnomAD_exome_4.1.nsa...
-Downloading file MITOMAP_20200819.nsa...
-Downloading file MITOMAP_SV_20200819.nsi...
-Downloading file OMIM_20240910.ega...
-Downloading file 1000_Genomes_Project_Phase_3_v3_plus_refMinor.rma...
-Downloading file 1000_Genomes_Project_Phase_3_v3_plus.nsa...
-Downloading file 1000_Genomes_Project_(SV)_Phase_3_v5a.nsi...
-Downloading file phyloP_hg38.npd...
-Downloading file PhyloPPrimate_1.0.gsa...
-Downloading file PrimateAI-3D_1.0.esa...
-Downloading file SpliceAi_1.3.esa...
+...
 ============= Downloading ==============
 
 SpliceAi_1.3.esa (with index)           : [##################################################] 100%
 PhyloPPrimate_1.0.gsa (with index)      : [##################################################] 100%
 PrimateAI-3D_1.0.esa (with index)       : [##################################################] 100%
 ======== Download Completed =========   : [##################################################] 100%
-Submitting download usage...
-Submitting download usage finished!
-Obtaining Data License...
-
 
 ---------------------------------------------------------------------------
                             Download Summary
 ---------------------------------------------------------------------------
 Download success:
 Total size: 63.61 GB
-Downloaded files:
-- DANN_20200205.gsa.idx
-- PrimateAI_0.2.nsa.idx
-- Gerp_20110522.gsa.idx
-- PrimateAI_0.2.nsa
-- PromoterAI_1.0.esa.idx
-- PromoterAI_1.0.esa
-- Homo_sapiens.GRCh38.Nirvana.dat
-- REVEL_20200205.nsa.idx
-- GRCh38.RefSeq.ndb.idx
-- GRCh38.RefSeq.ndb
-- REVEL_20200205.nsa
-- TOPMed_freeze_5.nsa.idx
-- ClinGen_disease_validity_curations_20240910.nga
-- ClinGen_Dosage_Sensitivity_Map_20240910.nga
-- ClinGen_Dosage_Sensitivity_Map_20240910.nsi
-- ClinGen_20160414.nsi
-- ClinVar_20240902.nsa.idx
-- ClinVar_20240902.nsa
-- ClinVar_20240902.nsi
-- ClinVarPreview_preview_20240902.nsa.idx
-- ClinVarPreview_preview_20240902.nsa
-- ClinVarPreview_preview_20240902.nsi
-- Cosmic_Cancer_Gene_Census_99.ega
-- COSMIC_GeneFusions_99.efj
-- COSMIC_99.esa.idx
-- TOPMed_freeze_5.nsa
-- COSMIC_99.esa
-- dbSNP_156.nsa.idx
-- dbSNP_151_globalMinor.nsa.idx
-- dbSNP_151_globalMinor.nsa
-- gnomAD_gene_scores_4.1.nga
-- gnomAD_LCR_2.1.lcr
-- gnomAD_4.1.nsa.idx
-- Gerp_20110522.gsa
-- gnomAD_SV_4.1.nsi
-- gnomAD-cnv_4.1.nsi
-- gnomAD_exome_4.1.nsa.idx
-- DANN_20200205.gsa
-- MITOMAP_20200819.nsa.idx
-- MITOMAP_20200819.nsa
-- MITOMAP_SV_20200819.nsi
-- OMIM_20240910.ega
-- 1000_Genomes_Project_Phase_3_v3_plus_refMinor.rma.idx
-- 1000_Genomes_Project_Phase_3_v3_plus_refMinor.rma
-- 1000_Genomes_Project_Phase_3_v3_plus.nsa.idx
-- 1000_Genomes_Project_Phase_3_v3_plus.nsa
-- 1000_Genomes_Project_(SV)_Phase_3_v5a.nsi
-- phyloP_hg38.npd.idx
-- dbSNP_156.nsa
-- PhyloPPrimate_1.0.gsa.idx
-- gnomAD_exome_4.1.nsa
-- PrimateAI-3D_1.0.esa.idx
-- phyloP_hg38.npd
-- SpliceAi_1.3.esa.idx
-- PrimateAI-3D_1.0.esa
-- SpliceAi_1.3.esa
-- PhyloPPrimate_1.0.gsa
-- gnomAD_4.1.nsa
-Data license saved: /home/nirvana_resources/nirvana_bin/premium.lic
+Downloaded files: [56 files listed]
+Data license saved: /data/nirvana_data/premium.lic
 
 Peak memory usage: 2.514 GB
 Time: 00:04:08.6
 ```
 
-## Annotate Files (via DRAGEN command-line)
+### Step 3: Annotate Variants
 
-To automatically annotate output VCFs when running DRAGEN, please add the following command-line arguments:
+Once credentials are configured and data is downloaded, you can annotate variants through DRAGEN or the standalone tool.
 
-| Argument                      | Example                   | Description                                                                                 |
-| ----------------------------- | ------------------------- | ------------------------------------------------------------------------------------------- |
-| --enable-variant-annotation   | true                      | enables annotation if the pipeline supports it                                              |
-| --variant-annotation-data     | /path/to/your/NirvanaData | the location where you downloaded the Nirvana annotation files                              |
-| --variant-annotation-assembly | GRCh38                    | the genome assembly - either GRCh37 or GRCh38. To annotate hg19 variants, please use GRCh37 |
+#### Option A: Annotate via DRAGEN Pipeline
 
-Example DRAGEN parameters for obtaining full annotation data:
+Add these parameters to your DRAGEN command:
 
+| Parameter                       | Value                     | Description                                     |
+|---------------------------------|---------------------------|-------------------------------------------------|
+| `--enable-variant-annotation`   | `true`                    | Enables variant annotation                      |
+| `--variant-annotation-data`     | `/path/to/data/directory` | Location of downloaded annotation files         |
+| `--variant-annotation-assembly` | `GRCh37` or `GRCh38`      | Reference genome assembly (use GRCh37 for hg19) |
+
+**Example:**
 ```bash
---enable-variant-annotation true \
---variant-annotation-data /path/to/your/NirvanaData \
---variant-annotation-assembly GRCh38
+dragen \
+  --enable-variant-annotation true \
+  --variant-annotation-data /data/nirvana_data \
+  --variant-annotation-assembly GRCh38 \
+  [... other DRAGEN parameters ...]
 ```
 
-## Annotate Files (via standalone Illumina Connected Annotations)
+#### Option B: Annotate via Standalone Tool
+
+Use the standalone `Nirvana` tool to annotate existing VCF files.
 
 :::tip
-
-Refer to the [Annotation guide](./getting-started#the-illumina-connected-annotations-command-line).
+For complete annotation options, see the [Illumina Connected Annotations guide](./getting-started#the-illumina-connected-annotations-command-line).
 :::
 
-To annotate an uncompressed VCF (or bgzipped VCF) file, enter the following command:
-
 ```shell
-<INSTALL_PATH>/share/nirvana/Nirvana \
- -i <input_VCF> \
- -o <output_prefix> \
- -c [path to data dir]/Cache \
- -r [path to data dir]/References/Homo_sapiens.GRCh38.Nirvana.dat \
- --sd [path to data dir]/SupplementaryAnnotation/GRCh38 \
- -l [path to credential file] \
- --versions-config [path to resource directory]/all_annotations_GRCh38.json
+/<NIRVANA PATH>/Nirvana \
+  -i <input.vcf> \
+  -o <output_prefix> \
+  -c <data_dir>/Cache \
+  -r <data_dir>/References/Homo_sapiens.GRCh38.Nirvana.dat \
+  --sd <data_dir>/SupplementaryAnnotation/GRCh38 \
+  -l <credentials.json> \
+  --versions-config /opt/dragen/<DRAGEN_VERSION>/resources/annotation/all_annotations_GRCh38.json
 ```
 
-The following command line options are available:
+**Parameters:**
 
-| Option            | Value     | Example                                           | Description                        |
-| ----------------- | --------- | ------------------------------------------------- | ---------------------------------- |
-| -i                | path      | <input_VCF>                                       | Input VCF path                     |
-| -o                | prefix    | <output_prefix>                                   | Output path prefix                 |
-| -c                | directory | ~/Data/Cache/                                     | Cache directory                    |
-| -r                | directory | ~/Data/References/Homo_sapiens.GRCh38.Nirvana.dat | Reference directory                |
-| --sd              | directory | ~/Data/SupplementaryAnnotation/GRCh38             | Supplementary annotation directory |
-| -l                | file path | credentials.json                                  | path to credential file            |
-| --versions-config | file path | all_annotations_GRCh38.json                       | path to versions config file       |
+| Option              | Description                               | Example                                                         |
+|---------------------|-------------------------------------------|-----------------------------------------------------------------|
+| `-i`                | Input VCF file (uncompressed or bgzipped) | `input.vcf.gz`                                                  |
+| `-o`                | Output file prefix                        | `output`                                                        |
+| `-c`                | Cache directory                           | `/data/nirvana_data/Cache`                                      |
+| `-r`                | Reference file                            | `/data/nirvana_data/References/Homo_sapiens.GRCh38.Nirvana.dat` |
+| `--sd`              | Supplementary annotation directory        | `/data/nirvana_data/SupplementaryAnnotation/GRCh38`             |
+| `-l`                | Credentials file                          | `credentials.json`                                              |
+| `--versions-config` | Version configuration file                | Path from resources directory                                   |
 
-Above example generates the following output.
-
+**Example output:**
 ```shell
 ---------------------------------------------------------------------------
 Illumina Connected Annotations                      (c) 2024 Illumina, Inc.
@@ -317,66 +489,15 @@ Illumina Connected Annotations                      (c) 2024 Illumina, Inc.
 Data Source              Type                     Status    Comments
 ---------------------------------------------------------------------------
 DANN                     Score                    Loaded    20200205
-DECIPHER                 StructuralVariant        Loaded    201509
 Ensembl                  GeneModels               Loaded    112
-FusionCatcher            GeneFusion               Loaded    1.33
-GME                      SmallVariant             Loaded    20160618
-GenomeAssembly           GenomeAssembly           Loaded    GRCh38.p14
-Gerp                     Score                    Loaded    20110522
-HGNC                     GeneModels               Loaded    20240603
-MultiZ100Way             Protein                  Loaded    20171006
-PrimateAI                SmallVariant             Loaded    0.2
-PromoterAI               SmallVariant             Loaded    1.0
-REVEL                    SmallVariant             Loaded    20200205
-RefSeq                   GeneModels               Loaded    GCF_000001405.40-RS_2023_10
-TOPMed                   SmallVariant             Loaded    freeze_5
-clingen                  Gene                     Loaded    20240910
-clingen                  StructuralVariant        Loaded    20240910
-clingen (legacy)         StructuralVariant        Loaded    20160414
-clinvar                  SmallVariant             Loaded    20240902
-clinvar                  StructuralVariant        Loaded    20240902
-clinvar-preview          SmallVariant             Loaded    20240902
-clinvar-preview          StructuralVariant        Loaded    20240902
-cosmic                   Gene                     Loaded    99
-cosmic                   GeneFusion               Loaded    99
-cosmic                   SmallVariant             Loaded    99
-dbSNP                    SmallVariant             Loaded    156
-globalAllele             SmallVariant             Loaded    151
-gnomad                   Gene                     Loaded    4.1
-gnomad                   LowComplexityRegions     Loaded    2.1
-gnomad                   SmallVariant             Loaded    4.1
-gnomad                   StructuralVariant        Loaded    4.1
-gnomad-exome             SmallVariant             Loaded    4.1
-mitomap                  SmallVariant             Loaded    20200819
-mitomap                  StructuralVariant        Loaded    20200819
-omim                     Gene                     Loaded    20240910
-oneKg                    RefMinor                 Loaded    Phase 3 v3plus
-oneKg                    SmallVariant             Loaded    Phase 3 v3plus
-oneKg                    StructuralVariant        Loaded    Phase 3 v5a
-phylopScore              ConservationScore        Loaded    hg38
-phylopScore              Score                    Loaded    1.0
-primateAI-3D             SmallVariant             Loaded    1.0
+...
 spliceAI                 SmallVariant             Loaded    1.3
 ---------------------------------------------------------------------------
-
-Initialization                                         Time     Positions/s
----------------------------------------------------------------------------
-Cache                                               00:00:03.6
-SA initialization                                   00:00:08.0
-VCF Position Scan                                   00:00:00.0      115,442
-
-Reference                             SA Loading    Annotation   Variants/s
----------------------------------------------------------------------------
-chr1                                    00:00:00.5  00:00:02.0        4,980
 
 Summary                                                Time         Percent
 ---------------------------------------------------------------------------
 Initialization                                      00:00:11.7       84.9 %
 Annotation                                          00:00:02.0       14.4 %
- |--SA Loading                                      00:00:00.5        4.2 %
- |--Output writing                                  00:00:00.3        2.2 %
-License Check                                       00:00:00.0        0.0 %
-Usage Report                                        00:00:00.0        0.0 %
 ---------------------------------------------------------------------------
 Gross Annotation rate:                                  718.84 positions/sec
 
@@ -384,28 +505,31 @@ Peak memory usage: 5.867 GB
 Time: 00:00:13.8
 ```
 
-## Output File
+## Output Formats
 
-Illumina Connected Annotation produces an output file in JSON format by default.
-Refer to [Illumina Connected Annotations JSON](../file-formats/illumina-annotator-json-file-format) for detailed description of the JSON file.
+### JSON Output (Default)
 
-A VCF output format is also possible by `--output-format vcf` command line parameter, though VCF annotations are limited.
-Refer to [Illumina Connected Annotations VCF](../file-formats/illumina-annotator-vcf-file-format) for detailed description of the VCF file.
+Illumina Connected Annotations produces JSON output by default. This format provides comprehensive annotation information.
+
+**Documentation:** [Illumina Connected Annotations JSON Format](../file-formats/illumina-annotator-json-file-format)
+
+### VCF Output (Optional)
+
+Add `--output-format vcf` to generate VCF output. Note that VCF format has limited annotation capabilities compared to JSON.
+
+**Documentation:** [Illumina Connected Annotations VCF Format](../file-formats/illumina-annotator-vcf-file-format)
 
 ## Version History
 
-Annotations binaries have been included with DRAGEN since v3.5. The table below indicates which version of Annotations
-binaries were included with different DRAGEN releases, and their AI annotation capabilities.
+| DRAGEN Version           | Annotations Version | AI Annotations        | Documentation                                                                      | Data Utility                                                                                                                                    |
+|--------------------------|---------------------|-----------------------|------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| 4.4                      | 3.25.1              | spliceAI, primateAI3D | [3.25](https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/3.25/) | [Data Manager](https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/3.25/utilities/data-manager)                                |
+| 4.3                      | 3.23                | spliceAI, primateAI3D | [3.23](https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/3.23/) | [Downloader](https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/3.23/introduction/getting-started#downloading-the-data-files) |
+| 3.9, 3.10, 4.0, 4.1, 4.2 | 3.16.1              | spliceAI, primateAI   | [3.16](https://illumina.github.io/NirvanaDocumentation/3.16/)                      | [Downloader](https://illumina.github.io/NirvanaDocumentation/3.16/introduction/getting-started#downloading-the-data-files)                      |
+| 3.8                      | 3.14                | spliceAI, primateAI   | [3.14](https://illumina.github.io/NirvanaDocumentation/3.14/)                      | [Downloader](https://illumina.github.io/NirvanaDocumentation/3.14/introduction/getting-started#downloading-the-data-files)                      |
+| 3.6, 3.7                 | 3.9.0               | spliceAI, primateAI   | Not Available                                                                      | Not Available                                                                                                                                   |
+| 3.5                      | 3.6.0               | spliceAI, primateAI   | Not Available                                                                      | Not Available                                                                                                                                   |
 
-The Annotations binaries distributed with DRAGEN can not be changed. Newer versions of Annotations are backward compatible, and can therefore annotate output files from older DRAGEN releases.
-
-| DRAGEN version(s)        | Annotations version | AI annotations        | Documentation         | Data Utility         |
-| :----------------------- | :------------------ | :-------------------- | :-------------------- | :-------------------- |
-| 4.4                      | 3.25.1              | spliceAI, primateAI3D | [3.25](https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/3.25/)|[Data Manager](https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/3.25/utilities/data-manager)|
-| 4.3                      | 3.23                | spliceAI, primateAI3D |[3.23](https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/3.23/)|[Downloader](https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/3.23/introduction/getting-started#downloading-the-data-files)|
-| 3.9, 3.10, 4.0, 4.1, 4.2 | 3.16.1              | spliceAI, primateAI   |[3.16](https://illumina.github.io/NirvanaDocumentation/3.16/)|[Downloader](https://illumina.github.io/NirvanaDocumentation/3.16/introduction/getting-started#downloading-the-data-files)|
-| 3.8                      | 3.14                | spliceAI, primateAI   |[3.14](https://illumina.github.io/NirvanaDocumentation/3.14/)|[Downloader](https://illumina.github.io/NirvanaDocumentation/3.14/introduction/getting-started#downloading-the-data-files)|
-| 3.6, 3.7                 | 3.9.0               | spliceAI, primateAI   | Not Available | Not Available |
-| 3.5                      | 3.6.0               | spliceAI, primateAI   | Not Available | Not Available |
-
-
+:::note
+Annotations binaries have been included with DRAGEN since v3.5. Newer versions are backward compatible and can annotate output files from older DRAGEN releases.
+:::
