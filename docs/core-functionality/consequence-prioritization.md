@@ -1,6 +1,6 @@
 # Consequence Prioritization
 
-Depending on the representation of a genetic variant (e.g. right vs. left aligned) the effect on the transcript may differ, leading to a possibility of different set of consequence annotations for the same variant. Even though both representations of a genetic variant correspond to the exact same haplotype, one may be annotated as more pathogenic than the other. We hypothesize that reporting of variants as likely pathogenic when the same exact haplotype can be interperted in a less pathogenic way is less likely to reflect the realized functional impact. As such, we report the set of consequences will lowest priority.
+Depending on the representation of a genetic variant (e.g. right vs. left aligned) the effect on the transcript may differ, leading to a possibility of different set of consequence annotations for the same variant. Even though both representations of a genetic variant correspond to the exact same haplotype, one may be annotated as more pathogenic than the other. We hypothesize that reporting of variants as likely pathogenic when the same exact haplotype can be interperted in a less pathogenic way is less likely to reflect the realized functional impact. As such, we report the set of consequences with lowest priority.
 
 The priority of a set of consequences is determined by the highest priority consequence within that set.
 
