@@ -83,6 +83,35 @@ If you already have a DRAGEN `--lic-credentials` file, you can use it directly:
 ```
 :::
 
+## Automated Setup Script
+
+For a streamlined setup experience, use the [**DRAGEN Provisioning Script**](../utilities/resources/dragen_provisioning.sh) which automates all the configuration steps:
+
+```bash
+# Download the provisioning script
+wget https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/utilities/resources/dragen_provisioning.sh
+
+# Make it executable
+chmod +x dragen_provisioning.sh
+
+# Run interactively (guided setup)
+./dragen_provisioning.sh
+
+# Or run with command-line options
+./dragen_provisioning.sh \
+  --dragen-path /opt/dragen/4.4.3 \
+  --data-dir /data/nirvana_data \
+  --assemblies GRCh37,GRCh38 \
+  --annotation-types all
+```
+
+**Features:**
+- **Interactive mode**: Step-by-step guidance for credential setup and data download
+- **CLI mode**: Fully automated for scripting and CI/CD pipelines
+- **Automatic credential detection**: Uses environment variables or prompts for credentials
+- **Multi-download support**: Download multiple assemblies and annotation types in one run
+- **Dry-run mode**: Preview commands without downloading (use `--dry-run`)
+
 ## Detailed Instructions
 
 ### Step 1: Configure Credentials
