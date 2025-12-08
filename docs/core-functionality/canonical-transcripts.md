@@ -4,7 +4,7 @@ title: Canonical Transcripts
 
 ## Overview
 
-One of the more polarizing topics within annotation is the notion of canonical transcripts. Because of alternative splicing, we often have several transcripts for each gene. In the human genome, there are an average of 3.4 transcripts per gene (Tung, 2020). As scientists, we seem to have a need for identifying a representative example of a gene - even if there's no biological basis for the motivation.
+Because of alternative splicing, we often have several transcripts for each gene. In the human genome, there are an average of 3.4 transcripts per gene (Tung, 2020). Our users seem to have a need for identifying a representative example of a gene - even if there's no biological basis for the motivation, and hence the demand for identifying a canonical transcript.
 
 ![](hk1-transcripts.png)
 
@@ -12,7 +12,22 @@ One of the more polarizing topics within annotation is the notion of canonical t
 A few years ago, the guys over at Golden Helix wrote an excellent post about the pitfalls and issues surrounding the identification of canonical transcripts: [What’s in a Name: The Intricacies of Identifying Variants](https://blog.goldenhelix.com/whats-in-a-name-the-intricacies-of-identifying-variants/).
 :::
 
-In Illumina Connected Annotations, we wanted to identify an algorithm for determining the canonical transcript and apply it consistently to all of our transcript data sources.
+Here we document how Illumina Connected Annotations flags a transcript as canonical.
+
+## RefSeq
+### Tag from Source
+RefSeq GFF3 files provide tags that help identify a transcript as canonical. If either `tag=MANE Select` or `tag=RefSeq Select` are present for a transcript entry, it is tagged as canonical.
+```scss
+NC_000001.11    BestRefSeq      mRNA    65419   71585   .       +       .       ID=rna-NM_001005484.2;Parent=gene-OR4F5;Dbxref=Ensembl:ENST00000641515.2,GeneID:79501,GenBank:NM_001005484.2,HGNC:HGNC:14825;Name=NM_001005484.2;gbkey=mRNA;gene=OR4F5;product=olfactory receptor family 4 subfamily F member 5;tag=MANE Select;transcript_id=NM_001005484.2
+NC_000001.11    BestRefSeq      mRNA    41628749        41628816        .       -       .       ID=rna-NM_001415000.1;Parent=gene-LOC128125817;Dbxref=GeneID:128125817,GenBank:NM_001415000.1;Name=NM_001415000.1;Note=The RefSeq transcript aligns at 83%25 coverage compared to this genomic sequence;exception=annotated by transcript or proteomic data;gbkey=mRNA;gene=LOC128125817;inference=similar to RNA sequence%2C mRNA (same species):RefSeq:NM_001415000.1;partial=true;product=uncharacterized protein;start_range=.,41628749;tag=RefSeq Select;transcript_id=NM_001415000.1
+```
+If only one transcript is marked canonical the algorithm terminates. Otherwise, the following steps are perfromed in the order listed.
+
+### Gene with single transcript
+If a gene has only one transcript and it is not marked canonical from `RefSeq`, we mark it as canonical.
+
+### Using HGNC
+If the HGNC transcript associated with the gene is found (independent of the version number), it is marked as canonical.
 
 ## Known Algorithms
 
