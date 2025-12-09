@@ -10,7 +10,7 @@ set -e
 # Configuration and Constants
 # ============================================================================
 YEAR=$(date +"%Y")
-VERSION="2.0.0"
+VERSION="1.0.1"
 
 # DRAGEN paths
 RESOURCES_DIR="resources/annotation"
@@ -20,8 +20,7 @@ DRAGEN_INFO_PATH="bin/dragen_info"
 # User inputs (populated from CLI args or prompts)
 DRAGEN_INSTALL_PATH=""
 DATA_DIRECTORY=""
-ASSEMBLIES=()
-ANNOTATION_TYPES=()
+CONFIG_FILES=()
 CREDENTIAL_TYPE=""
 CREDENTIALS_FILE=""
 API_KEY_FILE=""
@@ -74,9 +73,11 @@ show_usage() {
 DRAGEN Provisioning Script v${VERSION}
 
 Automates setup of Illumina Connected Annotations for DRAGEN:
-  1. Configure credentials via environment variables
-  2. Download annotation data files
-  3. Prepare environment for variant annotation
+  1. Select DRAGEN installation path
+  2. Configure credentials via environment variables or files
+  3. Specify download directory
+  4. Auto-discover all annotation configuration files
+  5. Download all annotation data files
 
 USAGE:
   $0 [options]
@@ -88,11 +89,9 @@ MODES:
 OPTIONS:
   --dragen-path <path>          Path to DRAGEN installation
   --data-dir <path>             Directory for annotation data
-  --assemblies <list>           Comma-separated: GRCh37,GRCh38 (default: both)
-  --annotation-types <list>     Comma-separated: all,germline_tagging,tmb
   --credentials-file <path>     Path to credentials.json (passed to DataManager)
   --api-key-file <path>         Path to API key file (passed to DataManager)
-  --lic-credentials <path>      Path to DRAGEN license credentials (passed to DataManager)
+  --lic-credentials <path>      Path to DRAGEN license credentials file (passed to DataManager)
   --dry-run                     Show actions without downloading
   --non-interactive             Fail if required info is missing
   --help                        Show this help
@@ -112,30 +111,25 @@ AUTHENTICATION METHODS:
     - Or set DRAGEN_LICENSE_CREDENTIALS_FILE environment variable (path)
     - Or use --lic-credentials option
 
-ANNOTATION TYPES:
-  all                - Full variant annotation
-  germline_tagging   - Germline tagging only
-  tmb                - Tumor Mutational Burden (includes germline tagging)
-
 EXAMPLES:
   # Interactive setup (will prompt for credentials)
   $0
 
   # On-premise with serial number from environment
   export DRAGEN_SERIAL_NUMBER="ABC123456"
-  $0 --dragen-path /opt/dragen/4.4.3 --data-dir /data/nirvana_data
+  $0 --dragen-path /opt/dragen/4.5.0 --data-dir /data/nirvana_data
 
   # Cloud with BYOL credentials from environment
   export NIRVANA_API_KEY="your_user_id"
   export NIRVANA_API_SECRET="your_password"
-  $0 --dragen-path /opt/edico --data-dir /data/nirvana_data
+  $0 --dragen-path /opt/dragen/4.5.0 --data-dir /data/nirvana_data
 
-  # Using credential files (passed to DataManager)
-  $0 --dragen-path /opt/edico --data-dir /data/nirvana_data \\
+  # Using credential file (passed to DataManager)
+  $0 --dragen-path /opt/dragen/4.5.0 --data-dir /data/nirvana_data \\
      --lic-credentials /path/to/lic_credentials
 
   # Dry run to see what would be downloaded
-  $0 --dragen-path /opt/dragen/4.4.3 --data-dir /data/nirvana_data --dry-run
+  $0 --dragen-path /opt/dragen/4.5.0 --data-dir /data/nirvana_data --dry-run
 
 EOF
     exit 0
@@ -150,7 +144,11 @@ prompt_yes_no() {
     local response
     
     while true; do
-        read -r -p "$prompt [y/n]: " response
+        read -r -p "$prompt [Y/n]: " response
+        # Default to yes if empty
+        if [[ -z "$response" ]]; then
+            return 0
+        fi
         case "$response" in
             [Yy]|[Yy][Ee][Ss]) return 0 ;;
             [Nn]|[Nn][Oo]) return 1 ;;
@@ -173,59 +171,6 @@ prompt_input() {
     fi
 }
 
-prompt_multiselect() {
-    local prompt="$1"
-    local default_behavior="$2"  # "all" or "required"
-    shift 2
-    local options=("$@")
-    local selected=()
-    
-    echo "$prompt" >&2
-    for i in "${!options[@]}"; do
-        echo "  $((i+1)). ${options[$i]}" >&2
-    done
-    
-    if [[ "$default_behavior" == "all" ]]; then
-        echo "  a. All of the above (default)" >&2
-        echo "" >&2
-        echo "Press Enter for default (all), or enter comma-separated numbers (e.g., 1,2)" >&2
-    else
-        echo "  a. All of the above" >&2
-        echo "" >&2
-        echo "Enter your selection (comma-separated numbers or 'a')" >&2
-    fi
-    
-    read -r -p "> " response
-    
-    if [[ -z "$response" ]]; then
-        if [[ "$default_behavior" == "all" ]]; then
-            selected=("${options[@]}")
-            echo "Using default: all options selected" >&2
-        else
-            return 1
-        fi
-    elif [[ "$response" == "a" ]] || [[ "$response" == "A" ]]; then
-        selected=("${options[@]}")
-    else
-        IFS=',' read -ra selections <<< "$response"
-        for sel in "${selections[@]}"; do
-            sel=$(echo "$sel" | xargs)
-            if [[ "$sel" =~ ^[0-9]+$ ]] && [[ "$sel" -ge 1 ]] && [[ "$sel" -le "${#options[@]}" ]]; then
-                selected+=("${options[$((sel-1))]}")
-            else
-                print_warning "Invalid selection ignored: '$sel'"
-            fi
-        done
-        
-        if [[ ${#selected[@]} -eq 0 ]]; then
-            print_error "No valid selections made"
-            return 1
-        fi
-    fi
-    
-    printf '%s\n' "${selected[@]}"
-}
-
 # ============================================================================
 # DRAGEN Detection and Validation
 # ============================================================================
@@ -235,46 +180,31 @@ detect_dragen_installations() {
         return 1
     fi
     
-    dragen_versions 2>/dev/null || return 1
+    local json_output
+    json_output=$(dragen_versions --json 2>/dev/null) || return 1
+    
+    # Check if jq is available for JSON parsing
+    if ! command -v jq >/dev/null 2>&1; then
+        # Fallback to basic parsing without jq
+        echo "$json_output" | grep -v "bitstream" | grep "\"instprefixes\"" -A 1 | grep -o '"/[^"]*"' | tr -d '"' 2>/dev/null || return 1
+        return 0
+    fi
+    
+    # Parse JSON with jq, filtering out bitstream packages and returning only paths
+    echo "$json_output" | jq -r '
+        .packages // {} | 
+        to_entries[] | 
+        select(.value.properties.category != "bitstream") |
+        (.value.properties.root // .value.instprefixes[0] // empty)
+    ' 2>/dev/null
+    
+    return 0
 }
 
 validate_dragen_path() {
-    local interactive="${1:-false}"
-    
-    if [[ -z "$DRAGEN_INSTALL_PATH" ]]; then
-        if [[ "$interactive" == "true" ]]; then
-            print_error "DRAGEN installation path cannot be empty"
-            return 1
-        else
-            error_exit "DRAGEN installation path is empty"
-        fi
-    fi
-    
-    if [[ ! -d "$DRAGEN_INSTALL_PATH" ]]; then
-        local msg="DRAGEN installation path does not exist: $DRAGEN_INSTALL_PATH"
-        [[ "$interactive" == "true" ]] && { print_error "$msg"; return 1; } || error_exit "$msg"
-    fi
-    
-    if [[ ! -r "$DRAGEN_INSTALL_PATH" ]]; then
-        local msg="No read permission for DRAGEN path: $DRAGEN_INSTALL_PATH"
-        [[ "$interactive" == "true" ]] && { print_error "$msg"; return 1; } || error_exit "$msg"
-    fi
-    
-    local datamanager="$DRAGEN_INSTALL_PATH/$DATAMANAGER_PATH"
-    if [[ ! -f "$datamanager" ]]; then
-        local msg="DataManager not found at: $datamanager"
-        [[ "$interactive" == "true" ]] && { print_error "$msg"; return 1; } || error_exit "$msg"
-    fi
-    
-    if [[ ! -x "$datamanager" ]]; then
-        local msg="DataManager is not executable: $datamanager"
-        [[ "$interactive" == "true" ]] && { print_error "$msg"; return 1; } || error_exit "$msg"
-    fi
-    
     local resources="$DRAGEN_INSTALL_PATH/$RESOURCES_DIR"
     if [[ ! -d "$resources" ]]; then
-        local msg="Resources directory not found at: $resources"
-        [[ "$interactive" == "true" ]] && { print_error "$msg"; return 1; } || error_exit "$msg"
+        error_exit "Resources directory not found at: $resources"
     fi
     
     print_info "DRAGEN installation validated successfully"
@@ -292,19 +222,57 @@ prompt_dragen_path() {
     fi
     
     print_section "Step 1: Select DRAGEN Installation"
+    echo "Note: Different DRAGEN versions have different annotation versions. Latest DRAGEN version will require redownloading the data."
     
+    # Try to auto-detect DRAGEN installations
     set +e
-    local installations
-    installations=$(detect_dragen_installations 2>&1)
-    if [[ $? -eq 0 ]]; then
-        echo "$installations"
-        echo ""
-    fi
+    local -a detected_paths
+    mapfile -t detected_paths < <(detect_dragen_installations 2>/dev/null)
+    local detect_result=$?
     set -e
     
+    if [[ $detect_result -eq 0 ]] && [[ ${#detected_paths[@]} -gt 0 ]]; then
+        # Show what was detected
+        echo "Detected DRAGEN installations:"
+        printf '  - %s\n' "${detected_paths[@]}"
+        echo ""
+        
+        # If only one installation found, use it automatically
+        if [[ ${#detected_paths[@]} -eq 1 ]]; then
+            DRAGEN_INSTALL_PATH="${detected_paths[0]}"
+            print_info "Using detected DRAGEN installation: $DRAGEN_INSTALL_PATH"
+            echo ""
+            
+            if validate_dragen_path "true"; then
+                return 0
+            else
+                print_warning "Auto-detected path failed validation, will prompt for manual entry"
+                DRAGEN_INSTALL_PATH=""
+            fi
+        else
+            # Multiple installations found, let user choose
+            echo "Multiple DRAGEN installations detected."
+            echo ""
+            
+            set +e
+            mapfile -t selection < <(prompt_multiselect "Select DRAGEN installation:" "required" "${detected_paths[@]}")
+            local select_result=$?
+            set -e
+            
+            # Check if selection was successful
+            if [[ $select_result -eq 0 ]] && [[ ${#selection[@]} -gt 0 ]]; then
+                DRAGEN_INSTALL_PATH="${selection[0]}"
+                echo ""
+                print_info "Selected: $DRAGEN_INSTALL_PATH"
+                echo ""
+            fi
+        fi
+    fi
+    
+    # Fallback to manual entry
     while true; do
         local input
-        input=$(prompt_input "Enter DRAGEN installation path" "/opt/edico")
+        input=$(prompt_input "Enter DRAGEN installation path" "/opt/dragen/4.5.0")
         DRAGEN_INSTALL_PATH=$(echo "$input" | xargs)
         
         if validate_dragen_path "true"; then
@@ -312,7 +280,10 @@ prompt_dragen_path() {
         else
             echo ""
             echo "Please try again."
-            echo ""
+            if [[ ${#detected_paths[@]} -gt 0 ]]; then
+                echo "Detected DRAGEN installations:"
+                printf '  - %s\n' "${detected_paths[@]}"
+            fi
         fi
     done
 }
@@ -325,15 +296,15 @@ check_environment_credentials() {
     local found_creds=false
     
     if [[ -n "${DRAGEN_SERIAL_NUMBER:-}" ]]; then
-        print_info "Found DRAGEN_SERIAL_NUMBER in environment"
+        print_info "Found DRAGEN_SERIAL_NUMBER=${DRAGEN_SERIAL_NUMBER}"
         CREDENTIAL_TYPE="on-premise"
         found_creds=true
     elif [[ -n "${DRAGEN_API_KEY_VALUE:-}" ]]; then
-        print_info "Found DRAGEN_API_KEY_VALUE in environment"
+        print_info "Found DRAGEN_API_KEY_VALUE=${DRAGEN_API_KEY_VALUE}"
         CREDENTIAL_TYPE="cloud"
         found_creds=true
     elif [[ -n "${DRAGEN_API_KEY_FILE:-}" ]]; then
-        print_info "Found DRAGEN_API_KEY_FILE in environment: ${DRAGEN_API_KEY_FILE}"
+        print_info "Found DRAGEN_API_KEY_FILE=${DRAGEN_API_KEY_FILE}"
         API_KEY_FILE="${DRAGEN_API_KEY_FILE}"
         CREDENTIAL_TYPE="cloud"
         found_creds=true
@@ -342,7 +313,7 @@ check_environment_credentials() {
         CREDENTIAL_TYPE="cloud"
         found_creds=true
     elif [[ -n "${DRAGEN_LICENSE_CREDENTIALS_FILE:-}" ]]; then
-        print_info "Found DRAGEN_LICENSE_CREDENTIALS_FILE in environment: ${DRAGEN_LICENSE_CREDENTIALS_FILE}"
+        print_info "Found DRAGEN_LICENSE_CREDENTIALS_FILE=${DRAGEN_LICENSE_CREDENTIALS_FILE}"
         LIC_CREDENTIALS_FILE="${DRAGEN_LICENSE_CREDENTIALS_FILE}"
         CREDENTIAL_TYPE="cloud"
         found_creds=true
@@ -444,8 +415,8 @@ setup_cloud_credentials() {
     echo "Cloud DRAGEN requires API credentials."
     echo ""
     echo "Choose credential method:"
-    echo "  1. Provide path to lic-credentials file"
-    echo "  2. Enter user_id and password manually (set as environment variables)"
+    echo "  1. Provide path to license credentials file"
+    echo "  2. Enter API key and secret manually (set as environment variables)"
     echo "  3. Provide path to existing credentials.json file"
     echo ""
     
@@ -463,11 +434,11 @@ setup_cloud_credentials() {
                 ;;
             2)
                 local api_key api_secret
-                api_key=$(prompt_input "Enter user_id (API Key)")
-                api_secret=$(prompt_input "Enter password (API Secret)")
+                api_key=$(prompt_input "Enter API key (user_id)")
+                api_secret=$(prompt_input "Enter API secret (password)")
                 
                 if [[ -z "$api_key" ]] || [[ -z "$api_secret" ]]; then
-                    print_error "Both user_id and password are required"
+                    print_error "Both API key and secret are required"
                     if ! prompt_yes_no "Try again?"; then
                         return 1
                     fi
@@ -584,243 +555,108 @@ discover_available_configs() {
     echo "$configs"
 }
 
-extract_assemblies_from_configs() {
-    local configs="$1"
-    local assemblies=()
+discover_annotation_files() {
+    print_section "Step 3: Discovering All Annotation Configuration Files"
+    
+    local resources="$DRAGEN_INSTALL_PATH/$RESOURCES_DIR"
+    CONFIG_FILES=()
+    
+    # Discover ALL annotation files in the resources folder
+    print_info "Searching for all annotation configuration files..."
+    echo ""
     
     while IFS= read -r config; do
-        local basename
-        basename=$(basename "$config" .json)
-        local assembly
-        assembly=$(echo "$basename" | grep -oE 'GRCh[0-9]+|hg[0-9]+' || echo "")
-        
-        if [[ -n "$assembly" ]]; then
-            local found=false
-            for existing in "${assemblies[@]}"; do
-                if [[ "$existing" == "$assembly" ]]; then
-                    found=true
-                    break
-                fi
-            done
-            if [[ "$found" == false ]]; then
-                assemblies+=("$assembly")
-            fi
-        fi
-    done <<< "$configs"
+        [[ -z "$config" ]] && continue
+        CONFIG_FILES+=("$config")
+        echo "  - $(basename "$config")"
+    done < <(find "$resources" -name "*.json" -type f 2>/dev/null | sort)
     
-    printf '%s\n' "${assemblies[@]}" | sort -u
-}
-
-extract_annotation_types_from_configs() {
-    local configs="$1"
-    local types=()
-    
-    while IFS= read -r config; do
-        local basename
-        basename=$(basename "$config" .json)
-        local type
-        
-        if [[ "$basename" =~ ^all_annotations_ ]]; then
-            type="all"
-        elif [[ "$basename" =~ ^germline_tagging_annotations_ ]]; then
-            type="germline_tagging"
-        elif [[ "$basename" =~ ^tmb_annotations_ ]]; then
-            type="tmb"
-        else
-            continue
-        fi
-        
-        local found=false
-        for existing in "${types[@]}"; do
-            if [[ "$existing" == "$type" ]]; then
-                found=true
-                break
-            fi
-        done
-        if [[ "$found" == false ]]; then
-            types+=("$type")
-        fi
-    done <<< "$configs"
-    
-    printf '%s\n' "${types[@]}" | sort -u
-}
-
-remove_redundant_annotation_types() {
-    # TMB includes germline tagging data, so remove germline_tagging if TMB is selected
-    local has_tmb=false
-    local has_germline_tagging=false
-    
-    for type in "${ANNOTATION_TYPES[@]}"; do
-        if [[ "$type" == "tmb" ]]; then
-            has_tmb=true
-        fi
-        if [[ "$type" == "germline_tagging" ]]; then
-            has_germline_tagging=true
-        fi
-    done
-    
-    if [[ "$has_tmb" == true ]] && [[ "$has_germline_tagging" == true ]]; then
-        print_warning "Ignoring germline tagging because TMB annotations include it"
-        
-        # Remove germline_tagging from array
-        local filtered_types=()
-        for type in "${ANNOTATION_TYPES[@]}"; do
-            if [[ "$type" != "germline_tagging" ]]; then
-                filtered_types+=("$type")
-            fi
-        done
-        ANNOTATION_TYPES=("${filtered_types[@]}")
-        
-        echo "Updated annotation types: ${ANNOTATION_TYPES[*]}"
-        echo ""
-    fi
-}
-
-prompt_assemblies() {
-    if [[ ${#ASSEMBLIES[@]} -gt 0 ]]; then
-        print_info "Using assemblies: ${ASSEMBLIES[*]}"
-        return 0
+    if [[ ${#CONFIG_FILES[@]} -eq 0 ]]; then
+        error_exit "No annotation configuration files found in: $resources"
     fi
     
-    print_section "Step 3: Select Reference Assemblies"
-    
-    local configs
-    configs=$(discover_available_configs)
-    
-    local available_assemblies
-    mapfile -t available_assemblies < <(extract_assemblies_from_configs "$configs")
-    
-    if [[ ${#available_assemblies[@]} -eq 0 ]]; then
-        error_exit "No assemblies found in configuration files"
-    fi
-    
-    echo "Available assemblies:"
-    for assembly in "${available_assemblies[@]}"; do
-        echo "  - $assembly"
-    done
     echo ""
-    
-    while true; do
-        # Temporarily disable exit on error for multiselect
-        set +e
-        mapfile -t ASSEMBLIES < <(prompt_multiselect "Select assemblies to download:" "all" "${available_assemblies[@]}")
-        local result=$?
-        set -e
-        
-        # Check if selection was successful
-        if [[ $result -eq 0 ]] && [[ ${#ASSEMBLIES[@]} -gt 0 ]]; then
-            break
-        else
-            print_error "At least one assembly must be selected"
-            echo "Please try again or type 'exit' to quit."
-            echo ""
-        fi
-    done
-}
-
-prompt_annotation_types() {
-    if [[ ${#ANNOTATION_TYPES[@]} -gt 0 ]]; then
-        print_info "Using annotation types: ${ANNOTATION_TYPES[*]}"
-        return 0
-    fi
-    
-    print_section "Step 4: Select Annotation Types"
-    
-    local configs
-    configs=$(discover_available_configs)
-    
-    local available_types
-    mapfile -t available_types < <(extract_annotation_types_from_configs "$configs")
-    
-    if [[ ${#available_types[@]} -eq 0 ]]; then
-        error_exit "No annotation types found in configuration files"
-    fi
-    
-    echo "Available annotation types:"
-    echo "  - all: Full variant annotation (all_annotations_*)"
-    echo "  - germline_tagging: Germline tagging only (germline_tagging_annotations_*)"
-    echo "  - tmb: Tumor Mutational Burden (tmb_annotations_*)"
-    echo ""
-    echo "Note: TMB includes germline tagging data"
-    echo ""
-    
-    while true; do
-        # Temporarily disable exit on error for multiselect
-        set +e
-        mapfile -t ANNOTATION_TYPES < <(prompt_multiselect "Select annotation types to download:" "all" "${available_types[@]}")
-        local result=$?
-        set -e
-        
-        # Check if selection was successful
-        if [[ $result -eq 0 ]] && [[ ${#ANNOTATION_TYPES[@]} -gt 0 ]]; then
-            break
-        else
-            # If nothing selected and it's not a default behavior, default to all
-            if [[ $result -eq 0 ]] && [[ ${#ANNOTATION_TYPES[@]} -eq 0 ]]; then
-                print_info "No selection made, using all available types as default"
-                ANNOTATION_TYPES=("${available_types[@]}")
-                break
-            else
-                print_error "Please make a selection"
-                echo "Please try again or type 'exit' to quit."
-                echo ""
-            fi
-        fi
-    done
-    
-    # Remove redundant annotation types if TMB is selected
-    remove_redundant_annotation_types
+    print_info "Total configuration files found: ${#CONFIG_FILES[@]}"
 }
 
 prompt_data_directory() {
+    print_section "Step 4: Specify Data Directory"
+    print_info "This directory will store all downloaded annotation files."
+    
     if [[ -n "$DATA_DIRECTORY" ]]; then
         print_info "Using data directory: $DATA_DIRECTORY"
         return 0
     fi
-    
-    print_section "Step 5: Specify Data Directory"
-    
-    echo "This directory will store all downloaded annotation files."
-    echo ""
-    
-    DATA_DIRECTORY=$(prompt_input "Enter data directory path" "/data/nirvana_data")
+      
+    DATA_DIRECTORY=$(prompt_input "Enter data directory path" "/staging/${USER}/data")
 }
 
 # ============================================================================
 # Configuration Display and Confirmation
 # ============================================================================
-
-get_config_filename() {
-    local type="$1"
-    local assembly="$2"
+print_script_usage_example() {
+    echo ""
+    print_info "Or run this script with the following parameters to download all annotation files:"
     
-    case "$type" in
-        all) echo "all_annotations_${assembly}.json" ;;
-        germline_tagging) echo "germline_tagging_annotations_${assembly}.json" ;;
-        tmb) echo "tmb_annotations_${assembly}.json" ;;
-        *) echo "unknown_${assembly}.json" ;;
-    esac
+    command=""
+    if [[ -n "${DRAGEN_SERIAL_NUMBER:-}" ]]; then
+        command+="export DRAGEN_SERIAL_NUMBER=${DRAGEN_SERIAL_NUMBER} &&"
+    fi
+    if [[ -n "${DRAGEN_API_KEY_VALUE:-}" ]]; then
+        command+="export DRAGEN_API_KEY_VALUE=${DRAGEN_API_KEY_VALUE} &&"
+    fi
+    if [[ -n "${DRAGEN_API_KEY_FILE:-}" ]]; then
+          command+="export DRAGEN_API_KEY_FILE=${DRAGEN_API_KEY_FILE} &&"
+    fi
+    if [[ -n "${NIRVANA_API_KEY:-}" ]] && [[ -n "${NIRVANA_API_SECRET:-}" ]]; then
+        command+="export NIRVANA_API_KEY=${NIRVANA_API_KEY}&&"
+        command+="export NIRVANA_API_SECRET=${NIRVANA_API_SECRET}&&"
+    fi
+    if [[ -n "${DRAGEN_LICENSE_CREDENTIALS_FILE:-}" ]]; then
+        command+="export DRAGEN_LICENSE_CREDENTIALS_FILE=${DRAGEN_LICENSE_CREDENTIALS_FILE} &&"
+    fi
+    
+    command+="$0 --dragen-path ${DRAGEN_INSTALL_PATH} --data-dir ${DATA_DIRECTORY}"
+    if [[ -n "$API_KEY_FILE" ]]; then
+        command+=" --api-key-file $API_KEY_FILE"
+    fi
+    
+    if [[ -n "$LIC_CREDENTIALS_FILE" ]]; then
+        command+=" --lic-credentials $LIC_CREDENTIALS_FILE"
+    fi
+    
+    if [[ -n "$CREDENTIALS_FILE" ]]; then
+        command+=" --credentials-file $CREDENTIALS_FILE"
+    fi
+    
+    echo "  $command"
 }
 
 display_credential_source() {
     if [[ -n "${DRAGEN_SERIAL_NUMBER:-}" ]]; then
-        echo "  Source: DRAGEN_SERIAL_NUMBER environment variable"
-    elif [[ -n "${DRAGEN_API_KEY_VALUE:-}" ]]; then
-        echo "  Source: DRAGEN_API_KEY_VALUE environment variable"
-    elif [[ -n "${DRAGEN_API_KEY_FILE:-}" ]]; then
-        echo "  Source: DRAGEN_API_KEY_FILE environment variable (${DRAGEN_API_KEY_FILE})"
-    elif [[ -n "${NIRVANA_API_KEY:-}" && -n "${NIRVANA_API_SECRET:-}" ]]; then
-        echo "  Source: NIRVANA_API_KEY + NIRVANA_API_SECRET environment variables"
-    elif [[ -n "${DRAGEN_LICENSE_CREDENTIALS_FILE:-}" ]]; then
-        echo "  Source: DRAGEN_LICENSE_CREDENTIALS_FILE environment variable (${DRAGEN_LICENSE_CREDENTIALS_FILE})"
-    elif [[ -n "$CREDENTIALS_FILE" ]]; then
-        echo "  Source: Credentials file - $CREDENTIALS_FILE"
-    elif [[ -n "$API_KEY_FILE" ]]; then
-        echo "  Source: API key file - $API_KEY_FILE"
-    elif [[ -n "$LIC_CREDENTIALS_FILE" ]]; then
-        echo "  Source: License credentials file - $LIC_CREDENTIALS_FILE"
-    else
-        echo "  Source: NOT CONFIGURED"
+        echo "  export DRAGEN_SERIAL_NUMBER=${DRAGEN_SERIAL_NUMBER}"
+    fi
+    if [[ -n "${DRAGEN_API_KEY_VALUE:-}" ]]; then
+        echo "  export DRAGEN_API_KEY_VALUE=${DRAGEN_API_KEY_VALUE}"
+    fi
+    if [[ -n "$API_KEY_FILE" ]]; then
+        echo "  --api-key-file $API_KEY_FILE"
+    fi
+    if [[ -n "${DRAGEN_API_KEY_FILE:-}" ]]; then
+        echo "  export DRAGEN_API_KEY_FILE=${DRAGEN_API_KEY_FILE}"
+    fi
+    if [[ -n "${NIRVANA_API_KEY:-}" ]] && [[ -n "${NIRVANA_API_SECRET:-}" ]]; then
+        echo "  export NIRVANA_API_KEY=${NIRVANA_API_KEY}"
+        echo "  export NIRVANA_API_SECRET=${NIRVANA_API_SECRET}"
+    fi
+    if [[ -n "$LIC_CREDENTIALS_FILE" ]]; then
+        echo "  --lic-credentials $LIC_CREDENTIALS_FILE"
+    fi
+    if [[ -n "${DRAGEN_LICENSE_CREDENTIALS_FILE:-}" ]]; then
+        echo "  export DRAGEN_LICENSE_CREDENTIALS_FILE=${DRAGEN_LICENSE_CREDENTIALS_FILE}"
+    fi
+    if [[ -n "$CREDENTIALS_FILE" ]]; then
+        echo "  --credentials-file $CREDENTIALS_FILE"
     fi
 }
 
@@ -841,66 +677,33 @@ display_configuration() {
     echo "  Status: $([ -d "$DATA_DIRECTORY" ] && echo "Directory exists" || echo "Will be created")"
     echo ""
     
-    echo "Assemblies:"
-    printf '  - %s\n' "${ASSEMBLIES[@]}"
-    echo ""
-    
-    echo "Annotation Types:"
-    for type in "${ANNOTATION_TYPES[@]}"; do
-        case "$type" in
-            all) echo "  - all (Full variant annotation)" ;;
-            germline_tagging) echo "  - germline_tagging (Germline tagging)" ;;
-            tmb) echo "  - tmb (Tumor Mutational Burden)" ;;
-        esac
+    echo "Configuration Files to Download (${#CONFIG_FILES[@]} total):"
+    for config in "${CONFIG_FILES[@]}"; do
+        echo "  - $(basename "$config")"
     done
     echo ""
     
     echo "Download Commands:"
     local job_count=0
-    local datamanager="$DRAGEN_INSTALL_PATH/$DATAMANAGER_PATH"
-    
-    for assembly in "${ASSEMBLIES[@]}"; do
-        for type in "${ANNOTATION_TYPES[@]}"; do
-            job_count=$((job_count + 1))
-            local config_filename config_path
-            config_filename=$(get_config_filename "$type" "$assembly")
-            config_path="$DRAGEN_INSTALL_PATH/$RESOURCES_DIR/$config_filename"
-            
-            echo ""
-            echo "  Job $job_count: $type ($assembly)"
-            echo "  ----------------------------------------"
-            
-            # Build the command to display
-            local display_cmd="$datamanager download -r $assembly --dir $DATA_DIRECTORY"
-            local cred_comment=""
-            
-            if [[ -n "$CREDENTIALS_FILE" ]]; then
-                display_cmd="$display_cmd --credentials-file $CREDENTIALS_FILE"
-            elif [[ -n "$API_KEY_FILE" ]]; then
-                display_cmd="$display_cmd --api-key-file $API_KEY_FILE"
-            elif [[ -n "$LIC_CREDENTIALS_FILE" ]]; then
-                display_cmd="$display_cmd --lic-credentials $LIC_CREDENTIALS_FILE"
-            elif [[ -n "${DRAGEN_SERIAL_NUMBER:-}" ]]; then
-                cred_comment=" # (using DRAGEN_SERIAL_NUMBER from environment)"
-            elif [[ -n "${DRAGEN_API_KEY_VALUE:-}" ]]; then
-                cred_comment=" # (using DRAGEN_API_KEY_VALUE from environment)"
-            elif [[ -n "${DRAGEN_API_KEY_FILE:-}" ]]; then
-                cred_comment=" # (using DRAGEN_API_KEY_FILE from environment)"
-            elif [[ -n "${NIRVANA_API_KEY:-}" && -n "${NIRVANA_API_SECRET:-}" ]]; then
-                cred_comment=" # (using NIRVANA_API_KEY + NIRVANA_API_SECRET from environment)"
-            elif [[ -n "${DRAGEN_LICENSE_CREDENTIALS_FILE:-}" ]]; then
-                cred_comment=" # (using DRAGEN_LICENSE_CREDENTIALS_FILE from environment)"
-            fi
-            
-            display_cmd="$display_cmd --versions-config $config_path $cred_comment"
-            
-            echo "  $display_cmd"
-        done
+
+    for config_path in "${CONFIG_FILES[@]}"; do
+        job_count=$((job_count + 1))
+        local config_filename assembly
+        config_filename=$(basename "$config_path")
+        assembly=$(echo "$config_filename" | grep -oE 'GRCh[0-9]+|hg[0-9]+' || echo "unknown")
+
+        echo ""
+        echo "  Command $job_count: $config_filename"
+
+        # Build and format the command to display
+        local display_cmd
+        build_datamanager_command "$config_path" display_cmd
+        format_command_with_credentials display_cmd "  "
     done
     echo ""
-    
+
     if [[ "$DRY_RUN" == true ]]; then
-        echo "Mode: DRY RUN (no files will be downloaded)"
+        print_info "Mode: DRY RUN (no files will be downloaded)"
         echo ""
     fi
 }
@@ -913,48 +716,80 @@ confirm_configuration() {
         return 0
     fi
     
-    while true; do
+    echo ""
+    if prompt_yes_no "Proceed with this configuration?"; then
+        return 0
+    else
         echo ""
-        if prompt_yes_no "Proceed with this configuration?"; then
-            return 0
-        else
-            echo ""
-            echo "What would you like to do?"
-            echo "  1. Review commands and decide"
-            echo "  2. Start over"
-            echo "  3. Exit without downloading"
-            echo ""
-            
-            read -r -p "> " choice
-            case "$choice" in
-                1)
-                    print_datamanager_commands
-                    echo ""
-                    if prompt_yes_no "Proceed with downloads?"; then
-                        return 0
-                    else
-                        print_info "Downloads cancelled"
-                        exit 0
-                    fi
-                    ;;
-                2)
-                    exec "$0"
-                    ;;
-                3)
-                    print_info "Exiting without downloading"
-                    exit 0
-                    ;;
-                *)
-                    echo "Invalid choice. Please enter 1, 2, or 3."
-                    ;;
-            esac
-        fi
-    done
+        print_info "Setup cancelled. You can run the above commands manually."
+        print_script_usage_example
+        exit 0
+    fi
 }
 
 # ============================================================================
 # Download Operations
 # ============================================================================
+
+build_datamanager_command() {
+    local config_path="$1"
+    local -n cmd_array=$2
+    
+    local config_filename assembly
+    config_filename=$(basename "$config_path")
+    assembly=$(echo "$config_filename" | grep -oE 'GRCh[0-9]+|hg[0-9]+' || echo "unknown")
+    
+    local datamanager="$DRAGEN_INSTALL_PATH/$DATAMANAGER_PATH"
+    
+    cmd_array=("$datamanager" "download" "-r" "$assembly" "--dir" "$DATA_DIRECTORY")
+    
+    # Add credential arguments
+    if [[ -n "$CREDENTIALS_FILE" ]]; then
+        cmd_array+=("--credentials-file" "$CREDENTIALS_FILE")
+    elif [[ -n "$API_KEY_FILE" ]]; then
+        cmd_array+=("--api-key-file" "$API_KEY_FILE")
+    elif [[ -n "$LIC_CREDENTIALS_FILE" ]]; then
+        cmd_array+=("--lic-credentials" "$LIC_CREDENTIALS_FILE")
+    fi
+    # If none specified, DataManager will use environment variables
+    
+    cmd_array+=("--versions-config" "$config_path")
+}
+
+get_credential_comment() {
+    if [[ -n "$CREDENTIALS_FILE" ]] || [[ -n "$API_KEY_FILE" ]] || [[ -n "$LIC_CREDENTIALS_FILE" ]]; then
+        echo ""
+    elif [[ -n "${DRAGEN_SERIAL_NUMBER:-}" ]]; then
+        echo " # (using DRAGEN_SERIAL_NUMBER from environment)"
+    elif [[ -n "${DRAGEN_API_KEY_VALUE:-}" ]]; then
+        echo " # (using DRAGEN_API_KEY_VALUE from environment)"
+    elif [[ -n "${DRAGEN_API_KEY_FILE:-}" ]]; then
+        echo " # (using DRAGEN_API_KEY_FILE from environment)"
+    elif [[ -n "${NIRVANA_API_KEY:-}" && -n "${NIRVANA_API_SECRET:-}" ]]; then
+        echo " # (using NIRVANA_API_KEY + NIRVANA_API_SECRET from environment)"
+    elif [[ -n "${DRAGEN_LICENSE_CREDENTIALS_FILE:-}" ]]; then
+        echo " # (using DRAGEN_LICENSE_CREDENTIALS_FILE from environment)"
+    else
+        echo ""
+    fi
+}
+
+format_command_with_credentials() {
+    local cmd_array_name=$1
+    local indent="${3:-}"
+    local -n cmd_ref=$cmd_array_name
+    
+    # Prepend export for specific env variables (with actual values)
+    if [[ -n "${DRAGEN_SERIAL_NUMBER:-}" ]]; then
+        echo "${indent}export DRAGEN_SERIAL_NUMBER=\"${DRAGEN_SERIAL_NUMBER}\" && ${cmd_ref[*]}"
+    elif [[ -n "${DRAGEN_API_KEY_FILE:-}" ]]; then
+        echo "${indent}export DRAGEN_API_KEY_FILE=\"${DRAGEN_API_KEY_FILE}\" && ${cmd_ref[*]}"
+    elif [[ -n "${DRAGEN_LICENSE_CREDENTIALS_FILE:-}" ]]; then
+        echo "${indent}export DRAGEN_LICENSE_CREDENTIALS_FILE=\"${DRAGEN_LICENSE_CREDENTIALS_FILE}\" && ${cmd_ref[*]}"
+    else
+        echo "${indent}${cmd_ref[*]}$(get_credential_comment)"
+    fi
+}
 
 build_credential_args() {
     local -n args=$1
@@ -969,72 +804,24 @@ build_credential_args() {
     # If none specified, DataManager will use environment variables
 }
 
-print_datamanager_commands() {
-    print_header "DataManager Commands"
-    
-    echo "You can run the following commands to download annotation data:"
-    echo ""
-    
-    local has_env_creds=false
-    [[ -n "${DRAGEN_SERIAL_NUMBER:-}" ]] || \
-    [[ -n "${DRAGEN_API_KEY_VALUE:-}" ]] || \
-    [[ -n "${DRAGEN_API_KEY_FILE:-}" ]] || \
-    [[ -n "${NIRVANA_API_KEY:-}" && -n "${NIRVANA_API_SECRET:-}" ]] || \
-    [[ -n "${DRAGEN_LICENSE_CREDENTIALS_FILE:-}" ]] && has_env_creds=true
-    
-    if [[ "$has_env_creds" == true ]]; then
-        echo "Note: Commands will use credentials from environment variables"
-        echo ""
-    fi
-    
-    local datamanager="$DRAGEN_INSTALL_PATH/$DATAMANAGER_PATH"
-    local cred_arg=""
-    
-    if [[ -n "$CREDENTIALS_FILE" ]]; then
-        cred_arg="--credentials-file $CREDENTIALS_FILE"
-    elif [[ -n "$API_KEY_FILE" ]]; then
-        cred_arg="--api-key-file $API_KEY_FILE"
-    elif [[ -n "$LIC_CREDENTIALS_FILE" ]]; then
-        cred_arg="--lic-credentials $LIC_CREDENTIALS_FILE"
-    fi
-    
-    for assembly in "${ASSEMBLIES[@]}"; do
-        for type in "${ANNOTATION_TYPES[@]}"; do
-            local config_filename config_path
-            config_filename=$(get_config_filename "$type" "$assembly")
-            config_path="$DRAGEN_INSTALL_PATH/$RESOURCES_DIR/$config_filename"
-            
-            echo "# Download $type annotations for $assembly"
-            echo "$datamanager download \\"
-            echo "  -r $assembly \\"
-            [[ -n "$cred_arg" ]] && echo "  $cred_arg \\"
-            echo "  --dir $DATA_DIRECTORY \\"
-            echo "  --versions-config $config_path"
-            echo ""
-        done
-    done
-}
-
 download_annotation_data() {
-    local assembly="$1"
-    local type="$2"
-    local config_filename config_path
-    
-    config_filename=$(get_config_filename "$type" "$assembly")
-    config_path="$DRAGEN_INSTALL_PATH/$RESOURCES_DIR/$config_filename"
+    local config_path="$1"
     
     if [[ ! -f "$config_path" ]]; then
         print_warning "Configuration file not found: $config_path"
         return 1
     fi
     
-    local datamanager="$DRAGEN_INSTALL_PATH/$DATAMANAGER_PATH"
+    local config_filename assembly
+    config_filename=$(basename "$config_path")
+    assembly=$(echo "$config_filename" | grep -oE 'GRCh[0-9]+|hg[0-9]+' || echo "unknown")
     
-    print_info "Downloading $type annotations for $assembly"
-    print_info "Using config: $config_filename"
+    print_info "Processing: $config_filename"
+    print_info "Assembly: $assembly"
     
-    local dm_cmd=("$datamanager" "download" "-r" "$assembly" "--dir" "$DATA_DIRECTORY" "--versions-config" "$config_path")
-    build_credential_args dm_cmd
+    # Build the command using the single source of truth
+    local dm_cmd
+    build_datamanager_command "$config_path" dm_cmd
     
     if [[ "$DRY_RUN" == true ]]; then
         print_info "DRY RUN: Would execute:"
@@ -1044,10 +831,12 @@ download_annotation_data() {
     
     echo ""
     if "${dm_cmd[@]}"; then
-        print_info "Successfully downloaded $type annotations for $assembly"
+        print_info "Successfully downloaded annotations from $config_filename"
+        mv -f "${DATA_DIRECTORY}/download_summary.json" "${DATA_DIRECTORY}/${config_filename}.json" 2>/dev/null || true
+        mv -f "${DATA_DIRECTORY}/download_summary.txt" "${DATA_DIRECTORY}/${config_filename}.txt" 2>/dev/null || true
         return 0
     else
-        print_error "Failed to download $type annotations for $assembly"
+        print_error "Failed to download annotations from $config_filename"
         return 1
     fi
 }
@@ -1060,20 +849,23 @@ execute_downloads() {
         mkdir -p "$DATA_DIRECTORY" || error_exit "Failed to create data directory"
     fi
     
-    local total=0 successful=0 failed=0
+    local total=${#CONFIG_FILES[@]}
+    local successful=0 failed=0
+    local job_count=0
     
-    for assembly in "${ASSEMBLIES[@]}"; do
-        for type in "${ANNOTATION_TYPES[@]}"; do
-            total=$((total + 1))
-            echo ""
-            print_section "Download $total: $type ($assembly)"
-            
-            if download_annotation_data "$assembly" "$type"; then
-                successful=$((successful + 1))
-            else
-                failed=$((failed + 1))
-            fi
-        done
+    for config_path in "${CONFIG_FILES[@]}"; do
+        job_count=$((job_count + 1))
+        local config_filename
+        config_filename=$(basename "$config_path")
+        
+        echo ""
+        print_section "Download $job_count of $total: $config_filename"
+        
+        if download_annotation_data "$config_path"; then
+            successful=$((successful + 1))
+        else
+            failed=$((failed + 1))
+        fi
     done
     
     print_header "Download Summary"
@@ -1123,8 +915,6 @@ parse_arguments() {
             --help) show_usage ;;
             --dragen-path) DRAGEN_INSTALL_PATH="$2"; shift 2 ;;
             --data-dir) DATA_DIRECTORY="$2"; shift 2 ;;
-            --assemblies) IFS=',' read -ra ASSEMBLIES <<< "$2"; shift 2 ;;
-            --annotation-types) IFS=',' read -ra ANNOTATION_TYPES <<< "$2"; shift 2 ;;
             --credentials-file) CREDENTIALS_FILE="$2"; shift 2 ;;
             --api-key-file) API_KEY_FILE="$2"; shift 2 ;;
             --lic-credentials) LIC_CREDENTIALS_FILE="$2"; shift 2 ;;
@@ -1149,22 +939,17 @@ main() {
     echo ""
     
     echo "Welcome to the Illumina Connected Annotations setup for DRAGEN."
-    echo "This assistant will help you configure credentials and download annotation data."
+    echo "This assistant will help you:"
+    echo "  - Select your DRAGEN installation"
+    echo "  - Configure authentication credentials"
+    echo "  - Specify download directory"
+    echo "  - Discover all annotation configuration files"
+    echo "  - Download all annotation data files"
     echo ""
     
     parse_arguments "$@"
     
-    [[ ${#ANNOTATION_TYPES[@]} -gt 0 ]] && remove_redundant_annotation_types
-    
     if [[ "$NON_INTERACTIVE" == false && -z "$DRAGEN_INSTALL_PATH" ]]; then
-        echo "Setup steps:"
-        echo "  1. Select DRAGEN installation"
-        echo "  2. Configure credentials (environment variables)"
-        echo "  3. Choose reference assemblies"
-        echo "  4. Choose annotation types"
-        echo "  5. Specify download directory"
-        echo ""
-        
         if ! prompt_yes_no "Ready to begin?"; then
             echo "Setup cancelled."
             exit 0
@@ -1172,10 +957,8 @@ main() {
     fi
     
     prompt_dragen_path
-    validate_dragen_path
     setup_credentials
-    prompt_assemblies
-    prompt_annotation_types
+    discover_annotation_files
     prompt_data_directory
     
     display_configuration
