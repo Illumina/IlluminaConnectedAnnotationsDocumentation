@@ -117,19 +117,19 @@ EXAMPLES:
 
   # On-premise with serial number from environment
   export DRAGEN_SERIAL_NUMBER="ABC123456"
-  $0 --dragen-path /opt/dragen/4.4.3 --data-dir /data/nirvana_data
+  $0 --dragen-path /opt/dragen/4.5.0 --data-dir /data/nirvana_data
 
   # Cloud with BYOL credentials from environment
   export NIRVANA_API_KEY="your_user_id"
   export NIRVANA_API_SECRET="your_password"
-  $0 --dragen-path /opt/edico --data-dir /data/nirvana_data
+  $0 --dragen-path /opt/dragen/4.5.0 --data-dir /data/nirvana_data
 
   # Using credential file (passed to DataManager)
-  $0 --dragen-path /opt/edico --data-dir /data/nirvana_data \\
+  $0 --dragen-path /opt/dragen/4.5.0 --data-dir /data/nirvana_data \\
      --lic-credentials /path/to/lic_credentials
 
   # Dry run to see what would be downloaded
-  $0 --dragen-path /opt/dragen/4.4.3 --data-dir /data/nirvana_data --dry-run
+  $0 --dragen-path /opt/dragen/4.5.0 --data-dir /data/nirvana_data --dry-run
 
 EOF
     exit 0
@@ -222,6 +222,7 @@ prompt_dragen_path() {
     fi
     
     print_section "Step 1: Select DRAGEN Installation"
+    echo "Note: Different DRAGEN versions have different annotation versions. Latest DRAGEN version will require redownloading the data."
     
     # Try to auto-detect DRAGEN installations
     set +e
@@ -271,7 +272,7 @@ prompt_dragen_path() {
     # Fallback to manual entry
     while true; do
         local input
-        input=$(prompt_input "Enter DRAGEN installation path" "/opt/edico")
+        input=$(prompt_input "Enter DRAGEN installation path" "/opt/dragen/4.5.0")
         DRAGEN_INSTALL_PATH=$(echo "$input" | xargs)
         
         if validate_dragen_path "true"; then
@@ -587,7 +588,7 @@ prompt_data_directory() {
         return 0
     fi
       
-    DATA_DIRECTORY=$(prompt_input "Enter data directory path" "/data/nirvana_data")
+    DATA_DIRECTORY=$(prompt_input "Enter data directory path" "/staging/${USER}/data")
 }
 
 # ============================================================================
@@ -831,6 +832,8 @@ download_annotation_data() {
     echo ""
     if "${dm_cmd[@]}"; then
         print_info "Successfully downloaded annotations from $config_filename"
+        mv -f "${DATA_DIRECTORY}/download_summary.json" "${DATA_DIRECTORY}/${config_filename}.json" 2>/dev/null || true
+        mv -f "${DATA_DIRECTORY}/download_summary.txt" "${DATA_DIRECTORY}/${config_filename}.txt" 2>/dev/null || true
         return 0
     else
         print_error "Failed to download annotations from $config_filename"
