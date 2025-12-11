@@ -85,22 +85,22 @@ If you already have a DRAGEN `--lic-credentials` file, you can use it directly:
 
 ## Automated Setup Script
 
-For a streamlined setup experience, use the [**DRAGEN Provisioning Script**](../utilities/resources/dragen_provisioning.sh) which automates all the configuration steps:
+For a streamlined setup experience, use the [**Annotation Setup Script**](../utilities/resources/annotation_setup.sh) which automates all the configuration steps:
 
 ```bash
 # Download the provisioning script
-wget https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/utilities/resources/dragen_provisioning.sh
+wget https://illumina.github.io/IlluminaConnectedAnnotationsDocumentation/utilities/resources/annotation_setup.sh
 
 # Make it executable
-chmod +x dragen_provisioning.sh
+chmod +x annotation_setup.sh
 
 # Run interactively (guided setup)
-./dragen_provisioning.sh
+./annotation_setup.sh
 
 # Or run with command-line options
-./dragen_provisioning.sh \
+./annotation_setup.sh \
   --dragen-path /opt/dragen/4.4.3 \
-  --data-dir /data/nirvana_data \
+  --data-dir /data/annotation_data \
   --assemblies GRCh37,GRCh38 \
   --annotation-types all
 ```

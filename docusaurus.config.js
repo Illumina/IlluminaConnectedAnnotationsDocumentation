@@ -30,11 +30,6 @@ module.exports = {
     gtag: {
       trackingID: 'G-5KXNW9LCD7',
     },
-    algolia: {
-      apiKey: 'e908c17192dca08b01d9d994b576335b',
-      indexName: 'illumina_nirvana',
-      contextualSearch: true,
-    },
     colorMode: {
       defaultMode: 'light',
       disableSwitch: true,
