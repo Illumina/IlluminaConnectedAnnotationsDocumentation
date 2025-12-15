@@ -53,7 +53,7 @@ chmod +x annotation_setup.sh
 ./annotation_setup.sh
 
 # Or run with command-line options
-./dragen_provisioning.sh \
+./annotation_setup.sh \
   --dragen-path /opt/dragen/4.5.0 \
   --data-dir /data/nirvana_data
 ```
