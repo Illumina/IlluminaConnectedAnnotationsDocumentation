@@ -98,11 +98,9 @@ chmod +x annotation_setup.sh
 ./annotation_setup.sh
 
 # Or run with command-line options
-./annotation_setup.sh \
-  --dragen-path /opt/dragen/4.4.3 \
-  --data-dir /data/annotation_data \
-  --assemblies GRCh37,GRCh38 \
-  --annotation-types all
+./dragen_provisioning.sh \
+  --dragen-path /opt/dragen/4.5.0 \
+  --data-dir /data/nirvana_data
 ```
 
 **Features:**
