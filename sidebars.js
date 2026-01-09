@@ -57,9 +57,10 @@ module.exports = {
       label: 'Core Functionality',
       items: [
         'core-functionality/canonical-transcripts',
-        'core-functionality/gene-fusions',
+        'core-functionality/gene-fusions', 
+        'core-functionality/structural-variant-type-matching',
         'core-functionality/simple-nomenclature-notation',
-        'core-functionality/junction-preserving',
+        'core-functionality/consequence-prioritization',
         'core-functionality/transcript-consequence-impacts',
         'core-functionality/variant-ids',
         'core-functionality/variant-classification'
