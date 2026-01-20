@@ -3,3 +3,46 @@ title: CpG Island
 ---
 
 ## Overview
+This supplementary data is one of the supplementary data that will only be used for annotating methylation gVCF file.
+In general, this supplementary data define genoimic region interval that indicates CpG island.
+The suppplementary data is available for both GRCh37 and GRCh38. Both data is obtained from publicly available source from UCSC FTP.
+
+[File URL for GRCh37](https://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/cpgIslandExt.txt.gz)
+
+[File URL for GRCh38](https://hgdownload.soe.ucsc.edu/goldenPath/hg38/database/cpgIslandExt.txt.gz)
+
+The file schema is explained in this [link](https://genome.ucsc.edu/cgi-bin/hgTables?db=hg38&hgta_group=regulation&hgta_track=cpgIslandExt&hgta_table=cpgIslandExt&hgta_doSchema=describe+table+schema&token=0.3AJvdi8lQklpZoYaOvLfRQTg59D9FBChXYDeKnuzwNYx_K4ngeQAYTvkozqVpet2lf8_JlEhxW6UdvmGc2kwtI6dT-4GozhaTk-cMSSa-z-c8XOe1xme8Af23gho5FyU350UFwgfX2MiXQ988-H7o6ihL5cnIrDTcQlhueTSr_PF1CLwG8JcQhe-ChIAj830FlSLYnO2NZAxV3AFMaHMh5e56lmr1jdguhgeHfdixl4Xd5xfjCy08rrwimKpcxpUMrJa1vI6M00J-Db9hF86JIh7aiKGKk26Uoiy1gm6J2AAwogP49dg99g-GcQZoFhP6WvZAO1PHnjbNUkUSaw01QXYo6Qdq6V28QtaFlBXi4Z_yruOGL8EUU3iFbrzCMUm3LevEsy7FxfwoyJ2VWGLXjlhr4EGpMR4-J7yHZ8V40xUlOyNzC3JjLkzR5lEg8OkQLJirGHXKAoO7jUh8qXNS2HCmB-SS1GzDJBFQrNcolXQPaQVr_5Rver0Qwv4-VIK2GmFS89lzP65xJONna7_XInb1OTz_p-jGIjV_1DRbNhCa1wNLXXQ3I7G589BlTqjftzDUgaZUpTV-EYHP_Z2IH5lYS94ns13Rxz7Nclr048LdkSpkfsVy1G7LmGIgYMT7-FC39cu6sbIGI2KQH7H90xbMcjtOJ6zRS4awug-4_RRGfM8EiQvSfsWGPKAcUNXtBMvHc0WfqwhpnOay0UHtfOADtev0pnVg07bHl0h5GmbWVuU8WkDC5dLBPtZEUgWNAYSceOb0x8Qgqmxx2X2-UlBT-CZlLCd1MM9WmD5riuDCQSz1F15GqkA-ZezxqVL5TdUti3EzgZWuDTB4qSrVGau_fkz8iwumjXUJsKSq52Y9jc0GKjKWGgpq8cc18WbjRsSK8T3N-ma9FMQsZN0OaS4gSBHoLCSfhTnldhHWcUEXFBU8oYaSKtRZP76Ngg-.DHbWsXcNG2gbaQJ6c45otA.8ab9bf6345609f9a3a4fdfbb33bf775632b38277175e4924bebb2c9d3c278448)
+
+## Output
+An example of methylation annotation from CpG Island region is below
+
+```
+{
+  "chromosome": "21",
+  "begin": 20997105,
+  "end": 20998245,
+  "regionId": "CpG: 89",
+  "biotype": "cpgIsland",
+  "bin": 745,
+  "length": 1140,
+  "cpgNum": 89,
+  "gcNum": 674,
+  "percentageCpg": 15.6,
+  "percentageGc": 59.1,
+  "observedToExpectedRatio": 0.89,
+  "samples": [
+    {
+      "sampleId": "mate_len_200bp_100X",
+      "averageCpGMethylation": 0.5085069662921352,
+      "totalCpGCoverage": 5413,
+      "totalCpGPosition": 44.5
+    }
+  ]
+}
+```
+
+The output will have biotype `cpgIsland`. The output will also have extra information compare to transcript region.
+The extra information is coming from the supplementary data. Those fields are:
+`bin`, `length`, `cpgNum`, `gcNum`, `percentageCpG`, `percentageGc`, and `observedToExpectedRatio`.
+As for the `regionId` field, we used `name` column in the original TSV file.
+
