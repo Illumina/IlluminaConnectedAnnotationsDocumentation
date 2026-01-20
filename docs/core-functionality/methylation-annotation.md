@@ -81,10 +81,15 @@ Example of the genome feature information produce in the output:
 ```
 
 The `regionId` is basically the name of the genomic feature, such as transcript ID or CpG Island ID.
+The `biotype` indicates the biotype of the genomic feature, such as transcript, intron, exon, etc.
 In the `sample` section, it will show the aggregate score for the corresponing genomic region for that particular sample.
 In the `features` section, it will show more detailed information for each genomic feature, for example exon, intron, etc. for that particulat transcript.
 The `averageCpGMethylation` is the average score obtained from the gVCF file aggregated for the genomic feature.
 The `totalCpGCoverage` is the total depth of CpG sites for that genomic feature.
 The `totalCpGPosition` is the total number of CpG sites that are methylated for the corresponding genomic feature.
 
+:::info
+Adding Cpg Islands supplementary data annotation will produce output region with biotype `cpgIsland`.
+There will be more information in the output file for CpG Islands. Please refer to the data source section for more details.
+:::
 
