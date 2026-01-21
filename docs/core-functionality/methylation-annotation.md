@@ -92,6 +92,6 @@ The table below describes the fields in the methylation annotation output:
 | `totalCpGPosition` | The total number of CpG sites that are methylated for the corresponding genomic feature.                      |
 
 :::info
-Adding Cpg Islands supplementary data annotation will produce output region with biotype `cpgIsland`.
-There will be more information in the output file for CpG Islands. Please refer to the data source section for more details.
+Adding CpG Islands supplementary data annotation will produce output region with biotype `cpgIsland`.
+There will be more information in the output file for CpG Islands. Please refer to the [CpG Island data source section](../data-sources/cpg-island.mdx) for more details.
 :::
