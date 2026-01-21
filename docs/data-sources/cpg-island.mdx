@@ -44,8 +44,18 @@ An example of methylation annotation from CpG Island region is below
 }
 ```
 
-The output will have biotype `cpgIsland`. The output will also have extra information compare to transcript region.
-The extra information is coming from the supplementary data. Those fields are:
-`bin`, `length`, `cpgNum`, `gcNum`, `percentageCpG`, `percentageGc`, and `observedToExpectedRatio`.
-As for the `regionId` field, we used `name` column in the original TSV file.
+The output includes the biotype `cpgIsland` and contains additional fields derived from the supplementary data. 
+
+The following table describes these extra fields:
+
+| Field | Description |
+| :--- | :--- |
+| `bin` | Indexing bin used for efficient spatial querying. |
+| `length` | Total length of the CpG island region. |
+| `cpgNum` | Number of CpG dinucleotides within the island. |
+| `gcNum` | Number of G and C nucleotides within the island. |
+| `percentageCpG` | Percentage of CpG dinucleotides in the region. |
+| `percentageGc` | Percentage of GC content in the region. |
+| `observedToExpectedRatio` | The ratio of observed to expected CpG counts. |
+| `regionId` | Corresponds to the `name` column from the original UCSC TSV file. |
 
