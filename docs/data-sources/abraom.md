@@ -5,6 +5,10 @@ title: ABraOM
 ## Overview
 Illumina Connected Annotation provides allele frequency annotations from [ABraOM](https://ABraOM.ib.usp.br/index.php) which is a repository of genomic variants from individual in Sao Paolo, Brazil.
 
+:::info Publication
+Naslavsky MS, Santos R, Rudan I, et al. ABraOM: A Brazilian database of genomic variants from whole exome sequenced elderly individuals. *Hum Mutat*. 2017;38(7):751-763. doi:10.1002/humu.23211
+:::
+
 ABraOM has data for both GRCh37 and GRCh38.
 
 | Assembly | Name | Description                                                                       |
