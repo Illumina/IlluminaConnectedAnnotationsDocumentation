@@ -18,6 +18,7 @@ module.exports = {
       label: 'Data Sources',
       items: [
         'data-sources/1000Genomes',
+        'data-sources/abraom',
         'data-sources/alpha-missense',
         'data-sources/amino-acid-conservation',
         'data-sources/cancer-hotspots',
