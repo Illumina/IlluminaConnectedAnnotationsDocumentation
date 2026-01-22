@@ -25,6 +25,7 @@ module.exports = {
         'data-sources/clinvar',
         'data-sources/clinvar-preview',
         'data-sources/cosmic',
+        'data-sources/cpg-island',
         'data-sources/dann',
         'data-sources/dbsnp',
         'data-sources/decipher',
@@ -63,7 +64,8 @@ module.exports = {
         'core-functionality/consequence-prioritization',
         'core-functionality/transcript-consequence-impacts',
         'core-functionality/variant-ids',
-        'core-functionality/variant-classification'
+        'core-functionality/variant-classification',
+        'core-functionality/methylation-annotation'
       ],
     },
     {
