@@ -1,17 +1,16 @@
 ---
-title: ABraOm
+title: ABraOM
 ---
 
 ## Overview
-Illumina Connected Annotation provide annotation data from ABraOM which is a repository of genomic variants from individual in Sao Paolo, Brazil.
-The link to the porject is [https://abraom.ib.usp.br/index.php](https://abraom.ib.usp.br/index.php).
+Illumina Connected Annotation provides allele frequency annotations from [ABraOM](https://ABraOM.ib.usp.br/index.php) which is a repository of genomic variants from individual in Sao Paolo, Brazil.
 
-ABraom has dataset for both GRCh37 and GRCh38.
+ABraOM has data for both GRCh37 and GRCh38.
 
 | Assembly | Name | Description                                                                       |
 |:---------|:-----|:----------------------------------------------------------------------------------|
-| GRCh37 | SABE609 | ABraom dataset for GRCh37, coming from exome samples from 609 individuals         |
-| GRCh38 | SABE-WGS-1171 | ABraom dataset for GRCh38, coming from whole genome samples from 1171 individuals |  
+| GRCh37 | SABE609 | ABraOM dataset for GRCh37, coming from exome samples from 609 individuals         |
+| GRCh38 | SABE-WGS-1171 | ABraOM dataset for GRCh38, coming from whole genome samples from 1171 individuals |  
 
 ## Data input
 Below are some examples of entry for SABE609 dataset.
@@ -41,7 +40,7 @@ Chr	Start	Ref	Alt	PredictedFunc.refGene	Gene.refGene	PredConsequence.refGene	avs
 ```
 
 ## Parsing
-From the TSV file, we store several columns in our supplementary data and it will be the annotation output for ABRaOm dataset.
+From the TSV file, the following columns are parsed out and provided in the annotation output:
 
 | Column             | Description                        | Illumina Connected Annotatyion JSON key |
 |:-------------------|:-----------------------------------|:----------------------------------------|
@@ -52,8 +51,8 @@ From the TSV file, we store several columns in our supplementary data and it wil
 | Frequencies        | Frequency of alt allele            |          `allAf`                               |    
 
 ## Output
-ABraOM supplementary data will have `abraom` key in Illlumina Connected Annotation JSON output.
-Below is an example of annotation output from ABraom.
+ABraOM supplementary data will have `abraom` key in Illumina Connected Annotation JSON output.
+Below is an example of annotation output from ABraOM.
 ```
 "abraom": {
         "homozygote": 532,
