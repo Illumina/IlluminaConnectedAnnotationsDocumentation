@@ -542,11 +542,14 @@ Once credentials are configured and data is downloaded, you can annotate variant
 
 Add these parameters to your DRAGEN command:
 
-| Parameter                       | Value                     | Description                                     |
-|---------------------------------|---------------------------|-------------------------------------------------|
-| `--enable-variant-annotation`   | `true`                    | Enables variant annotation                      |
-| `--variant-annotation-data`     | `/path/to/data/directory` | Location of downloaded annotation files         |
-| `--variant-annotation-assembly` | `GRCh37` or `GRCh38`      | Reference genome assembly (use GRCh37 for hg19) |
+| Parameter                       | Value                                | Description                                                                                            |
+|---------------------------------|--------------------------------------|--------------------------------------------------------------------------------------------------------|
+| `--enable-variant-annotation`   | `true`                               | Enables variant annotation                                                                             |
+| `--variant-annotation-data`     | `/path/to/data/directory`            | Location of downloaded annotation files                                                                |
+| `--variant-annotation-assembly` | `GRCh37` or `GRCh38`                 | Reference genome assembly (use GRCh37 for hg19)                                                        |
+| `--annotation-data-config`     | `/path/to/data/versions-config-json` | File path to annotation data config (json) file, if this is not set, embedded data config will be used |
+| `--variant-annotation-assembly` | `true`                    | Set Nirvana output format to VCF(optional)                                                             |
+
 
 **Example:**
 
@@ -555,6 +558,8 @@ dragen \
   --enable-variant-annotation true \
   --variant-annotation-data /data/nirvana_data \
   --variant-annotation-assembly GRCh38 \
+  --annotation-data-config /opt/dragen/<DRAGEN_VERSION>/resources/annotation/latest_annotations_GRCh38.json \
+  --variant-annotation-enable-vcf-output true \
   [... other DRAGEN parameters ...]
 ```
 
