@@ -1,0 +1,135 @@
+---
+title: AlphaMissense
+---
+
+import JSON from './alpha-missense-json.md'
+
+## Overview
+
+AlphaMissense is a deep learning model that predicts the pathogenicity of missense variants across the human proteome. 
+It produces a pathogenicity score between 0 and 1, where higher values indicate more pathogenic predictions.
+
+This release provides pre-computed predictions for all possible human amino acid substitutions across major transcripts and isoforms.
+
+For more details, refer to:
+
+:::info Publication
+Jun Cheng, Guido Novati, Joshua Pan, Clare Bycroft, Akvilė Žemgulytė, Taylor Applebaum, Alexander Pritzel, Lai Hong Wong, Michal Zielinski, Tobias Sargeant, Rosalia G. Schneider, Andrew W. Senior, John Jumper, Demis Hassabis, Pushmeet Kohli, Žiga Avsec. Accurate proteome-wide missense variant effect prediction with AlphaMissense. Science (2023). [https://doi.org/10.1126/science.adg7492](https://doi.org/10.1126/science.adg7492)
+:::
+
+## Parsing
+
+AlphaMissense provides two tab-separated files:
+- a canonical TSV file (required)
+  - `AlphaMissense_hg38.tsv.gz` for GRCh38
+  - `AlphaMissense_hg19.tsv.gz` for GRCh37
+- an isoforms TSV file (optional)
+  - `AlphaMissense_isoforms_hg38.tsv.gz` only for GRCh38
+
+Only a subset of columns are consumed during parsing. Column positions are 0-based below.
+
+### TSV File
+
+#### `AlphaMissense_hg38.tsv.gz` Snippet
+```tsv
+#CHROM	POS	REF	ALT	genome	uniprot_id	transcript_id	protein_variant	am_pathogenicity	am_class
+chr1	69094	G	T	hg38	Q8NH21	ENST00000335137.4	V2L	0.2937	likely_benign
+chr1	69094	G	C	hg38	Q8NH21	ENST00000335137.4	V2L	0.2937	likely_benign
+chr1	69094	G	A	hg38	Q8NH21	ENST00000335137.4	V2M	0.3296	likely_benign
+chr1	69103	T	C	hg38	Q8NH21	ENST00000335137.4	F5L	0.9110	likely_pathogenic
+chr1	69103	T	G	hg38	Q8NH21	ENST00000335137.4	F5V	0.4055	ambiguous
+```
+
+From the canonical file, the following columns are parsed (0-based indices):
+- 0: `#CHROM` (reference name)
+- 1: `pos` (1-based position)
+- 2: `ref` (reference allele)
+- 3: `alt` (alternate allele)
+- 6: `transcriptId` (Ensembl transcript)
+- 7: `proteinVariant` (amino-acid substitution, e.g., V2L)
+- 8: `pathogenicity` (0-1)
+- 9: `classification` (e.g., likely_benign / likely_pathogenic / ambiguous)
+
+Columns present but not consumed:
+- `genome`
+- `uniprot_id` (UniProt accession; see release notes: [UniProt release notes](https://www.uniprot.org/release-notes/2021-04-07-release))
+
+#### `AlphaMissense_isoforms_hg38.tsv.gz` Snippet
+```tsv
+#CHROM	POS	REF	ALT	genome	transcript_id	protein_variant	am_pathogenicity	am_class
+chr1	65568	A	C	hg38	ENST00000641515.2	K2Q	0.0938	likely_benign
+chr1	65568	A	G	hg38	ENST00000641515.2	K2E	0.0766	likely_benign
+chr1	65569	A	G	hg38	ENST00000641515.2	K2R	0.0756	likely_benign
+chr1	65569	A	T	hg38	ENST00000641515.2	K2M	0.1732	likely_benign
+chr1	65569	A	C	hg38	ENST00000641515.2	K2T	0.1186	likely_benign
+chr1	65570	G	T	hg38	ENST00000641515.2	K2N	0.1432	likely_benign
+```
+
+From the isoforms file, the following columns are parsed (0-based indices):
+- 0: `#CHROM`
+- 1: `pos`
+- 2: `ref`
+- 3: `alt`
+- 5: `transcriptId`
+- 6: `proteinVariant`
+- 7: `pathogenicity`
+- 8: `classification`
+
+During ingestion, transcripts present in the canonical file take precedence. Isoform records with the same `transcriptId` as a canonical record are skipped.
+
+:::note Classification labels
+AlphaMissense provides `am_class` labels such as `likely_benign`, `likely_pathogenic`, and `ambiguous`.
+:::
+
+
+## SA Generation
+
+```shell
+dotnet SAUtils.dll \
+AlphaMissense \
+--r "${References}/Homo_sapiens.GRCh38.Nirvana.dat" \
+--t "${ExternalDataSources}/AlphaMissense/AlphaMissense_hg38.tsv.gz" \
+--i "${ExternalDataSources}/AlphaMissense/AlphaMissense_isoforms_hg38.tsv.gz" \
+--o "${SaUtilsOutput}"
+```
+
+Notes:
+- `--i` is optional. If omitted, only canonical records are ingested.
+- Output files are written with an automatically derived version name based on the `.version` sidecar file.
+
+## Known Issues
+
+:::caution Known Issues
+Some transcript IDs defined in the AlphaMissense files may be obsolete, retired, or updated. They are not modified by Illumina Connected Annotations and are passed as-is from the data source.
+:::
+
+## License and Disclaimer
+
+:::caution Disclaimer
+AlphaMissense predictions have varying confidence; they are not medical advice and are not approved for clinical use. This is not an officially supported Google product.
+:::
+
+:::note License
+We use and redistribute AlphaMissense predictions only, which are licensed under Creative Commons Attribution 4.0 (CC BY 4.0). See [CC BY 4.0 legal code](https://creativecommons.org/licenses/by/4.0/legalcode).
+
+Attribution (CC BY 4.0): credit DeepMind/AlphaMissense and the authors, link to the license and source, indicate changes, and do not imply endorsement.
+
+AlphaMissense predictions © 2023 DeepMind Technologies Limited, used under CC BY 4.0. Adapted for Illumina Connected Annotations.
+
+Source: [AlphaMissense – License and Disclaimer](https://github.com/google-deepmind/alphamissense?tab=readme-ov-file#license-and-disclaimer)
+:::
+
+## Download URL
+
+[https://console.cloud.google.com/storage/browser/dm_alphamissense](https://console.cloud.google.com/storage/browser/dm_alphamissense)
+
+
+## Contact
+
+For questions about the dataset, contact `alphamissense@google.com`.
+
+## JSON Output
+
+<JSON/>
+
+

@@ -18,6 +18,7 @@ module.exports = {
       label: 'Data Sources',
       items: [
         'data-sources/1000Genomes',
+        'data-sources/abraom',
         'data-sources/alpha-missense',
         'data-sources/amino-acid-conservation',
         'data-sources/cancer-hotspots',
@@ -25,6 +26,7 @@ module.exports = {
         'data-sources/clinvar',
         'data-sources/clinvar-preview',
         'data-sources/cosmic',
+        'data-sources/cpg-island',
         'data-sources/dann',
         'data-sources/dbsnp',
         'data-sources/decipher',
@@ -63,7 +65,8 @@ module.exports = {
         'core-functionality/consequence-prioritization',
         'core-functionality/transcript-consequence-impacts',
         'core-functionality/variant-ids',
-        'core-functionality/variant-classification'
+        'core-functionality/variant-classification',
+        'core-functionality/methylation-annotation'
       ],
     },
     {
